@@ -56,7 +56,7 @@ namespace AspNetCoreAnalyzers.Tests.Documentation
         public void Title(DescriptorInfo descriptorInfo)
         {
             var expected = $"## {descriptorInfo.Descriptor.Title}";
-            var actual = File.ReadLines(descriptorInfo.DocFileName).Skip(1).First().Replace("`", string.Empty);
+            var actual = File.ReadLines(descriptorInfo.DocFileName).Skip(1).First().Replace("`", string.Empty, StringComparison.Ordinal);
             Assert.AreEqual(expected, actual);
         }
 
@@ -72,7 +72,7 @@ namespace AspNetCoreAnalyzers.Tests.Documentation
                              .SkipWhile(l => !l.StartsWith("## Description", StringComparison.OrdinalIgnoreCase))
                              .Skip(1)
                              .FirstOrDefault(l => !string.IsNullOrWhiteSpace(l))
-                            ?.Replace("`", string.Empty);
+                            ?.Replace("`", string.Empty, StringComparison.Ordinal);
 
             DumpIfDebug(expected);
             DumpIfDebug(actual);
@@ -155,8 +155,8 @@ namespace AspNetCoreAnalyzers.Tests.Documentation
             }
 
             var text = builder.Return();
-            return stub.Replace("  <tr>\r\n    <td>Code</td>\r\n    <td><a href=\"{URL}\">{TYPENAME}</a></td>\r\n  </tr>\r\n", text)
-                       .Replace("  <tr>\n    <td>Code</td>\n    <td><a href=\"{URL}\">{TYPENAME}</a></td>\n  </tr>\n", text);
+            return stub.Replace("  <tr>\r\n    <td>Code</td>\r\n    <td><a href=\"{URL}\">{TYPENAME}</a></td>\r\n  </tr>\r\n", text, StringComparison.Ordinal)
+                       .Replace("  <tr>\n    <td>Code</td>\n    <td><a href=\"{URL}\">{TYPENAME}</a></td>\n  </tr>\n", text, StringComparison.Ordinal);
         }
 
         private static string GetTable(string doc)
@@ -217,7 +217,7 @@ namespace AspNetCoreAnalyzers.Tests.Documentation
                                         .FirstOrDefault();
                 return fileName != null
                     ? "https://github.com/DotNetAnalyzers/AspNetCoreAnalyzers/blob/master" +
-                      fileName.Substring(SolutionDirectory.FullName.Length).Replace("\\", "/")
+                      fileName.Substring(SolutionDirectory.FullName.Length).Replace("\\", "/", StringComparison.Ordinal)
                     : "missing";
             }
 
