@@ -18,7 +18,7 @@ The preferable way to use the analyzers is to add the nuget package [AspNetCoreA
 to the project(s).
 
 The severity of individual rules may be configured using [rule set files](https://msdn.microsoft.com/en-us/library/dd264996.aspx)
-in Visual Studio 2015.
+in Visual Studio.
 
 ## Installation
 
