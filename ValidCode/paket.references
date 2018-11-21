@@ -1,4 +1,5 @@
 group Test
   NUnit
+  Microsoft.AspNetCore.All
 
 
