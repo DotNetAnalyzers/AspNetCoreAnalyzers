@@ -22,7 +22,7 @@ in Visual Studio 2015.
 
 ## Installation
 
-AspNetCoreAnalyzers can be installed using [Paket](https://fsprojects.github.io/Paket/) or the NuGet command line or the NuGet Package Manager in Visual Studio 2015.
+AspNetCoreAnalyzers can be installed using [Paket](https://fsprojects.github.io/Paket/) or the NuGet command line or the NuGet Package Manager in Visual Studio.
 
 
 **Install using the command line:**
