@@ -8,7 +8,6 @@ using Gu.Roslyn.Asserts;
     typeof(System.Linq.Enumerable),
     typeof(System.Reflection.Assembly),
     typeof(System.Net.WebClient),
-    typeof(System.Drawing.Bitmap),
     typeof(System.Data.Common.DbConnection),
     typeof(System.Xml.Serialization.XmlSerializer),
     typeof(System.Runtime.Serialization.DataContractSerializer),
