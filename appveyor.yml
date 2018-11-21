@@ -1,0 +1,11 @@
+image: Visual Studio 2017
+
+before_build:
+- ps: dotnet restore
+
+configuration: Release
+build:
+  verbosity: minimal
+
+on_success:
+- ps: Get-ChildItem publish\*.nupkg | % { Push-AppveyorArtifact $_.FullName -FileName $_.Name }

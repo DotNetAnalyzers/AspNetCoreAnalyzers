@@ -50,7 +50,5 @@ $tf*/
 *.dll
 packages/*
 publish/*
-WpfAnalyzers.Demo/*
 .vs/*
 /paket-files/*
-/WpfAnalyzers.Benchmarks/BenchmarkDotNet.Artifacts/*

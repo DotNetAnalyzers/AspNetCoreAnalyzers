@@ -1,0 +1,15 @@
+﻿type project
+developmentDependency true
+projectUrl https://github.com/DotNetAnalyzers/AspNetCoreAnalyzers
+licenseUrl http://opensource.org/licenses/MIT
+
+releasenotes
+
+excludedgroups
+  Main
+  Analyzers
+
+files
+  bin/Release/Gu.Roslyn.Extensions.dll ==> analyzers/dotnet/cs
+  ../.paket/tools/*.ps1 ==> tools
+
