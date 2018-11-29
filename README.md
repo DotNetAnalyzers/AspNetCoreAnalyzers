@@ -8,7 +8,8 @@ Roslyn analyzers for ASP.NET.Core.
 
 
 <!-- start generated table -->
-
+<table>
+<table>
 <!-- end generated table -->
 
 

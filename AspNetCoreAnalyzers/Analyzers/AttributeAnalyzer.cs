@@ -8,7 +8,7 @@ namespace AspNetCoreAnalyzers.Analyzers
     [DiagnosticAnalyzer(LanguageNames.CSharp)]
     public class AttributeAnalyzer : DiagnosticAnalyzer
     {
-        public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get; }
+        public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get; } = ImmutableArray<DiagnosticDescriptor>.Empty;
 
         public override void Initialize(AnalysisContext context)
         {

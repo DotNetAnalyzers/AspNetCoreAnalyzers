@@ -23,6 +23,8 @@ group Test
   nuget System.Runtime.CompilerServices.Unsafe
   nuget Gu.Roslyn.Asserts
   nuget NUnit
+  nuget NUnit3TestAdapter
+  nuget Microsoft.NET.Test.Sdk
   nuget Microsoft.AspNetCore.All
 
 group Build
