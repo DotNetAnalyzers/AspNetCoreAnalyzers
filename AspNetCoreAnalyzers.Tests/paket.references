@@ -12,4 +12,3 @@ group Analyzers
   IDisposableAnalyzers
   Microsoft.CodeAnalysis.FxCopAnalyzers
   StyleCop.Analyzers
-
