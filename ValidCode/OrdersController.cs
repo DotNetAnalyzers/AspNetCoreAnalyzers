@@ -15,7 +15,7 @@ namespace ValidCode
         }
 
         [HttpGet("api/orders/{id}")]
-        public async Task<IActionResult> GetOrder(int id)
+        public async Task<IActionResult> GetOrder([FromRoute]int id)
         {
             var match = await this.db.Orders.FirstOrDefaultAsync(x => x.Id == id);
             if (match == null)
