@@ -13,6 +13,10 @@ Roslyn analyzers for ASP.NET.Core.
     <td><a href="https://github.com/DotNetAnalyzers/AspNetCoreAnalyzers/tree/master/documentation/ASP001.md">ASP001</a></td>
     <td>The parameter name does not match the url parameter.</td>
   </tr>
+  <tr>
+    <td><a href="https://github.com/DotNetAnalyzers/AspNetCoreAnalyzers/tree/master/documentation/ASP002.md">ASP002</a></td>
+    <td>The method has no corresponding parameter.</td>
+  </tr>
 <table>
 <!-- end generated table -->
 

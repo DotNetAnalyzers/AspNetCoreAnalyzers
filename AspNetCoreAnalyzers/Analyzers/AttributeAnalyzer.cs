@@ -12,7 +12,8 @@ namespace AspNetCoreAnalyzers
     public class AttributeAnalyzer : DiagnosticAnalyzer
     {
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get; } = ImmutableArray.Create(
-            ASP001ParameterName.Descriptor);
+            ASP001ParameterName.Descriptor,
+            ASP002MissingParameter.Descriptor);
 
         public override void Initialize(AnalysisContext context)
         {
@@ -24,6 +25,7 @@ namespace AspNetCoreAnalyzers
             if (!context.IsExcludedFromAnalysis() &&
                 context.Node is AttributeSyntax attribute &&
                 context.ContainingSymbol is IMethodSymbol method &&
+                attribute.TryFirstAncestor<MethodDeclarationSyntax>(out var methodDeclaration) &&
                 TryGetTemplate(attribute, context, out var template))
             {
                 foreach (var component in template.Path)
@@ -38,6 +40,14 @@ namespace AspNetCoreAnalyzers
                                     ASP001ParameterName.Descriptor,
                                     single.Locations.Single(),
                                     ImmutableDictionary<string, string>.Empty.Add(nameof(NameSyntax), name)));
+                        }
+
+                        if (!method.Parameters.TryFirst(x => IsFromRoute(x), out _))
+                        {
+                            context.ReportDiagnostic(
+                                Diagnostic.Create(
+                                    ASP002MissingParameter.Descriptor,
+                                    methodDeclaration.ParameterList.GetLocation()));
                         }
                     }
                 }
