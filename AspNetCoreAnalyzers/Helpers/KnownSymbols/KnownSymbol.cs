@@ -1,4 +1,4 @@
-namespace AspNetCoreAnalyzers.Helpers
+namespace AspNetCoreAnalyzers
 {
     using Gu.Roslyn.AnalyzerExtensions;
 

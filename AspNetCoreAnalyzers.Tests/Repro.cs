@@ -10,7 +10,7 @@ namespace AspNetCoreAnalyzers.Tests
     using NUnit.Framework;
 
     [Explicit("Only for digging out test cases.")]
-    internal class Repro
+    public class Repro
     {
         ////ReSharper disable once UnusedMember.Local
         private static readonly IReadOnlyList<DiagnosticAnalyzer> AllAnalyzers = typeof(HelpLink)

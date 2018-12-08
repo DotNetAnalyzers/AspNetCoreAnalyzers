@@ -2,8 +2,6 @@ namespace AspNetCoreAnalyzers
 {
     using System.Collections.Immutable;
     using System.Linq;
-    using System.Text.RegularExpressions;
-    using AspNetCoreAnalyzers.Helpers;
     using Gu.Roslyn.AnalyzerExtensions;
     using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.CSharp;
@@ -24,58 +22,84 @@ namespace AspNetCoreAnalyzers
         private static void Handle(SyntaxNodeAnalysisContext context)
         {
             if (!context.IsExcludedFromAnalysis() &&
-                context.Node is AttributeSyntax attribute)
+                context.Node is AttributeSyntax attribute &&
+                context.ContainingSymbol is IMethodSymbol method &&
+                TryGetTemplate(attribute, context, out var template))
             {
-                if (context.ContainingSymbol is IMethodSymbol method &&
-                    TryGetTemplate(attribute, context, out var template) &&
-                    TryGetRouteParameter(template, out var name) &&
-                    method.Parameters.TrySingle(x => IsFromRoute(x), out var parameter) &&
-                    parameter.Name != name)
+                foreach (var component in template.Path)
                 {
-                    context.ReportDiagnostic(
-                        Diagnostic.Create(
-                            ASP001ParameterName.Descriptor,
-                            parameter.Locations.Single(),
-                            ImmutableDictionary<string, string>.Empty.Add(nameof(NameSyntax), name)));
+                    if (TryGetParameterName(component.Text, out var name))
+                    {
+                        if (method.Parameters.TrySingle(x => IsFromRoute(x), out var single) &&
+                            single.Name != name)
+                        {
+                            context.ReportDiagnostic(
+                                Diagnostic.Create(
+                                    ASP001ParameterName.Descriptor,
+                                    single.Locations.Single(),
+                                    ImmutableDictionary<string, string>.Empty.Add(nameof(NameSyntax), name)));
+                        }
+                    }
                 }
             }
         }
 
-        private static bool TryGetTemplate(AttributeSyntax attribute, SyntaxNodeAnalysisContext context, out LiteralExpressionSyntax literal)
+        private static bool TryGetParameterName(string text, out string name)
+        {
+            var start = text.IndexOf('{');
+            if (start < 0 ||
+                text.IndexOf('}') < start ||
+                text.IndexOf('{', start) > 0)
+            {
+                name = null;
+                return false;
+            }
+
+            start++;
+            while (start < text.Length &&
+                   text[start] == ' ')
+            {
+                start++;
+            }
+
+            var end = text.IndexOf('}', start);
+            if (end < 0)
+            {
+                name = null;
+                return false;
+            }
+
+            while (text[end] == ' ')
+            {
+                end--;
+            }
+
+            name = text.Substring(start, end - start);
+            return true;
+        }
+
+        private static bool TryGetTemplate(AttributeSyntax attribute, SyntaxNodeAnalysisContext context, out UrlTemplate template)
         {
             if (attribute.ArgumentList is AttributeArgumentListSyntax argumentList &&
                 argumentList.Arguments.TrySingle(out var argument) &&
-                argument.Expression is LiteralExpressionSyntax candidate &&
-                candidate.IsKind(SyntaxKind.StringLiteralExpression) &&
+                argument.Expression is LiteralExpressionSyntax literal &&
+                literal.IsKind(SyntaxKind.StringLiteralExpression) &&
                 (Attribute.IsType(attribute, KnownSymbol.HttpGetAttribute, context.SemanticModel, context.CancellationToken) ||
                  Attribute.IsType(attribute, KnownSymbol.HttpPostAttribute, context.SemanticModel, context.CancellationToken) ||
                  Attribute.IsType(attribute, KnownSymbol.HttpPutAttribute, context.SemanticModel, context.CancellationToken) ||
-                 Attribute.IsType(attribute, KnownSymbol.HttpDeleteAttribute, context.SemanticModel, context.CancellationToken)))
+                 Attribute.IsType(attribute, KnownSymbol.HttpDeleteAttribute, context.SemanticModel, context.CancellationToken)) &&
+                UrlTemplate.TryParse(literal, out template))
             {
-                literal = candidate;
                 return true;
             }
 
-            literal = null;
+            template = default(UrlTemplate);
             return false;
         }
 
-        private static bool TryGetRouteParameter(LiteralExpressionSyntax literal, out string name)
+        private static bool IsFromRoute(IParameterSymbol p)
         {
-            var match = Regex.Match(literal.Token.ValueText, @"\{(?<name>\w+)}");
-            if (match.Success)
-            {
-                name = match.Groups["name"].Value;
-                return true;
-            }
-
-            name = null;
-            return false;
-        }
-
-        private static bool IsFromRoute(IParameterSymbol parameter)
-        {
-            foreach (var attributeData in parameter.GetAttributes())
+            foreach (var attributeData in p.GetAttributes())
             {
                 if (attributeData.AttributeClass == KnownSymbol.FromRouteAttribute)
                 {
