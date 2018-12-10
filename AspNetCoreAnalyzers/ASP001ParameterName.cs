@@ -10,7 +10,7 @@ namespace AspNetCoreAnalyzers
             id: DiagnosticId,
             title: "The parameter name does not match the url parameter.",
             messageFormat: "The parameter name does not match the url parameter.",
-            category: AnalyzerCategory.Correctness,
+            category: AnalyzerCategory.Routing,
             defaultSeverity: DiagnosticSeverity.Hidden,
             isEnabledByDefault: true,
             description: "The parameter name does not match the url parameter.",

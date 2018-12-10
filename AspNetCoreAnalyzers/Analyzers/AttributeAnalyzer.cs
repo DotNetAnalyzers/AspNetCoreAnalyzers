@@ -84,6 +84,17 @@ namespace AspNetCoreAnalyzers
                 end--;
             }
 
+            for (var i = start; i < end; i++)
+            {
+                switch (text[i])
+                {
+                    case '?':
+                    case ':':
+                        end = i;
+                        break;
+                }
+            }
+
             name = text.Substring(start, end - start);
             return true;
         }

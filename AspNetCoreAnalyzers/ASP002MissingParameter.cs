@@ -10,7 +10,7 @@ namespace AspNetCoreAnalyzers
             id: DiagnosticId,
             title: "The method has no corresponding parameter.",
             messageFormat: "The method has no corresponding parameter.",
-            category: AnalyzerCategory.Correctness,
+            category: AnalyzerCategory.Routing,
             defaultSeverity: DiagnosticSeverity.Hidden,
             isEnabledByDefault: true,
             description: "The method has no corresponding parameter.",
