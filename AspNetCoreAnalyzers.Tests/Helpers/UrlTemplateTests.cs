@@ -29,7 +29,11 @@ namespace ValidCode
 }".AssertReplace("api/orders/{id}", text));
             var literal = syntaxTree.FindLiteralExpression(text);
             Assert.AreEqual(true, UrlTemplate.TryParse(literal, out var template));
-            CollectionAssert.AreEqual(expected, template.Path.Select(x => x.Text));
+            CollectionAssert.AreEqual(expected, template.Path.Select(x => x.Text.Text));
+
+            // ReSharper disable once PossibleInvalidOperationException
+            var parameter = template.Path.Single(x => x.Parameter.HasValue).Parameter.Value;
+            Assert.AreEqual("id", parameter.Name.Text);
         }
     }
 }

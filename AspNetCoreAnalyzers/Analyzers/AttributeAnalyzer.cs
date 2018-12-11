@@ -25,21 +25,20 @@ namespace AspNetCoreAnalyzers
             if (!context.IsExcludedFromAnalysis() &&
                 context.Node is AttributeSyntax attribute &&
                 context.ContainingSymbol is IMethodSymbol method &&
-                attribute.TryFirstAncestor<MethodDeclarationSyntax>(out var methodDeclaration) &&
+                attribute.TryFirstAncestor(out MethodDeclarationSyntax methodDeclaration) &&
                 TryGetTemplate(attribute, context, out var template))
             {
                 foreach (var component in template.Path)
                 {
-                    if (TryGetParameterName(component.Text, out var name))
+                    if (component.Parameter is TemplateParameter parameter)
                     {
-                        if (method.Parameters.TrySingle(x => IsFromRoute(x), out var single) &&
-                            single.Name != name)
+                        if (method.Parameters.TryFirst(x => IsFromRoute(x) && x.Name != parameter.Name.Text, out var single))
                         {
                             context.ReportDiagnostic(
                                 Diagnostic.Create(
                                     ASP001ParameterName.Descriptor,
                                     single.Locations.Single(),
-                                    ImmutableDictionary<string, string>.Empty.Add(nameof(NameSyntax), name)));
+                                    ImmutableDictionary<string, string>.Empty.Add(nameof(NameSyntax), parameter.Name.Text)));
                         }
 
                         if (!method.Parameters.TryFirst(x => IsFromRoute(x), out _))
@@ -52,51 +51,6 @@ namespace AspNetCoreAnalyzers
                     }
                 }
             }
-        }
-
-        private static bool TryGetParameterName(string text, out string name)
-        {
-            var start = text.IndexOf('{');
-            if (start < 0 ||
-                text.IndexOf('}') < start ||
-                text.IndexOf('{', start) > 0)
-            {
-                name = null;
-                return false;
-            }
-
-            start++;
-            while (start < text.Length &&
-                   text[start] == ' ')
-            {
-                start++;
-            }
-
-            var end = text.IndexOf('}', start);
-            if (end < 0)
-            {
-                name = null;
-                return false;
-            }
-
-            while (text[end] == ' ')
-            {
-                end--;
-            }
-
-            for (var i = start; i < end; i++)
-            {
-                switch (text[i])
-                {
-                    case '?':
-                    case ':':
-                        end = i;
-                        break;
-                }
-            }
-
-            name = text.Substring(start, end - start);
-            return true;
         }
 
         private static bool TryGetTemplate(AttributeSyntax attribute, SyntaxNodeAnalysisContext context, out UrlTemplate template)
