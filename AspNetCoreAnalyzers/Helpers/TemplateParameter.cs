@@ -1,6 +1,8 @@
 namespace AspNetCoreAnalyzers
 {
-    public struct TemplateParameter
+    using System;
+
+    public struct TemplateParameter : IEquatable<TemplateParameter>
     {
         public TemplateParameter(TextAndLocation name, bool isOptional, TextAndLocation? type)
         {
@@ -14,6 +16,17 @@ namespace AspNetCoreAnalyzers
         public bool IsOptional { get; }
 
         public TextAndLocation? Type { get; }
+
+
+        public static bool operator ==(TemplateParameter left, TemplateParameter right)
+        {
+            return left.Equals(right);
+        }
+
+        public static bool operator !=(TemplateParameter left, TemplateParameter right)
+        {
+            return !left.Equals(right);
+        }
 
         public static bool TryParse(TextAndLocation textAndLocation, out TemplateParameter result)
         {
@@ -81,6 +94,21 @@ namespace AspNetCoreAnalyzers
 
                 return textAndLocation.Substring(typeStart, typeEnd - typeStart);
             }
+        }
+
+        public bool Equals(TemplateParameter other)
+        {
+            return this.Name.Equals(other.Name);
+        }
+
+        public override bool Equals(object obj)
+        {
+            return obj is TemplateParameter other && this.Equals(other);
+        }
+
+        public override int GetHashCode()
+        {
+            return this.Name.GetHashCode();
         }
     }
 }
