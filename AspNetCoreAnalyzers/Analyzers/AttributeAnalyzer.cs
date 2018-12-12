@@ -52,8 +52,7 @@ namespace AspNetCoreAnalyzers
                                 methodDeclaration.ParameterList.GetLocation()));
                     }
 
-                    if (pairs.TrySingle(x => x.Template != null, out _) &&
-                        pairs.TrySingle(x => x.Method == null, out _))
+                    if (pairs.TryFirst(x => x.Method == null, out _))
                     {
                         context.ReportDiagnostic(
                             Diagnostic.Create(
