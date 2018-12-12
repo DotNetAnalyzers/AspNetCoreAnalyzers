@@ -4,7 +4,7 @@ namespace AspNetCoreAnalyzers.Tests.ASP002MissingParameterTests
     using Microsoft.CodeAnalysis.Diagnostics;
     using NUnit.Framework;
 
-    public class CodeFix
+    public class Diagnostics
     {
         private static readonly DiagnosticAnalyzer Analyzer = new AttributeAnalyzer();
         private static readonly ExpectedDiagnostic ExpectedDiagnostic = ExpectedDiagnostic.Create(ASP002MissingParameter.Descriptor);
