@@ -31,13 +31,25 @@ namespace AspNetCoreAnalyzers
                 using (var pairs = GetPairs(template, method))
                 {
                     if (pairs.TrySingle(x => x.Template == null, out var withMethodParameter) &&
-                        pairs.TrySingle(x => x.Method == null, out var withTemplateParameter))
+                        methodDeclaration.TryFindParameter(withMethodParameter.Method.Name, out var parameterSyntax) &&
+                        pairs.TrySingle(x => x.Method == null, out var withTemplateParameter) &&
+                        withTemplateParameter.Template is TemplateParameter templateParameter)
                     {
                         context.ReportDiagnostic(
                             Diagnostic.Create(
                                 ASP001ParameterName.Descriptor,
-                                withMethodParameter.Method.Locations.Single(),
-                                ImmutableDictionary<string, string>.Empty.Add(nameof(NameSyntax), withTemplateParameter.Template.Value.Name.Text)));
+                                parameterSyntax.Identifier.GetLocation(),
+                                ImmutableDictionary<string, string>.Empty.Add(
+                                    nameof(NameSyntax),
+                                    templateParameter.Name.Text)));
+                    }
+                    else if (pairs.Count(x => x.Template == null) > 1 &&
+                             pairs.Count(x => x.Method == null) > 1)
+                    {
+                        context.ReportDiagnostic(
+                            Diagnostic.Create(
+                                ASP001ParameterName.Descriptor,
+                                methodDeclaration.ParameterList.GetLocation()));
                     }
 
                     if (pairs.TrySingle(x => x.Template != null, out _) &&

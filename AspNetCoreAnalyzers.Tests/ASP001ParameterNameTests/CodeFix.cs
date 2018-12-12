@@ -406,5 +406,71 @@ namespace ValidCode
 }";
             AnalyzerAssert.CodeFix(Analyzer, RenameParameterFix, ExpectedDiagnostic, new[] { order, db, before }, after);
         }
+
+        [Test]
+        public void BothParameters()
+        {
+            var orderItem = @"
+namespace ValidCode
+{
+    public class OrderItem
+    {
+        public int Id { get; set; }
+    }
+}";
+            var order = @"
+namespace ValidCode
+{
+    public class Order
+    {
+        public int Id { get; set; }
+
+        public IEnumerable<OrderItem> Items { get; set; }
+    }
+}";
+
+            var db = @"
+namespace ValidCode
+{
+    using Microsoft.EntityFrameworkCore;
+
+    public class Db : DbContext
+    {
+        public DbSet<Order> Orders { get; set; }
+    }
+}";
+            var before = @"
+namespace ValidCode
+{
+    using System.Threading.Tasks;
+    using Microsoft.AspNetCore.Mvc;
+    using Microsoft.EntityFrameworkCore;
+
+    [ApiController]
+    public class OrdersController : Controller
+    {
+        private readonly Db db;
+
+        public OrdersController(Db db)
+        {
+            this.db = db;
+        }
+
+        [HttpGet(""api/orders/{orderId}/items/{itemId}"")]
+        public async Task<IActionResult> GetOrder↓(int wrong1, int wrong2)
+        {
+            var match = await this.db.Orders.FirstOrDefaultAsync(x => x.Id == wrong1)?.FirstOrDefaultAsync(x => x.Id == wrong2);
+            if (match == null)
+            {
+                return this.NotFound();
+            }
+
+            return this.Ok(match);
+        }
+    }
+}";
+
+            AnalyzerAssert.Diagnostics(Analyzer, ExpectedDiagnostic, orderItem, order, db, before);
+        }
     }
 }
