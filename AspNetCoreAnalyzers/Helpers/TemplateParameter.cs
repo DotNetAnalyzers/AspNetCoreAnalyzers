@@ -17,7 +17,6 @@ namespace AspNetCoreAnalyzers
 
         public TextAndLocation? Type { get; }
 
-
         public static bool operator ==(TemplateParameter left, TemplateParameter right)
         {
             return left.Equals(right);
@@ -41,11 +40,7 @@ namespace AspNetCoreAnalyzers
             }
 
             start++;
-            while (start < text.Length &&
-                   text[start] == ' ')
-            {
-                start++;
-            }
+            SkipWhiteSpace(text, ref start);
 
             var end = text.IndexOf('}', start);
             if (end < 0)
@@ -54,10 +49,7 @@ namespace AspNetCoreAnalyzers
                 return false;
             }
 
-            while (text[end] == ' ')
-            {
-                end--;
-            }
+            BackWhiteSpace(text, ref end);
 
             for (var i = start; i < end; i++)
             {
@@ -81,17 +73,15 @@ namespace AspNetCoreAnalyzers
                     return null;
                 }
 
+                typeStart++;
+                SkipWhiteSpace(text, ref typeStart);
                 var typeEnd = text.IndexOf('}', typeStart);
                 if (typeEnd < 0)
                 {
                     return null;
                 }
 
-                while (text[typeEnd] == ' ')
-                {
-                    typeEnd--;
-                }
-
+                BackWhiteSpace(text, ref typeEnd);
                 return textAndLocation.Substring(typeStart, typeEnd - typeStart);
             }
         }
@@ -109,6 +99,24 @@ namespace AspNetCoreAnalyzers
         public override int GetHashCode()
         {
             return this.Name.GetHashCode();
+        }
+
+        private static void SkipWhiteSpace(string text, ref int pos)
+        {
+            while (pos < text.Length &&
+                   text[pos] == ' ')
+            {
+                pos++;
+            }
+        }
+
+        private static void BackWhiteSpace(string text, ref int pos)
+        {
+            while (pos >= 0 &&
+                   text[pos] == ' ')
+            {
+                pos--;
+            }
         }
     }
 }

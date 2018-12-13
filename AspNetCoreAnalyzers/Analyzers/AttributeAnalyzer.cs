@@ -13,7 +13,8 @@ namespace AspNetCoreAnalyzers
     {
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get; } = ImmutableArray.Create(
             ASP001ParameterName.Descriptor,
-            ASP002MissingParameter.Descriptor);
+            ASP002MissingParameter.Descriptor,
+            ASP003ParameterType.Descriptor);
 
         public override void Initialize(AnalysisContext context)
         {
@@ -58,6 +59,32 @@ namespace AspNetCoreAnalyzers
                             Diagnostic.Create(
                                 ASP002MissingParameter.Descriptor,
                                 methodDeclaration.ParameterList.GetLocation()));
+                    }
+
+                    foreach (var pair in pairs)
+                    {
+                        if (pair.Template?.Type is TextAndLocation templateType &&
+                            pair.Method is IParameterSymbol parameter)
+                        {
+                            switch (templateType.Text)
+                            {
+                                // https://docs.microsoft.com/en-us/aspnet/core/fundamentals/routing?view=aspnetcore-2.2#route-constraint-reference
+                                case "bool" when parameter.Type != KnownSymbol.Boolean && methodDeclaration.TryFindParameter(parameter.Name, out parameterSyntax):
+                                case "decimal" when parameter.Type != KnownSymbol.Decimal && methodDeclaration.TryFindParameter(parameter.Name,  out parameterSyntax):
+                                case "double" when parameter.Type != KnownSymbol.Float && methodDeclaration.TryFindParameter(parameter.Name,  out parameterSyntax):
+                                case "float" when parameter.Type != KnownSymbol.Double && methodDeclaration.TryFindParameter(parameter.Name,  out parameterSyntax):
+                                case "int" when parameter.Type != KnownSymbol.Int32 && methodDeclaration.TryFindParameter(parameter.Name,  out parameterSyntax):
+                                case "long" when parameter.Type != KnownSymbol.Int64 && methodDeclaration.TryFindParameter(parameter.Name,  out parameterSyntax):
+                                    context.ReportDiagnostic(
+                                        Diagnostic.Create(
+                                            ASP003ParameterType.Descriptor,
+                                            parameterSyntax.Type.GetLocation(),
+                                            ImmutableDictionary<string, string>.Empty.Add(
+                                                nameof(TypeSyntax),
+                                                templateType.Text)));
+                                    break;
+                            }
+                        }
                     }
                 }
             }

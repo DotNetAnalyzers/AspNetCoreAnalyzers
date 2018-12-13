@@ -9,7 +9,7 @@ namespace AspNetCoreAnalyzers.Tests.ASP001ParameterNameTests
     {
         private static readonly DiagnosticAnalyzer Analyzer = new AttributeAnalyzer();
         private static readonly ExpectedDiagnostic ExpectedDiagnostic = Gu.Roslyn.Asserts.ExpectedDiagnostic.Create(ASP001ParameterName.Descriptor);
-        private static readonly CodeFixProvider RenameParameterFix = new RenameParameterFix();
+        private static readonly CodeFixProvider Fix = new ParameterNameFix();
 
         [Test]
         public void ImplicitSingleParameter()
@@ -94,7 +94,7 @@ namespace ValidCode
         }
     }
 }";
-            AnalyzerAssert.CodeFix(Analyzer, RenameParameterFix, ExpectedDiagnostic, new[] { order, db, before }, after);
+            AnalyzerAssert.CodeFix(Analyzer, Fix, ExpectedDiagnostic, new[] { order, db, before }, after);
         }
 
         [Test]
@@ -206,7 +206,7 @@ namespace ValidCode
         }
     }
 }";
-            AnalyzerAssert.CodeFix(Analyzer, RenameParameterFix, ExpectedDiagnostic, new[] { orderItem, order, db, before }, after);
+            AnalyzerAssert.CodeFix(Analyzer, Fix, ExpectedDiagnostic, new[] { orderItem, order, db, before }, after);
         }
 
         [Test]
@@ -318,7 +318,7 @@ namespace ValidCode
         }
     }
 }";
-            AnalyzerAssert.CodeFix(Analyzer, RenameParameterFix, ExpectedDiagnostic, new[] { orderItem, order, db, before }, after);
+            AnalyzerAssert.CodeFix(Analyzer, Fix, ExpectedDiagnostic, new[] { orderItem, order, db, before }, after);
         }
 
         [Test]
@@ -404,7 +404,7 @@ namespace ValidCode
         }
     }
 }";
-            AnalyzerAssert.CodeFix(Analyzer, RenameParameterFix, ExpectedDiagnostic, new[] { order, db, before }, after);
+            AnalyzerAssert.CodeFix(Analyzer, Fix, ExpectedDiagnostic, new[] { order, db, before }, after);
         }
 
         [Test]

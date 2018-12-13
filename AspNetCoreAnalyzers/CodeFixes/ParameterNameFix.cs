@@ -9,7 +9,7 @@ namespace AspNetCoreAnalyzers
     using Microsoft.CodeAnalysis.CSharp.Syntax;
     using Microsoft.CodeAnalysis.Rename;
 
-    public class RenameParameterFix : CodeFixProvider
+    public class ParameterNameFix : CodeFixProvider
     {
         public override ImmutableArray<string> FixableDiagnosticIds { get; } = ImmutableArray.Create(
             ASP001ParameterName.DiagnosticId);
@@ -35,7 +35,7 @@ namespace AspNetCoreAnalyzers
                                 name,
                                 null,
                                 cancellationToken),
-                            nameof(RenameParameterFix)),
+                            nameof(ParameterNameFix)),
                         diagnostic);
                 }
             }
