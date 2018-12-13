@@ -1,6 +1,7 @@
 # AspNetCoreAnalyzers
 
 [![Join the chat at https://gitter.im/DotNetAnalyzers/AspNetCoreAnalyzers](https://badges.gitter.im/DotNetAnalyzers/AspNetCoreAnalyzers.svg)](https://gitter.im/DotNetAnalyzers/AspNetCoreAnalyzers?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+[![Build status](https://ci.appveyor.com/api/projects/status/wk4ra33vaa9okd9o/branch/master?svg=true)](https://ci.appveyor.com/project/JohanLarsson/aspnetcoreanalyzers/branch/master)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
 
