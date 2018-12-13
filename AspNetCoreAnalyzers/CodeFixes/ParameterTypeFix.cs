@@ -26,7 +26,9 @@ namespace AspNetCoreAnalyzers
                         $"Change to {typeName}",
                         (e, _) => e.ReplaceNode(
                             typeSyntax,
-                            x => SyntaxFactory.ParseTypeName(typeName).WithTriviaFrom(x)),
+                            x => SyntaxFactory.ParseTypeName(typeName)
+                                              .WithSimplifiedNames()
+                                              .WithTriviaFrom(x)),
                         nameof(ParameterTypeFix),
                         diagnostic);
                 }

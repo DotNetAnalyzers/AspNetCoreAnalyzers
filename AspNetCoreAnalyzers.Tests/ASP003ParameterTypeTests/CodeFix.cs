@@ -13,58 +13,27 @@ namespace AspNetCoreAnalyzers.Tests.ASP003ParameterTypeTests
 
         [TestCase("api/orders/{id:int}", "int id")]
         [TestCase("api/orders/{id:bool}", "bool id")]
+        [TestCase("api/orders/{id:datetime}", "System.DateTime id")]
         [TestCase("api/orders/{id:decimal}", "decimal id")]
         [TestCase("api/orders/{id:double}", "double id")]
         [TestCase("api/orders/{id:float}", "float id")]
-
+        [TestCase("api/orders/{id:guid}", "System.Guid id")]
+        [TestCase("api/orders/{id:long}", "long id")]
+        [TestCase("api/orders/{id:alpha}", "string id")]
         public void ExplicitType(string template, string parameter)
         {
-            var order = @"
-namespace ValidCode
-{
-    public class Order
-    {
-        public int Id { get; set; }
-    }
-}";
-
-            var db = @"
-namespace ValidCode
-{
-    using Microsoft.EntityFrameworkCore;
-
-    public class Db : DbContext
-    {
-        public DbSet<Order> Orders { get; set; }
-    }
-}";
             var code = @"
 namespace ValidCode
 {
-    using System.Threading.Tasks;
     using Microsoft.AspNetCore.Mvc;
-    using Microsoft.EntityFrameworkCore;
 
     [ApiController]
     public class OrdersController : Controller
     {
-        private readonly Db db;
-
-        public OrdersController(Db db)
-        {
-            this.db = db;
-        }
-
         [HttpGet(""api/orders/{id:int}"")]
-        public async Task<IActionResult> GetOrder(↓byte id)
+        public IActionResult GetId(↓byte id)
         {
-            var match = await this.db.Orders.FirstOrDefaultAsync(x => x.Id == id);
-            if (match == null)
-            {
-                return this.NotFound();
-            }
-
-            return this.Ok(match);
+            return this.Ok(id);
         }
     }
 }".AssertReplace("api/orders/{id:int}", template);
@@ -72,35 +41,20 @@ namespace ValidCode
             var fixedCode = @"
 namespace ValidCode
 {
-    using System.Threading.Tasks;
     using Microsoft.AspNetCore.Mvc;
-    using Microsoft.EntityFrameworkCore;
 
     [ApiController]
     public class OrdersController : Controller
     {
-        private readonly Db db;
-
-        public OrdersController(Db db)
-        {
-            this.db = db;
-        }
-
         [HttpGet(""api/orders/{id:int}"")]
-        public async Task<IActionResult> GetOrder(byte id)
+        public IActionResult GetId(byte id)
         {
-            var match = await this.db.Orders.FirstOrDefaultAsync(x => x.Id == id);
-            if (match == null)
-            {
-                return this.NotFound();
-            }
-
-            return this.Ok(match);
+            return this.Ok(id);
         }
     }
 }".AssertReplace("api/orders/{id:int}", template)
   .AssertReplace("byte id", parameter);
-            AnalyzerAssert.CodeFix(Analyzer, Fix, ExpectedDiagnostic, new[] { order, db, code }, fixedCode);
+            AnalyzerAssert.CodeFix(Analyzer, Fix, ExpectedDiagnostic, code, fixedCode);
         }
     }
 }

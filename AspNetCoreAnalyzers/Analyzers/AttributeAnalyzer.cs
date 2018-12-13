@@ -63,27 +63,16 @@ namespace AspNetCoreAnalyzers
 
                     foreach (var pair in pairs)
                     {
-                        if (pair.Template?.Type is TextAndLocation templateType &&
-                            pair.Method is IParameterSymbol parameter)
+                        if (TryGetParameterType(pair, out var typeName) &&
+                            methodDeclaration.TryFindParameter(pair.Method?.Name, out parameterSyntax))
                         {
-                            switch (templateType.Text)
-                            {
-                                // https://docs.microsoft.com/en-us/aspnet/core/fundamentals/routing?view=aspnetcore-2.2#route-constraint-reference
-                                case "bool" when parameter.Type != KnownSymbol.Boolean && methodDeclaration.TryFindParameter(parameter.Name, out parameterSyntax):
-                                case "decimal" when parameter.Type != KnownSymbol.Decimal && methodDeclaration.TryFindParameter(parameter.Name,  out parameterSyntax):
-                                case "double" when parameter.Type != KnownSymbol.Float && methodDeclaration.TryFindParameter(parameter.Name,  out parameterSyntax):
-                                case "float" when parameter.Type != KnownSymbol.Double && methodDeclaration.TryFindParameter(parameter.Name,  out parameterSyntax):
-                                case "int" when parameter.Type != KnownSymbol.Int32 && methodDeclaration.TryFindParameter(parameter.Name,  out parameterSyntax):
-                                case "long" when parameter.Type != KnownSymbol.Int64 && methodDeclaration.TryFindParameter(parameter.Name,  out parameterSyntax):
-                                    context.ReportDiagnostic(
-                                        Diagnostic.Create(
-                                            ASP003ParameterType.Descriptor,
-                                            parameterSyntax.Type.GetLocation(),
-                                            ImmutableDictionary<string, string>.Empty.Add(
-                                                nameof(TypeSyntax),
-                                                templateType.Text)));
-                                    break;
-                            }
+                            context.ReportDiagnostic(
+                                Diagnostic.Create(
+                                    ASP003ParameterType.Descriptor,
+                                    parameterSyntax.Type.GetLocation(),
+                                    ImmutableDictionary<string, string>.Empty.Add(
+                                        nameof(TypeSyntax),
+                                        typeName)));
                         }
                     }
                 }
@@ -148,6 +137,38 @@ namespace AspNetCoreAnalyzers
             }
 
             return list;
+        }
+
+        private static bool TryGetParameterType(ParameterPair pair, out string typeName)
+        {
+            if (pair.Template?.Type is TextAndLocation templateType &&
+                pair.Method is IParameterSymbol parameter)
+            {
+                switch (templateType.Text)
+                {
+                    // https://docs.microsoft.com/en-us/aspnet/core/fundamentals/routing?view=aspnetcore-2.2#route-constraint-reference
+                    case "bool" when parameter.Type != KnownSymbol.Boolean:
+                    case "decimal" when parameter.Type != KnownSymbol.Decimal:
+                    case "double" when parameter.Type != KnownSymbol.Float:
+                    case "float" when parameter.Type != KnownSymbol.Double:
+                    case "int" when parameter.Type != KnownSymbol.Int32:
+                    case "long" when parameter.Type != KnownSymbol.Int64:
+                        typeName = templateType.Text;
+                        return true;
+                    case "datetime" when parameter.Type != KnownSymbol.DateTime:
+                        typeName = "System.DateTime";
+                        return true;
+                    case "guid" when parameter.Type != KnownSymbol.Guid:
+                        typeName = "System.Guid";
+                        return true;
+                    case "alpha" when parameter.Type != KnownSymbol.String:
+                        typeName = "string";
+                        return true;
+                }
+            }
+
+            typeName = null;
+            return false;
         }
     }
 }

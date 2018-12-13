@@ -7,9 +7,11 @@ namespace AspNetCoreAnalyzers
         internal static readonly ObjectType Object = new ObjectType();
         internal static readonly StringType String = new StringType();
         internal static readonly QualifiedType Boolean = Create("System.Boolean", "bool");
+        internal static readonly QualifiedType DateTime = Create("System.DateTime");
         internal static readonly QualifiedType Decimal = Create("System.Decimal", "decimal");
         internal static readonly QualifiedType Double = Create("System.Double", "double");
         internal static readonly QualifiedType Float = Create("System.Single", "float");
+        internal static readonly QualifiedType Guid = Create("System.Guid");
         internal static readonly QualifiedType Int32 = Create("System.Int32", "int");
         internal static readonly QualifiedType Int64 = Create("System.Int64", "long");
         internal static readonly QualifiedType Attribute = Create("System.Attribute");
