@@ -7,5 +7,3 @@ configuration: Release
 build:
   verbosity: minimal
 
-on_success:
-- ps: Get-ChildItem publish\*.nupkg | % { Push-AppveyorArtifact $_.FullName -FileName $_.Name }
