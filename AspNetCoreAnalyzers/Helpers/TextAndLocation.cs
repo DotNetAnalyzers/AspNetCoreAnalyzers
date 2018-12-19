@@ -7,20 +7,22 @@ namespace AspNetCoreAnalyzers
     public struct TextAndLocation
     {
         private readonly LiteralExpressionSyntax literal;
-        private readonly int start;
-        private readonly int end;
 
         public TextAndLocation(LiteralExpressionSyntax literal, int start, int end)
         {
             this.literal = literal;
-            this.start = start;
-            this.end = end;
+            this.Start = start;
+            this.End = end;
             this.Text = literal.Token.ValueText.Substring(start, end - start);
         }
 
+        public int Start { get; }
+
+        public int End { get; }
+
         public string Text { get; }
 
-        public Location Location => Location.Create(this.literal.SyntaxTree, TextSpan.FromBounds(this.literal.SpanStart + this.start, this.literal.SpanStart + this.end));
+        public Location Location => Location.Create(this.literal.SyntaxTree, TextSpan.FromBounds(this.literal.SpanStart + this.Start, this.literal.SpanStart + this.End));
 
         public static bool operator ==(TextAndLocation left, TextAndLocation right)
         {
@@ -34,7 +36,7 @@ namespace AspNetCoreAnalyzers
 
         public bool Equals(TextAndLocation other)
         {
-            return this.literal.Equals(other.literal) && this.start == other.start && this.end == other.end;
+            return this.literal.Equals(other.literal) && this.Start == other.Start && this.End == other.End;
         }
 
         public override bool Equals(object obj)
@@ -48,15 +50,15 @@ namespace AspNetCoreAnalyzers
             unchecked
             {
                 var hashCode = this.literal.GetHashCode();
-                hashCode = (hashCode * 397) ^ this.start;
-                hashCode = (hashCode * 397) ^ this.end;
+                hashCode = (hashCode * 397) ^ this.Start;
+                hashCode = (hashCode * 397) ^ this.End;
                 return hashCode;
             }
         }
 
         internal TextAndLocation Substring(int index, int length)
         {
-            return new TextAndLocation(this.literal, this.start + index, this.start + index + length);
+            return new TextAndLocation(this.literal, this.Start + index, this.Start + index + length);
         }
     }
 }

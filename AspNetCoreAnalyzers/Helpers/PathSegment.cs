@@ -1,10 +1,12 @@
 namespace AspNetCoreAnalyzers
 {
+    using System.Diagnostics;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
 
-    public struct Component
+    [DebuggerDisplay("{this.Text.Text}")]
+    public struct PathSegment
     {
-        public Component(LiteralExpressionSyntax literal, int start, int end)
+        public PathSegment(LiteralExpressionSyntax literal, int start, int end)
         {
             this.Text = new TextAndLocation(literal, start, end);
             this.Parameter = TemplateParameter.TryParse(this.Text, out var parameter)

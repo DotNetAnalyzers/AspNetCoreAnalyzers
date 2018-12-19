@@ -2,7 +2,6 @@ namespace AspNetCoreAnalyzers
 {
     using System;
     using System.Collections.Immutable;
-    using System.Linq;
     using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.CSharp;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -12,7 +11,7 @@ namespace AspNetCoreAnalyzers
     /// </summary>
     public struct UrlTemplate : IEquatable<UrlTemplate>
     {
-        private UrlTemplate(LiteralExpressionSyntax literal, ImmutableArray<Component> path)
+        private UrlTemplate(LiteralExpressionSyntax literal, ImmutableArray<PathSegment> path)
         {
             this.Literal = literal;
             this.Path = path;
@@ -20,7 +19,7 @@ namespace AspNetCoreAnalyzers
 
         public LiteralExpressionSyntax Literal { get; }
 
-        public ImmutableArray<Component> Path { get; }
+        public ImmutableArray<PathSegment> Path { get; }
 
         public static bool operator ==(UrlTemplate left, UrlTemplate right)
         {
@@ -37,23 +36,19 @@ namespace AspNetCoreAnalyzers
             if (literal.IsKind(SyntaxKind.StringLiteralExpression))
             {
                 var text = literal.Token.ValueText;
-                var builder = ImmutableArray.CreateBuilder<Component>(text.Count(x => x == '/') + 1);
+                var builder = ImmutableArray.CreateBuilder<PathSegment>();
                 var start = 0;
-                while (true)
+                while (TryParse(literal, text, start, out var component))
                 {
-                    var end = text.IndexOf('/', start);
-                    if (end < 0)
-                    {
-                        builder.Add(new Component(literal, start, text.Length));
-                        break;
-                    }
-
-                    builder.Add(new Component(literal, start, end));
-                    start = end + 1;
+                    builder.Add(component);
+                    start = component.Text.End;
                 }
 
-                template = new UrlTemplate(literal, builder.MoveToImmutable());
-                return true;
+                if (start == text.Length)
+                {
+                    template = new UrlTemplate(literal, builder.Count == builder.Capacity ? builder.MoveToImmutable() : builder.ToImmutable());
+                    return true;
+                }
             }
 
             template = default(UrlTemplate);
@@ -74,6 +69,49 @@ namespace AspNetCoreAnalyzers
         public override int GetHashCode()
         {
             return this.Literal.GetHashCode();
+        }
+
+        private static bool TryParse(LiteralExpressionSyntax literal, string text, int start, out PathSegment segment)
+        {
+            // https://tools.ietf.org/html/rfc3986
+            var pos = start;
+            if (pos < text.Length - 1)
+            {
+                if (pos == 0)
+                {
+                    pos++;
+                }
+                else if (text[pos] == '/')
+                {
+                    pos++;
+                    start++;
+                }
+                else
+                {
+                    segment = default(PathSegment);
+                    return false;
+                }
+
+                while (pos < text.Length)
+                {
+                    if (text[pos] == '/')
+                    {
+                        segment = new PathSegment(literal, start, pos);
+                        return true;
+                    }
+
+                    pos++;
+                }
+
+                if (pos == text.Length)
+                {
+                    segment = new PathSegment(literal, start, pos);
+                    return true;
+                }
+            }
+
+            segment = default(PathSegment);
+            return false;
         }
     }
 }

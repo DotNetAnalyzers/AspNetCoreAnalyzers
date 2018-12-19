@@ -8,7 +8,7 @@ namespace AspNetCoreAnalyzers.Tests.ASP001ParameterNameTests
     public class CodeFix
     {
         private static readonly DiagnosticAnalyzer Analyzer = new AttributeAnalyzer();
-        private static readonly ExpectedDiagnostic ExpectedDiagnostic = Gu.Roslyn.Asserts.ExpectedDiagnostic.Create(ASP001ParameterName.Descriptor);
+        private static readonly ExpectedDiagnostic ExpectedDiagnostic = ExpectedDiagnostic.Create(ASP001ParameterName.Descriptor);
         private static readonly CodeFixProvider Fix = new ParameterNameFix();
 
         [Test]
