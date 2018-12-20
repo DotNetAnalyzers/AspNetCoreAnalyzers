@@ -100,6 +100,24 @@ namespace AspNetCoreAnalyzers
                         return true;
                     }
 
+                    if (text[pos] == '(')
+                    {
+                        pos++;
+                        while (Text.TrySkipPast(text, ref pos, ")"))
+                        {
+                            Text.SkipWhiteSpace(text, ref pos);
+                            switch (text[pos])
+                            {
+                                case ':':
+                                    break;
+                                case '}':
+                                    pos++;
+                                    segment = new PathSegment(literal, start, pos);
+                                    return true;
+                            }
+                        }
+                    }
+
                     pos++;
                 }
 

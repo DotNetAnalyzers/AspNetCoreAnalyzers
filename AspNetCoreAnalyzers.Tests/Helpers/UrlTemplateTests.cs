@@ -7,8 +7,8 @@ namespace AspNetCoreAnalyzers.Tests.Helpers
 
     public class UrlTemplateTests
     {
-        [TestCase("foo",                  new[] { "foo" })]
-        [TestCase("foo/bar",                  new[] { "foo", "bar" })]
+        [TestCase("foo",     new[] { "foo" })]
+        [TestCase("foo/bar", new[] { "foo", "bar" })]
         public void TryParse(string text, string[] expected)
         {
             var syntaxTree = CSharpSyntaxTree.ParseText(@"
@@ -65,10 +65,11 @@ namespace ValidCode
             Assert.AreEqual("id", parameter.Name.Text);
         }
 
-        [TestCase("orders/{id:min(1)}",      new[] { "orders", "{id:min(1)}" })]
-        [TestCase("orders/{id:max(2)}",      new[] { "orders", "{id:max(2)}" })]
-        [TestCase("orders/{id:int:max(2)}",  new[] { "orders", "{id:int:max(2)}" })]
-        [TestCase("orders/{id:range(1,23)}", new[] { "orders", "{id:range(1,23)}" })]
+        [TestCase("orders/{id:min(1)}",            new[] { "orders", "{id:min(1)}" })]
+        [TestCase("orders/{id:int:min(1):max(2)}", new[] { "orders", "{id:int:min(1):max(2)}" })]
+        [TestCase("orders/{id:max(2)}",            new[] { "orders", "{id:max(2)}" })]
+        [TestCase("orders/{id:int:max(2)}",        new[] { "orders", "{id:int:max(2)}" })]
+        [TestCase("orders/{id:range(1,23)}",       new[] { "orders", "{id:range(1,23)}" })]
         public void TryParseWhenIntParameter(string text, string[] expected)
         {
             var syntaxTree = CSharpSyntaxTree.ParseText(@"
@@ -102,6 +103,9 @@ namespace ValidCode
         [TestCase("orders/{id:maxlength(1)}",                        new[] { "orders", "{id:maxlength(1)}" })]
         [TestCase("orders/{id:length(1)}",                           new[] { "orders", "{id:length(1)}" })]
         [TestCase("orders/{id:length(1,2)}",                         new[] { "orders", "{id:length(1,2)}" })]
+        [TestCase("orders/{id:regex(^\\\\d{{3}}-\\\\d{{2}}-\\\\d{{4}}$)}", new[] { "orders", "{id:regex(^\\d{{3}}-\\d{{2}}-\\d{{4}}$)}" })]
+        [TestCase("orders/{id:regex(a/b)}",                          new[] { "orders", "{id:regex(a/b)}" })]
+        ////[TestCase("orders/{id:regex(a[)}/]b)}",                      new[] { "orders", "{id:regex(a[)}/]b)}" })]
         public void TryParseWhenStringParameter(string text, string[] expected)
         {
             var syntaxTree = CSharpSyntaxTree.ParseText(@"

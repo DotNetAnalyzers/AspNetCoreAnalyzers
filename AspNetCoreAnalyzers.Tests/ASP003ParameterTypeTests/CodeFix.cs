@@ -8,7 +8,7 @@ namespace AspNetCoreAnalyzers.Tests.ASP003ParameterTypeTests
     public class CodeFix
     {
         private static readonly DiagnosticAnalyzer Analyzer = new AttributeAnalyzer();
-        private static readonly ExpectedDiagnostic ExpectedDiagnostic = Gu.Roslyn.Asserts.ExpectedDiagnostic.Create(ASP003ParameterType.Descriptor);
+        private static readonly ExpectedDiagnostic ExpectedDiagnostic = ExpectedDiagnostic.Create(ASP003ParameterType.Descriptor);
         private static readonly CodeFixProvider Fix = new ParameterTypeFix();
 
         [TestCase("api/orders/{id:int}", "int id")]

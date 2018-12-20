@@ -128,6 +128,7 @@ namespace ValidCode
         [TestCase("api/orders/{id:length(1,3)}")]
         [TestCase("api/orders/{id:alpha}")]
         [TestCase("api/orders/{id:regex(a-(0|1))}")]
+        [TestCase("api/orders/{id:regex(^\\\\d{{3}}-\\\\d{{2}}-\\\\d{{4}}$)}")]
         [TestCase("api/orders/{id:required}")]
         public void ExplicitString(string template)
         {
@@ -167,7 +168,7 @@ namespace ValidCode
             this.db = db;
         }
 
-        [HttpGet(""api/orders/{id:int}"")]
+        [HttpGet(""api/orders/{id}"")]
         public async Task<IActionResult> GetOrder(string id)
         {
             var match = await this.db.Orders.FirstOrDefaultAsync(x => x.Id == id);
@@ -179,7 +180,7 @@ namespace ValidCode
             return this.Ok(match);
         }
     }
-}".AssertReplace("api/orders/{id:int}", template);
+}".AssertReplace("api/orders/{id}", template);
             AnalyzerAssert.Valid(Analyzer, order, db, code);
         }
     }

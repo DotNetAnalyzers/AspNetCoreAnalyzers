@@ -40,7 +40,7 @@ namespace AspNetCoreAnalyzers
             }
 
             start++;
-            SkipWhiteSpace(text, ref start);
+            Text.SkipWhiteSpace(text, ref start);
 
             var end = text.IndexOf('}', start);
             if (end < 0)
@@ -49,7 +49,7 @@ namespace AspNetCoreAnalyzers
                 return false;
             }
 
-            BackWhiteSpace(text, ref end);
+            Text.BackWhiteSpace(text, ref end);
 
             for (var i = start; i < end; i++)
             {
@@ -74,14 +74,14 @@ namespace AspNetCoreAnalyzers
                 }
 
                 typeStart++;
-                SkipWhiteSpace(text, ref typeStart);
+                Text.SkipWhiteSpace(text, ref typeStart);
                 var typeEnd = text.IndexOf('}', typeStart);
                 if (typeEnd < 0)
                 {
                     return null;
                 }
 
-                BackWhiteSpace(text, ref typeEnd);
+                Text.BackWhiteSpace(text, ref typeEnd);
                 return textAndLocation.Substring(typeStart, typeEnd - typeStart);
             }
         }
@@ -99,24 +99,6 @@ namespace AspNetCoreAnalyzers
         public override int GetHashCode()
         {
             return this.Name.GetHashCode();
-        }
-
-        private static void SkipWhiteSpace(string text, ref int pos)
-        {
-            while (pos < text.Length &&
-                   text[pos] == ' ')
-            {
-                pos++;
-            }
-        }
-
-        private static void BackWhiteSpace(string text, ref int pos)
-        {
-            while (pos >= 0 &&
-                   text[pos] == ' ')
-            {
-                pos--;
-            }
         }
     }
 }
