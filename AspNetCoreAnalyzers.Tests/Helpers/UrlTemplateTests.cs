@@ -97,14 +97,15 @@ namespace ValidCode
             Assert.AreEqual("id", parameter.Name.Text);
         }
 
-        [TestCase("orders/{id:alpha}",                               new[] { "orders", "{id:alpha}" })]
-        [TestCase("orders/{id:alpha:minlength(1)}",                  new[] { "orders", "{id:alpha:minlength(1)}" })]
-        [TestCase("orders/{id:minlength(1)}",                        new[] { "orders", "{id:minlength(1)}" })]
-        [TestCase("orders/{id:maxlength(1)}",                        new[] { "orders", "{id:maxlength(1)}" })]
-        [TestCase("orders/{id:length(1)}",                           new[] { "orders", "{id:length(1)}" })]
-        [TestCase("orders/{id:length(1,2)}",                         new[] { "orders", "{id:length(1,2)}" })]
+        [TestCase("orders/{id?}",                                          new[] { "orders", "{id?}" })]
+        [TestCase("orders/{id:alpha}",                                     new[] { "orders", "{id:alpha}" })]
+        [TestCase("orders/{id:alpha:minlength(1)}",                        new[] { "orders", "{id:alpha:minlength(1)}" })]
+        [TestCase("orders/{id:minlength(1)}",                              new[] { "orders", "{id:minlength(1)}" })]
+        [TestCase("orders/{id:maxlength(1)}",                              new[] { "orders", "{id:maxlength(1)}" })]
+        [TestCase("orders/{id:length(1)}",                                 new[] { "orders", "{id:length(1)}" })]
+        [TestCase("orders/{id:length(1,2)}",                               new[] { "orders", "{id:length(1,2)}" })]
         [TestCase("orders/{id:regex(^\\\\d{{3}}-\\\\d{{2}}-\\\\d{{4}}$)}", new[] { "orders", "{id:regex(^\\d{{3}}-\\d{{2}}-\\d{{4}}$)}" })]
-        [TestCase("orders/{id:regex(a/b)}",                          new[] { "orders", "{id:regex(a/b)}" })]
+        [TestCase("orders/{id:regex(a/b)}",                                new[] { "orders", "{id:regex(a/b)}" })]
         ////[TestCase("orders/{id:regex(a[)}/]b)}",                      new[] { "orders", "{id:regex(a[)}/]b)}" })]
         public void TryParseWhenStringParameter(string text, string[] expected)
         {

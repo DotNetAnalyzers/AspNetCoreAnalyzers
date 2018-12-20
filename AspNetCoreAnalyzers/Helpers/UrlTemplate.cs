@@ -37,14 +37,14 @@ namespace AspNetCoreAnalyzers
             {
                 var text = literal.Token.ValueText;
                 var builder = ImmutableArray.CreateBuilder<PathSegment>();
-                var start = 0;
-                while (TryParse(literal, text, start, out var component))
+                var pos = 0;
+                while (TryParse(literal, text, pos, out var component))
                 {
                     builder.Add(component);
-                    start = component.Text.End;
+                    pos = component.Text.Span.End;
                 }
 
-                if (start == text.Length)
+                if (pos == text.Length)
                 {
                     template = new UrlTemplate(literal, builder.Count == builder.Capacity ? builder.MoveToImmutable() : builder.ToImmutable());
                     return true;

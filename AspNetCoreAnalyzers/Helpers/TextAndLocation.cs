@@ -11,18 +11,15 @@ namespace AspNetCoreAnalyzers
         public TextAndLocation(LiteralExpressionSyntax literal, int start, int end)
         {
             this.literal = literal;
-            this.Start = start;
-            this.End = end;
+            this.Span = new TextSpan(start, end - start);
             this.Text = literal.Token.ValueText.Substring(start, end - start);
         }
 
-        public int Start { get; }
-
-        public int End { get; }
+        public TextSpan Span { get; }
 
         public string Text { get; }
 
-        public Location Location => Location.Create(this.literal.SyntaxTree, TextSpan.FromBounds(this.literal.SpanStart + this.Start, this.literal.SpanStart + this.End));
+        public Location Location => Location.Create(this.literal.SyntaxTree, this.Span);
 
         public static bool operator ==(TextAndLocation left, TextAndLocation right)
         {
@@ -36,7 +33,7 @@ namespace AspNetCoreAnalyzers
 
         public bool Equals(TextAndLocation other)
         {
-            return this.literal.Equals(other.literal) && this.Start == other.Start && this.End == other.End;
+            return this.literal.Equals(other.literal) && this.Span == other.Span;
         }
 
         public override bool Equals(object obj)
@@ -50,15 +47,14 @@ namespace AspNetCoreAnalyzers
             unchecked
             {
                 var hashCode = this.literal.GetHashCode();
-                hashCode = (hashCode * 397) ^ this.Start;
-                hashCode = (hashCode * 397) ^ this.End;
+                hashCode = (hashCode * 397) ^ this.Span.GetHashCode();
                 return hashCode;
             }
         }
 
         internal TextAndLocation Substring(int index, int length)
         {
-            return new TextAndLocation(this.literal, this.Start + index, this.Start + index + length);
+            return new TextAndLocation(this.literal, this.Span.Start + index, this.Span.Start + index + length);
         }
     }
 }
