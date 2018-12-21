@@ -11,15 +11,25 @@ namespace AspNetCoreAnalyzers.Tests.ASP003ParameterTypeTests
         private static readonly ExpectedDiagnostic ExpectedDiagnostic = ExpectedDiagnostic.Create(ASP003ParameterType.Descriptor);
         private static readonly CodeFixProvider Fix = new ParameterTypeFix();
 
-        [TestCase("api/orders/{id:int}", "int id")]
-        [TestCase("api/orders/{id:bool}", "bool id")]
-        [TestCase("api/orders/{id:datetime}", "System.DateTime id")]
-        [TestCase("api/orders/{id:decimal}", "decimal id")]
-        [TestCase("api/orders/{id:double}", "double id")]
-        [TestCase("api/orders/{id:float}", "float id")]
-        [TestCase("api/orders/{id:guid}", "System.Guid id")]
-        [TestCase("api/orders/{id:long}", "long id")]
-        [TestCase("api/orders/{id:alpha}", "string id")]
+        [TestCase("api/orders/{id:int}",                                     "int id")]
+        [TestCase("api/orders/{id:int:min(1)}",                              "int id")]
+        [TestCase("api/orders/{id:bool}",                                    "bool id")]
+        [TestCase("api/orders/{id:datetime}",                                "System.DateTime id")]
+        [TestCase("api/orders/{id:decimal}",                                 "decimal id")]
+        [TestCase("api/orders/{id:double}",                                  "double id")]
+        [TestCase("api/orders/{id:float}",                                   "float id")]
+        [TestCase("api/orders/{id:guid}",                                    "System.Guid id")]
+        [TestCase("api/orders/{id:long}",                                    "long id")]
+        [TestCase("api/orders/{id:minlength(1)}",                            "string id")]
+        [TestCase("api/orders/{id:maxlength(1)}",                            "string id")]
+        [TestCase("api/orders/{id:length(1)}",                               "string id")]
+        [TestCase("api/orders/{id:length(1,3)}",                             "string id")]
+        [TestCase("api/orders/{id:min(1)}",                                  "long id")]
+        [TestCase("api/orders/{id:max(10)}",                                 "long id")]
+        [TestCase("api/orders/{id:range(0,10)}",                             "long id")]
+        [TestCase("api/orders/{id:alpha}",                                   "string id")]
+        [TestCase("api/orders/{id:regex(a-(0|1))}",                          "string id")]
+        [TestCase("api/orders/{id:regex(^\\\\d{{3}}-\\\\d{{2}}-\\\\d{4}$)}", "string id")]
         public void ExplicitType(string template, string parameter)
         {
             var code = @"

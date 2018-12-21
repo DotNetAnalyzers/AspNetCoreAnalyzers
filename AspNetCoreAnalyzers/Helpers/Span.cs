@@ -57,7 +57,7 @@ namespace AspNetCoreAnalyzers
 
         internal Span Slice(int start, int end)
         {
-            if (start >= end)
+            if (start > end)
             {
                 throw new InvalidOperationException("Expected start to be less than end.");
             }

@@ -1,5 +1,6 @@
 namespace AspNetCoreAnalyzers
 {
+    using System;
     using System.Collections.Immutable;
     using System.Linq;
     using Gu.Roslyn.AnalyzerExtensions;
@@ -7,6 +8,7 @@ namespace AspNetCoreAnalyzers
     using Microsoft.CodeAnalysis.CSharp;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
     using Microsoft.CodeAnalysis.Diagnostics;
+    using Attribute = Gu.Roslyn.AnalyzerExtensions.Attribute;
 
     [DiagnosticAnalyzer(LanguageNames.CSharp)]
     public class AttributeAnalyzer : DiagnosticAnalyzer
@@ -63,7 +65,7 @@ namespace AspNetCoreAnalyzers
 
                     foreach (var pair in pairs)
                     {
-                        if (TryGetParameterType(pair, out var typeName) &&
+                        if (TryGetCorrectParameterType(pair, out var typeName) &&
                             methodDeclaration.TryFindParameter(pair.Method?.Name, out parameterSyntax))
                         {
                             context.ReportDiagnostic(
@@ -139,24 +141,34 @@ namespace AspNetCoreAnalyzers
             return list;
         }
 
-        private static bool TryGetParameterType(ParameterPair pair, out string typeName)
+        private static bool TryGetCorrectParameterType(ParameterPair pair, out string typeName)
         {
             if (pair.Template?.Constraints is ImmutableArray<RouteConstraint> constraints &&
                 pair.Method is IParameterSymbol parameter)
             {
                 foreach (var constraint in constraints)
                 {
+                    // https://docs.microsoft.com/en-us/aspnet/core/fundamentals/routing?view=aspnetcore-2.2#route-constraint-reference
                     switch (constraint.Span.Text)
                     {
-                        // https://docs.microsoft.com/en-us/aspnet/core/fundamentals/routing?view=aspnetcore-2.2#route-constraint-reference
-                        case "bool" when parameter.Type != KnownSymbol.Boolean:
-                        case "decimal" when parameter.Type != KnownSymbol.Decimal:
-                        case "double" when parameter.Type != KnownSymbol.Float:
-                        case "float" when parameter.Type != KnownSymbol.Double:
-                        case "int" when parameter.Type != KnownSymbol.Int32:
-                        case "long" when parameter.Type != KnownSymbol.Int64:
+                        case "bool":
                             typeName = constraint.Span.Text;
-                            return true;
+                            return parameter.Type != KnownSymbol.Boolean;
+                        case "decimal":
+                            typeName = constraint.Span.Text;
+                            return parameter.Type != KnownSymbol.Decimal;
+                        case "double":
+                            typeName = constraint.Span.Text;
+                            return parameter.Type != KnownSymbol.Double;
+                        case "float":
+                            typeName = constraint.Span.Text;
+                            return parameter.Type != KnownSymbol.Float;
+                        case "int":
+                            typeName = constraint.Span.Text;
+                            return parameter.Type != KnownSymbol.Int32;
+                        case "long":
+                            typeName = constraint.Span.Text;
+                            return parameter.Type != KnownSymbol.Int64;
                         case "datetime" when parameter.Type != KnownSymbol.DateTime:
                             typeName = "System.DateTime";
                             return true;
@@ -165,6 +177,21 @@ namespace AspNetCoreAnalyzers
                             return true;
                         case "alpha" when parameter.Type != KnownSymbol.String:
                             typeName = "string";
+                            return true;
+                        case "required":
+                            continue;
+                        case string text when parameter.Type != KnownSymbol.String &&
+                                              (text.StartsWith("regex(", StringComparison.OrdinalIgnoreCase) ||
+                                               text.StartsWith("length(", StringComparison.OrdinalIgnoreCase) ||
+                                               text.StartsWith("minlength(", StringComparison.OrdinalIgnoreCase) ||
+                                               text.StartsWith("maxlength(", StringComparison.OrdinalIgnoreCase)):
+                            typeName = "string";
+                            return true;
+                        case string text when parameter.Type != KnownSymbol.Int64 &&
+                                              (text.StartsWith("min(", StringComparison.OrdinalIgnoreCase) ||
+                                               text.StartsWith("max(", StringComparison.OrdinalIgnoreCase) ||
+                                               text.StartsWith("range(", StringComparison.OrdinalIgnoreCase)):
+                            typeName = "long";
                             return true;
                     }
                 }

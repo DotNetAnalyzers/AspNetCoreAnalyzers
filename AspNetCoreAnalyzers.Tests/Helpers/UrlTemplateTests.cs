@@ -108,7 +108,7 @@ namespace ValidCode
         [TestCase("orders/{id:maxlength(1)}",                        new[] { "orders", "{id:maxlength(1)}" },                  new[] { "maxlength(1)" })]
         [TestCase("orders/{id:length(1)}",                           new[] { "orders", "{id:length(1)}" },                     new[] { "length(1)" })]
         [TestCase("orders/{id:length(1,2)}",                         new[] { "orders", "{id:length(1,2)}" },                   new[] { "length(1,2)" })]
-        [TestCase("orders/{id:regex(^\\\\d{3}-\\\\d{2}-\\\\d{4}$)}", new[] { "orders", "{id:regex(^\\d{3}-\\d{2}-\\d{4}$)}" }, new[] { "regex(^\\d{3}-\\d{2}-\\d{4}$)" })]
+        [TestCase("orders/{id:regex(^\\\\d{{3}}-\\\\d{{2}}-\\\\d{4}$)}", new[] { "orders", "{id:regex(^\\d{{3}}-\\d{{2}}-\\d{4}$)}" }, new[] { "regex(^\\d{{3}}-\\d{{2}}-\\d{4}$)" })]
         [TestCase("orders/{id:regex(a/b)}",                          new[] { "orders", "{id:regex(a/b)}" },                    new[] { "regex(a/b)" })]
         ////[TestCase("orders/{id:regex(a[)}/]b)}",                      new[] { "orders", "{id:regex(a[)}/]b)}" })]
         public void TryParseWhenStringParameter(string text, string[] segments, string[] constraints)
@@ -138,6 +138,37 @@ namespace ValidCode
             Assert.AreEqual("id", parameter.Name.Text);
             CollectionAssert.AreEqual(constraints, parameter.Constraints.Select(x => x.Span.Text)
                                                             .ToArray());
+        }
+
+        [TestCase("orders/{id:}", new[] { "orders", "{id:}" }, new[] { "" })]
+        [TestCase("orders/{id:min(1}", new[] { "orders", "{id:min(1}" }, new[] { "min(1" })]
+        [TestCase("orders/{id:min1)}", new[] { "orders", "{id:min1)}" }, new[] { "min1)" })]
+        public void TryParseWhenSyntaxError(string text, string[] segments, string[] constraints)
+        {
+            var syntaxTree = CSharpSyntaxTree.ParseText(@"
+namespace ValidCode
+{
+    using System.Threading.Tasks;
+    using Microsoft.AspNetCore.Mvc;
+
+    [ApiController]
+    public class OrdersController : Controller
+    {
+        [HttpGet(""orders/{id}"")]
+        public async Task<IActionResult> GetOrder([FromRoute]int id)
+        {
+        }
+    }
+}".AssertReplace("orders/{id}", text));
+            var literal = syntaxTree.FindLiteralExpression(text);
+            Assert.AreEqual(true, UrlTemplate.TryParse(literal, out var template));
+            CollectionAssert.AreEqual(segments, template.Path.Select(x => x.Span.Text));
+
+            // ReSharper disable once PossibleInvalidOperationException
+            var parameter = template.Path.Single(x => x.Parameter.HasValue)
+                                    .Parameter.Value;
+            Assert.AreEqual("id", parameter.Name.Text);
+            CollectionAssert.AreEqual(constraints, parameter.Constraints.Select(x => x.Span.Text));
         }
     }
 }
