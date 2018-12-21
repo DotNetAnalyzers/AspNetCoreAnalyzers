@@ -11,6 +11,7 @@ namespace AspNetCoreAnalyzers.Tests.ASP003ParameterTypeTests
         private static readonly ExpectedDiagnostic ExpectedDiagnostic = ExpectedDiagnostic.Create(ASP003ParameterType.Descriptor);
         private static readonly CodeFixProvider Fix = new ParameterTypeFix();
 
+        [TestCase("{id:int}",                                                "int id")]
         [TestCase("api/orders/{id:int}",                                     "int id")]
         [TestCase("api/orders/{id:int:min(1)}",                              "int id")]
         [TestCase("api/orders/{id:bool}",                                    "bool id")]

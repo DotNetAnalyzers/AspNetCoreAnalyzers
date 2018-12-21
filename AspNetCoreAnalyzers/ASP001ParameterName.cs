@@ -11,7 +11,7 @@ namespace AspNetCoreAnalyzers
             title: "The parameter name does not match the url parameter.",
             messageFormat: "The parameter name does not match the url parameter.",
             category: AnalyzerCategory.Routing,
-            defaultSeverity: DiagnosticSeverity.Hidden,
+            defaultSeverity: DiagnosticSeverity.Warning,
             isEnabledByDefault: true,
             description: "The parameter name does not match the url parameter.",
             helpLinkUri: HelpLink.ForId(DiagnosticId));

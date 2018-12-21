@@ -11,7 +11,7 @@ namespace AspNetCoreAnalyzers
             title: "Parameter type does not match template.",
             messageFormat: "Parameter type does not match template.",
             category: AnalyzerCategory.Routing,
-            defaultSeverity: DiagnosticSeverity.Hidden,
+            defaultSeverity: DiagnosticSeverity.Warning,
             isEnabledByDefault: true,
             description: "Parameter type does not match template.",
             helpLinkUri: HelpLink.ForId(DiagnosticId));
