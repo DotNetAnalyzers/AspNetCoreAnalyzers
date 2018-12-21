@@ -16,7 +16,8 @@ namespace AspNetCoreAnalyzers
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get; } = ImmutableArray.Create(
             ASP001ParameterName.Descriptor,
             ASP002MissingParameter.Descriptor,
-            ASP003ParameterType.Descriptor);
+            ASP003ParameterType.Descriptor,
+            ASP004ParameterSyntax.Descriptor);
 
         public override void Initialize(AnalysisContext context)
         {

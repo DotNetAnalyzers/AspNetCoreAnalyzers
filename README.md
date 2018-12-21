@@ -22,6 +22,10 @@ Roslyn analyzers for ASP.NET.Core.
     <td><a href="https://github.com/DotNetAnalyzers/AspNetCoreAnalyzers/tree/master/documentation/ASP003.md">ASP003</a></td>
     <td>Parameter type does not match template.</td>
   </tr>
+  <tr>
+    <td><a href="https://github.com/DotNetAnalyzers/AspNetCoreAnalyzers/tree/master/documentation/ASP004.md">ASP004</a></td>
+    <td>Syntax error in parameter.</td>
+  </tr>
 <table>
 <!-- end generated table -->
 
