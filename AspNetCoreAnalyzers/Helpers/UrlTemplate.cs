@@ -2,6 +2,7 @@ namespace AspNetCoreAnalyzers
 {
     using System;
     using System.Collections.Immutable;
+    using System.Diagnostics;
     using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.CSharp;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -9,6 +10,7 @@ namespace AspNetCoreAnalyzers
     /// <summary>
     /// https://tools.ietf.org/html/rfc1738.
     /// </summary>
+    [DebuggerDisplay("{this.Literal.ToString()}")]
     public struct UrlTemplate : IEquatable<UrlTemplate>
     {
         private UrlTemplate(LiteralExpressionSyntax literal, ImmutableArray<PathSegment> path)
@@ -35,16 +37,15 @@ namespace AspNetCoreAnalyzers
         {
             if (literal.IsKind(SyntaxKind.StringLiteralExpression))
             {
-                var text = literal.Token.ValueText;
                 var builder = ImmutableArray.CreateBuilder<PathSegment>();
                 var pos = 0;
-                while (TryParse(literal, text, pos, out var component))
+                while (PathSegment.TryRead(literal, pos, out var component))
                 {
                     builder.Add(component);
-                    pos = component.Text.Span.End;
+                    pos = component.Span.TextSpan.End;
                 }
 
-                if (pos == text.Length)
+                if (pos == literal.Token.ValueText.Length)
                 {
                     template = new UrlTemplate(literal, builder.Count == builder.Capacity ? builder.MoveToImmutable() : builder.ToImmutable());
                     return true;
@@ -69,67 +70,6 @@ namespace AspNetCoreAnalyzers
         public override int GetHashCode()
         {
             return this.Literal.GetHashCode();
-        }
-
-        private static bool TryParse(LiteralExpressionSyntax literal, string text, int start, out PathSegment segment)
-        {
-            // https://tools.ietf.org/html/rfc3986
-            var pos = start;
-            if (pos < text.Length - 1)
-            {
-                if (pos == 0)
-                {
-                    pos++;
-                }
-                else if (text[pos] == '/')
-                {
-                    pos++;
-                    start++;
-                }
-                else
-                {
-                    segment = default(PathSegment);
-                    return false;
-                }
-
-                while (pos < text.Length)
-                {
-                    if (text[pos] == '/')
-                    {
-                        segment = new PathSegment(literal, start, pos);
-                        return true;
-                    }
-
-                    if (text[pos] == '(')
-                    {
-                        pos++;
-                        while (Text.TrySkipPast(text, ref pos, ")"))
-                        {
-                            Text.SkipWhiteSpace(text, ref pos);
-                            switch (text[pos])
-                            {
-                                case ':':
-                                    break;
-                                case '}':
-                                    pos++;
-                                    segment = new PathSegment(literal, start, pos);
-                                    return true;
-                            }
-                        }
-                    }
-
-                    pos++;
-                }
-
-                if (pos == text.Length)
-                {
-                    segment = new PathSegment(literal, start, pos);
-                    return true;
-                }
-            }
-
-            segment = default(PathSegment);
-            return false;
         }
     }
 }

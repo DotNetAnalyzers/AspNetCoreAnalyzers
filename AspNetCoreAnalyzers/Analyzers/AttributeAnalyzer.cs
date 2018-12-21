@@ -141,29 +141,32 @@ namespace AspNetCoreAnalyzers
 
         private static bool TryGetParameterType(ParameterPair pair, out string typeName)
         {
-            if (pair.Template?.Type is TextAndLocation templateType &&
+            if (pair.Template?.Constraints is ImmutableArray<RouteConstraint> constraints &&
                 pair.Method is IParameterSymbol parameter)
             {
-                switch (templateType.Text)
+                foreach (var constraint in constraints)
                 {
-                    // https://docs.microsoft.com/en-us/aspnet/core/fundamentals/routing?view=aspnetcore-2.2#route-constraint-reference
-                    case "bool" when parameter.Type != KnownSymbol.Boolean:
-                    case "decimal" when parameter.Type != KnownSymbol.Decimal:
-                    case "double" when parameter.Type != KnownSymbol.Float:
-                    case "float" when parameter.Type != KnownSymbol.Double:
-                    case "int" when parameter.Type != KnownSymbol.Int32:
-                    case "long" when parameter.Type != KnownSymbol.Int64:
-                        typeName = templateType.Text;
-                        return true;
-                    case "datetime" when parameter.Type != KnownSymbol.DateTime:
-                        typeName = "System.DateTime";
-                        return true;
-                    case "guid" when parameter.Type != KnownSymbol.Guid:
-                        typeName = "System.Guid";
-                        return true;
-                    case "alpha" when parameter.Type != KnownSymbol.String:
-                        typeName = "string";
-                        return true;
+                    switch (constraint.Span.Text)
+                    {
+                        // https://docs.microsoft.com/en-us/aspnet/core/fundamentals/routing?view=aspnetcore-2.2#route-constraint-reference
+                        case "bool" when parameter.Type != KnownSymbol.Boolean:
+                        case "decimal" when parameter.Type != KnownSymbol.Decimal:
+                        case "double" when parameter.Type != KnownSymbol.Float:
+                        case "float" when parameter.Type != KnownSymbol.Double:
+                        case "int" when parameter.Type != KnownSymbol.Int32:
+                        case "long" when parameter.Type != KnownSymbol.Int64:
+                            typeName = constraint.Span.Text;
+                            return true;
+                        case "datetime" when parameter.Type != KnownSymbol.DateTime:
+                            typeName = "System.DateTime";
+                            return true;
+                        case "guid" when parameter.Type != KnownSymbol.Guid:
+                            typeName = "System.Guid";
+                            return true;
+                        case "alpha" when parameter.Type != KnownSymbol.String:
+                            typeName = "string";
+                            return true;
+                    }
                 }
             }
 

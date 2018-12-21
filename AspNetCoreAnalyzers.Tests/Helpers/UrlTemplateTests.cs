@@ -28,7 +28,7 @@ namespace ValidCode
 }".AssertReplace("api/orders/{id}", text));
             var literal = syntaxTree.FindLiteralExpression(text);
             Assert.AreEqual(true, UrlTemplate.TryParse(literal, out var template));
-            CollectionAssert.AreEqual(expected, template.Path.Select(x => x.Text.Text));
+            CollectionAssert.AreEqual(expected, template.Path.Select(x => x.Span.Text));
         }
 
         [TestCase("{id}",                 new[] { "{id}" })]
@@ -57,7 +57,7 @@ namespace ValidCode
 }".AssertReplace("api/orders/{id}", text));
             var literal = syntaxTree.FindLiteralExpression(text);
             Assert.AreEqual(true, UrlTemplate.TryParse(literal, out var template));
-            CollectionAssert.AreEqual(expected, template.Path.Select(x => x.Text.Text));
+            CollectionAssert.AreEqual(expected, template.Path.Select(x => x.Span.Text));
 
             // ReSharper disable once PossibleInvalidOperationException
             var parameter = template.Path.Single(x => x.Parameter.HasValue)
@@ -65,12 +65,13 @@ namespace ValidCode
             Assert.AreEqual("id", parameter.Name.Text);
         }
 
-        [TestCase("orders/{id:min(1)}",            new[] { "orders", "{id:min(1)}" })]
-        [TestCase("orders/{id:int:min(1):max(2)}", new[] { "orders", "{id:int:min(1):max(2)}" })]
-        [TestCase("orders/{id:max(2)}",            new[] { "orders", "{id:max(2)}" })]
-        [TestCase("orders/{id:int:max(2)}",        new[] { "orders", "{id:int:max(2)}" })]
-        [TestCase("orders/{id:range(1,23)}",       new[] { "orders", "{id:range(1,23)}" })]
-        public void TryParseWhenIntParameter(string text, string[] expected)
+        [TestCase("orders/{id?}",                  new[] { "orders", "{id?}" },                  new[] { "?" })]
+        [TestCase("orders/{id:min(1)}",            new[] { "orders", "{id:min(1)}" },            new[] { "min(1)" })]
+        [TestCase("orders/{id:int:min(1):max(2)}", new[] { "orders", "{id:int:min(1):max(2)}" }, new[] { "int", "min(1)", "max(2)" })]
+        [TestCase("orders/{id:max(2)}",            new[] { "orders", "{id:max(2)}" },            new[] { "max(2)" })]
+        [TestCase("orders/{id:int:max(2)}",        new[] { "orders", "{id:int:max(2)}" },        new[] { "int", "max(2)" })]
+        [TestCase("orders/{id:range(1,23)}",       new[] { "orders", "{id:range(1,23)}" },       new[] { "range(1,23)" })]
+        public void TryParseWhenIntParameter(string text, string[] segments, string[] constraints)
         {
             var syntaxTree = CSharpSyntaxTree.ParseText(@"
 namespace ValidCode
@@ -89,25 +90,28 @@ namespace ValidCode
 }".AssertReplace("orders/{id}", text));
             var literal = syntaxTree.FindLiteralExpression(text);
             Assert.AreEqual(true, UrlTemplate.TryParse(literal, out var template));
-            CollectionAssert.AreEqual(expected, template.Path.Select(x => x.Text.Text));
+            CollectionAssert.AreEqual(segments, template.Path.Select(x => x.Span.Text));
 
             // ReSharper disable once PossibleInvalidOperationException
             var parameter = template.Path.Single(x => x.Parameter.HasValue)
                                     .Parameter.Value;
             Assert.AreEqual("id", parameter.Name.Text);
+            CollectionAssert.AreEqual(constraints, parameter.Constraints.Select(x => x.Span.Text));
         }
 
-        [TestCase("orders/{id?}",                                          new[] { "orders", "{id?}" })]
-        [TestCase("orders/{id:alpha}",                                     new[] { "orders", "{id:alpha}" })]
-        [TestCase("orders/{id:alpha:minlength(1)}",                        new[] { "orders", "{id:alpha:minlength(1)}" })]
-        [TestCase("orders/{id:minlength(1)}",                              new[] { "orders", "{id:minlength(1)}" })]
-        [TestCase("orders/{id:maxlength(1)}",                              new[] { "orders", "{id:maxlength(1)}" })]
-        [TestCase("orders/{id:length(1)}",                                 new[] { "orders", "{id:length(1)}" })]
-        [TestCase("orders/{id:length(1,2)}",                               new[] { "orders", "{id:length(1,2)}" })]
-        [TestCase("orders/{id:regex(^\\\\d{{3}}-\\\\d{{2}}-\\\\d{{4}}$)}", new[] { "orders", "{id:regex(^\\d{{3}}-\\d{{2}}-\\d{{4}}$)}" })]
-        [TestCase("orders/{id:regex(a/b)}",                                new[] { "orders", "{id:regex(a/b)}" })]
+        [TestCase("orders/{id}",                                     new[] { "orders", "{id}" },                               new string[0])]
+        [TestCase("orders/{id?}",                                    new[] { "orders", "{id?}" },                              new[] { "?" })]
+        [TestCase("orders/{id:alpha}",                               new[] { "orders", "{id:alpha}" },                         new[] { "alpha" })]
+        [TestCase("orders/{id:ALPHA}",                               new[] { "orders", "{id:ALPHA}" },                         new[] { "ALPHA" })]
+        [TestCase("orders/{id:alpha:minlength(1)}",                  new[] { "orders", "{id:alpha:minlength(1)}" },            new[] { "alpha", "minlength(1)" })]
+        [TestCase("orders/{id:minlength(1)}",                        new[] { "orders", "{id:minlength(1)}" },                  new[] { "minlength(1)" })]
+        [TestCase("orders/{id:maxlength(1)}",                        new[] { "orders", "{id:maxlength(1)}" },                  new[] { "maxlength(1)" })]
+        [TestCase("orders/{id:length(1)}",                           new[] { "orders", "{id:length(1)}" },                     new[] { "length(1)" })]
+        [TestCase("orders/{id:length(1,2)}",                         new[] { "orders", "{id:length(1,2)}" },                   new[] { "length(1,2)" })]
+        [TestCase("orders/{id:regex(^\\\\d{3}-\\\\d{2}-\\\\d{4}$)}", new[] { "orders", "{id:regex(^\\d{3}-\\d{2}-\\d{4}$)}" }, new[] { "regex(^\\d{3}-\\d{2}-\\d{4}$)" })]
+        [TestCase("orders/{id:regex(a/b)}",                          new[] { "orders", "{id:regex(a/b)}" },                    new[] { "regex(a/b)" })]
         ////[TestCase("orders/{id:regex(a[)}/]b)}",                      new[] { "orders", "{id:regex(a[)}/]b)}" })]
-        public void TryParseWhenStringParameter(string text, string[] expected)
+        public void TryParseWhenStringParameter(string text, string[] segments, string[] constraints)
         {
             var syntaxTree = CSharpSyntaxTree.ParseText(@"
 namespace ValidCode
@@ -126,12 +130,14 @@ namespace ValidCode
 }".AssertReplace("orders/{id}", text));
             var literal = syntaxTree.FindLiteralExpression(text);
             Assert.AreEqual(true, UrlTemplate.TryParse(literal, out var template));
-            CollectionAssert.AreEqual(expected, template.Path.Select(x => x.Text.Text));
+            CollectionAssert.AreEqual(segments, template.Path.Select(x => x.Span.Text));
 
             // ReSharper disable once PossibleInvalidOperationException
             var parameter = template.Path.Single(x => x.Parameter.HasValue)
                                     .Parameter.Value;
             Assert.AreEqual("id", parameter.Name.Text);
+            CollectionAssert.AreEqual(constraints, parameter.Constraints.Select(x => x.Span.Text)
+                                                            .ToArray());
         }
     }
 }

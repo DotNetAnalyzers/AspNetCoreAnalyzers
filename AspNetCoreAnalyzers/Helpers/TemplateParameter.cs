@@ -1,21 +1,19 @@
 namespace AspNetCoreAnalyzers
 {
     using System;
+    using System.Collections.Immutable;
 
     public struct TemplateParameter : IEquatable<TemplateParameter>
     {
-        public TemplateParameter(TextAndLocation name, bool isOptional, TextAndLocation? type)
+        public TemplateParameter(Span name, ImmutableArray<RouteConstraint> constraints)
         {
             this.Name = name;
-            this.IsOptional = isOptional;
-            this.Type = type;
+            this.Constraints = constraints;
         }
 
-        public TextAndLocation Name { get; }
+        public Span Name { get; }
 
-        public bool IsOptional { get; }
-
-        public TextAndLocation? Type { get; }
+        public ImmutableArray<RouteConstraint> Constraints { get; }
 
         public static bool operator ==(TemplateParameter left, TemplateParameter right)
         {
@@ -27,12 +25,11 @@ namespace AspNetCoreAnalyzers
             return !left.Equals(right);
         }
 
-        public static bool TryParse(TextAndLocation textAndLocation, out TemplateParameter result)
+        public static bool TryParse(Span source, out TemplateParameter result)
         {
-            var text = textAndLocation.Text;
+            var text = source.Text;
             var start = text.IndexOf('{');
             if (start < 0 ||
-                text.IndexOf('}') < start ||
                 text.IndexOf('{', start) > 0)
             {
                 result = default(TemplateParameter);
@@ -41,49 +38,43 @@ namespace AspNetCoreAnalyzers
 
             start++;
             Text.SkipWhiteSpace(text, ref start);
-
-            var end = text.IndexOf('}', start);
-            if (end < 0)
+            var end = text.LastIndexOf('}');
+            if (end < start)
             {
                 result = default(TemplateParameter);
                 return false;
             }
 
             Text.BackWhiteSpace(text, ref end);
-
-            for (var i = start; i < end; i++)
+            if (text[end - 1] == '?')
             {
-                switch (text[i])
-                {
-                    case '?':
-                    case ':':
-                        end = i;
-                        break;
-                }
+                result = new TemplateParameter(source.Slice(start, end - 1), ImmutableArray.Create(new RouteConstraint(source.Substring(end - 1, 1))));
+                return true;
             }
 
-            result = new TemplateParameter(textAndLocation.Substring(start, end - start), text.Contains("?"), Type());
+            if (text.IndexOf(':') is int i &&
+                i > start)
+            {
+                var name = source.Slice(start, i);
+                if (text.IndexOf(':', i + 1) > i)
+                {
+                    var builder = ImmutableArray.CreateBuilder<RouteConstraint>();
+                    while (RouteConstraint.TryRead(source, i, out var constraint))
+                    {
+                        builder.Add(constraint);
+                        i += constraint.Span.TextSpan.Length + 1;
+                    }
+
+                    result = new TemplateParameter(name, builder.ToImmutable());
+                    return true;
+                }
+
+                result = new TemplateParameter(name, ImmutableArray.Create(new RouteConstraint(source.Slice(i + 1, end))));
+                return true;
+            }
+
+            result = new TemplateParameter(source.Slice(start, end), ImmutableArray<RouteConstraint>.Empty);
             return true;
-
-            TextAndLocation? Type()
-            {
-                var typeStart = text.IndexOf(':', start);
-                if (typeStart < 0)
-                {
-                    return null;
-                }
-
-                typeStart++;
-                Text.SkipWhiteSpace(text, ref typeStart);
-                var typeEnd = text.IndexOf('}', typeStart);
-                if (typeEnd < 0)
-                {
-                    return null;
-                }
-
-                Text.BackWhiteSpace(text, ref typeEnd);
-                return textAndLocation.Substring(typeStart, typeEnd - typeStart);
-            }
         }
 
         public bool Equals(TemplateParameter other)
