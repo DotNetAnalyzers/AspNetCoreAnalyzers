@@ -220,22 +220,48 @@ namespace AspNetCoreAnalyzers
 
         private static bool HasWrongSyntax(PathSegment segment, out Location location, out string correctSyntax)
         {
-            var text = segment.Span.Text;
-            if (text.StartsWith("{", StringComparison.Ordinal) &&
-                !text.EndsWith("}", StringComparison.Ordinal))
+            if (segment.Parameter is TemplateParameter parameter)
             {
-                location = segment.Span.GetLocation();
-                correctSyntax = text + "}";
-                return true;
+                foreach (var constraint in parameter.Constraints)
+                {
+                    var text = constraint.Span.Text;
+                    if (text.StartsWith("min(", StringComparison.OrdinalIgnoreCase) ||
+                        text.StartsWith("max(", StringComparison.OrdinalIgnoreCase) ||
+                        text.StartsWith("minlength(", StringComparison.OrdinalIgnoreCase) ||
+                        text.StartsWith("maxlength(", StringComparison.OrdinalIgnoreCase) ||
+                        text.StartsWith("length(", StringComparison.OrdinalIgnoreCase) ||
+                        text.StartsWith("range(", StringComparison.OrdinalIgnoreCase) ||
+                        text.StartsWith("regex(", StringComparison.OrdinalIgnoreCase))
+                    {
+                        if (!text.EndsWith(")", StringComparison.Ordinal))
+                        {
+                            location = constraint.Span.GetLocation();
+                            correctSyntax = text + ")";
+                            return true;
+                        }
+                    }
+                }
+            }
+            else
+            {
+                var text = segment.Span.Text;
+                if (text.StartsWith("{", StringComparison.Ordinal) &&
+                    !text.EndsWith("}", StringComparison.Ordinal))
+                {
+                    location = segment.Span.GetLocation();
+                    correctSyntax = text + "}";
+                    return true;
+                }
+
+                if (!text.StartsWith("{", StringComparison.Ordinal) &&
+                    text.EndsWith("}", StringComparison.Ordinal))
+                {
+                    location = segment.Span.GetLocation();
+                    correctSyntax = "{" + text;
+                    return true;
+                }
             }
 
-            if (!text.StartsWith("{", StringComparison.Ordinal) &&
-                text.EndsWith("}", StringComparison.Ordinal))
-            {
-                location = segment.Span.GetLocation();
-                correctSyntax = "{" + text;
-                return true;
-            }
 
             location = null;
             correctSyntax = null;
