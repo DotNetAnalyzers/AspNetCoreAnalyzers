@@ -21,7 +21,7 @@ namespace AspNetCoreAnalyzers.Tests.ASP004ParameterSyntaxTests
         [TestCase("api/orders/{id:length(1,2}",    "api/orders/{id:length(1,2)}")]
         [TestCase("api/orders/{id:range(1,2}",     "api/orders/{id:range(1,2)}")]
         [TestCase("api/orders/{id:regex((a|b)-c}", "api/orders/{id:regex((a|b)-c)}")]
-        public void WhenFixable(string before, string after)
+        public void When(string before, string after)
         {
             var code = @"
 namespace ValidCode
@@ -55,30 +55,6 @@ namespace ValidCode
     }
 }".AssertReplace("api/orders/{id:long}", after);
             AnalyzerAssert.CodeFix(Analyzer, Fix, ExpectedDiagnostic, code, fixedCode);
-        }
-
-        [TestCase("api/orders/{id:↓wrong}")]
-        [TestCase("api/orders/{id:min1)}")]
-        [TestCase("api/orders/{id:max1)}")]
-        public void WhenNot(string before)
-        {
-            var code = @"
-namespace ValidCode
-{
-    using Microsoft.AspNetCore.Mvc;
-
-    [ApiController]
-    public class OrdersController : Controller
-    {
-        [HttpGet(""api/orders/↓{id:wrong}"")]
-        public IActionResult GetId(long id)
-        {
-            return this.Ok(id);
-        }
-    }
-}".AssertReplace("api/orders/↓{id:wrong}", before);
-
-            AnalyzerAssert.Diagnostics(Analyzer, ExpectedDiagnostic, code);
         }
     }
 }

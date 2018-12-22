@@ -8,22 +8,24 @@ namespace AspNetCoreAnalyzers.Tests.ASP004ParameterSyntaxTests
     {
         private static readonly DiagnosticAnalyzer Analyzer = new AttributeAnalyzer();
 
-        [TestCase("{value:bool}",                                              "bool")]
-        [TestCase("{value:datetime}",                                          "System.DateTime")]
-        [TestCase("{value:decimal}",                                           "decimal")]
-        [TestCase("{value:double}",                                            "double")]
-        [TestCase("{value:float}",                                             "float")]
-        [TestCase("{value:int}",                                               "int")]
+        [TestCase("{value}",                                                      "string")]
+        [TestCase("{value?}",                                                     "string")]
+        [TestCase("{value:bool}",                                                 "bool")]
+        [TestCase("{value:datetime}",                                             "System.DateTime")]
+        [TestCase("{value:decimal}",                                              "decimal")]
+        [TestCase("{value:double}",                                               "double")]
+        [TestCase("{value:float}",                                                "float")]
+        [TestCase("{value:int}",                                                  "int")]
         [TestCase("api/orders/{value:int:min(1)}",                                "int")]
         [TestCase("api/orders/{value:int:max(1)}",                                "int")]
         [TestCase("api/orders/{value:int:range(1,10)}",                           "int")]
         [TestCase("api/orders/{value:int:required}",                              "int")]
-        [TestCase("{value:long}",                                              "long")]
+        [TestCase("{value:long}",                                                 "long")]
         [TestCase("api/orders/{value:min(1)}",                                    "long")]
         [TestCase("api/orders/{value:max(1)}",                                    "long")]
         [TestCase("api/orders/{value:range(1,10)}",                               "long")]
         [TestCase("api/orders/{value:required}",                                  "long")]
-        [TestCase("{value:guid}",                                              "System.Guid")]
+        [TestCase("{value:guid}",                                                 "System.Guid")]
         [TestCase("api/orders/{value:minlength(1)}",                              "string")]
         [TestCase("api/orders/{value:maxlength(1)}",                              "string")]
         [TestCase("api/orders/{value:length(1)}",                                 "string")]
@@ -45,13 +47,13 @@ namespace ValidCode
     public class OrdersController : Controller
     {
         [HttpGet(""api/{value}"")]
-        public async Task<int> GetOrder(int value)
+        public IActionResult GetValue(string value)
         {
-            return value;
+            return this.Ok(value);
         }
     }
-}".AssertReplace("int", type)
-  .AssertReplace("{value}", parameter);
+}".AssertReplace("{value}", parameter)
+  .AssertReplace("string", type);
             AnalyzerAssert.Valid(Analyzer, code);
         }
     }

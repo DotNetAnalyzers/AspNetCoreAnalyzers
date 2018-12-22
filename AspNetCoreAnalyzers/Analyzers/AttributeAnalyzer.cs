@@ -241,7 +241,8 @@ namespace AspNetCoreAnalyzers
                         }
                     }
 
-                    if (!text.Equals("int", StringComparison.OrdinalIgnoreCase) &&
+                    if (!text.Equals("?", StringComparison.OrdinalIgnoreCase) &&
+                        !text.Equals("int", StringComparison.OrdinalIgnoreCase) &&
                         !text.Equals("bool", StringComparison.OrdinalIgnoreCase) &&
                         !text.Equals("datetime", StringComparison.OrdinalIgnoreCase) &&
                         !text.Equals("decimal", StringComparison.OrdinalIgnoreCase) &&
