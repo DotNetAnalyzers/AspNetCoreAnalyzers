@@ -66,7 +66,7 @@ namespace AspNetCoreAnalyzers
 
                     foreach (var pair in pairs)
                     {
-                        if (TryGetCorrectParameterType(pair, out var typeName) &&
+                        if (HasWrongType(pair, out var typeName) &&
                             methodDeclaration.TryFindParameter(pair.Method?.Name, out parameterSyntax))
                         {
                             context.ReportDiagnostic(
@@ -76,6 +76,22 @@ namespace AspNetCoreAnalyzers
                                     ImmutableDictionary<string, string>.Empty.Add(
                                         nameof(TypeSyntax),
                                         typeName)));
+                        }
+                    }
+
+                    foreach (var segment in template.Path)
+                    {
+                        if (HasWrongSyntax(segment, out var location, out var syntax))
+                        {
+                            context.ReportDiagnostic(
+                                Diagnostic.Create(
+                                    ASP004ParameterSyntax.Descriptor,
+                                    location,
+                                    syntax == null
+                                    ? ImmutableDictionary<string, string>.Empty
+                                    : ImmutableDictionary<string, string>.Empty.Add(
+                                        nameof(Text),
+                                        syntax)));
                         }
                     }
                 }
@@ -142,7 +158,7 @@ namespace AspNetCoreAnalyzers
             return list;
         }
 
-        private static bool TryGetCorrectParameterType(ParameterPair pair, out string typeName)
+        private static bool HasWrongType(ParameterPair pair, out string correctType)
         {
             if (pair.Template?.Constraints is ImmutableArray<RouteConstraint> constraints &&
                 pair.Method is IParameterSymbol parameter)
@@ -153,31 +169,31 @@ namespace AspNetCoreAnalyzers
                     switch (constraint.Span.Text)
                     {
                         case "bool":
-                            typeName = constraint.Span.Text;
+                            correctType = constraint.Span.Text;
                             return parameter.Type != KnownSymbol.Boolean;
                         case "decimal":
-                            typeName = constraint.Span.Text;
+                            correctType = constraint.Span.Text;
                             return parameter.Type != KnownSymbol.Decimal;
                         case "double":
-                            typeName = constraint.Span.Text;
+                            correctType = constraint.Span.Text;
                             return parameter.Type != KnownSymbol.Double;
                         case "float":
-                            typeName = constraint.Span.Text;
+                            correctType = constraint.Span.Text;
                             return parameter.Type != KnownSymbol.Float;
                         case "int":
-                            typeName = constraint.Span.Text;
+                            correctType = constraint.Span.Text;
                             return parameter.Type != KnownSymbol.Int32;
                         case "long":
-                            typeName = constraint.Span.Text;
+                            correctType = constraint.Span.Text;
                             return parameter.Type != KnownSymbol.Int64;
                         case "datetime" when parameter.Type != KnownSymbol.DateTime:
-                            typeName = "System.DateTime";
+                            correctType = "System.DateTime";
                             return true;
                         case "guid" when parameter.Type != KnownSymbol.Guid:
-                            typeName = "System.Guid";
+                            correctType = "System.Guid";
                             return true;
                         case "alpha" when parameter.Type != KnownSymbol.String:
-                            typeName = "string";
+                            correctType = "string";
                             return true;
                         case "required":
                             continue;
@@ -186,19 +202,43 @@ namespace AspNetCoreAnalyzers
                                                text.StartsWith("length(", StringComparison.OrdinalIgnoreCase) ||
                                                text.StartsWith("minlength(", StringComparison.OrdinalIgnoreCase) ||
                                                text.StartsWith("maxlength(", StringComparison.OrdinalIgnoreCase)):
-                            typeName = "string";
+                            correctType = "string";
                             return true;
                         case string text when parameter.Type != KnownSymbol.Int64 &&
                                               (text.StartsWith("min(", StringComparison.OrdinalIgnoreCase) ||
                                                text.StartsWith("max(", StringComparison.OrdinalIgnoreCase) ||
                                                text.StartsWith("range(", StringComparison.OrdinalIgnoreCase)):
-                            typeName = "long";
+                            correctType = "long";
                             return true;
                     }
                 }
             }
 
-            typeName = null;
+            correctType = null;
+            return false;
+        }
+
+        private static bool HasWrongSyntax(PathSegment segment, out Location location, out string correctSyntax)
+        {
+            var text = segment.Span.Text;
+            if (text.StartsWith("{", StringComparison.Ordinal) &&
+                !text.EndsWith("}", StringComparison.Ordinal))
+            {
+                location = segment.Span.GetLocation();
+                correctSyntax = text + "}";
+                return true;
+            }
+
+            if (!text.StartsWith("{", StringComparison.Ordinal) &&
+                text.EndsWith("}", StringComparison.Ordinal))
+            {
+                location = segment.Span.GetLocation();
+                correctSyntax = "{" + text;
+                return true;
+            }
+
+            location = null;
+            correctSyntax = null;
             return false;
         }
     }

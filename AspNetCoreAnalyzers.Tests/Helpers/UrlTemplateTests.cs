@@ -99,17 +99,17 @@ namespace ValidCode
             CollectionAssert.AreEqual(constraints, parameter.Constraints.Select(x => x.Span.Text));
         }
 
-        [TestCase("orders/{id}",                                     new[] { "orders", "{id}" },                               new string[0])]
-        [TestCase("orders/{id?}",                                    new[] { "orders", "{id?}" },                              new[] { "?" })]
-        [TestCase("orders/{id:alpha}",                               new[] { "orders", "{id:alpha}" },                         new[] { "alpha" })]
-        [TestCase("orders/{id:ALPHA}",                               new[] { "orders", "{id:ALPHA}" },                         new[] { "ALPHA" })]
-        [TestCase("orders/{id:alpha:minlength(1)}",                  new[] { "orders", "{id:alpha:minlength(1)}" },            new[] { "alpha", "minlength(1)" })]
-        [TestCase("orders/{id:minlength(1)}",                        new[] { "orders", "{id:minlength(1)}" },                  new[] { "minlength(1)" })]
-        [TestCase("orders/{id:maxlength(1)}",                        new[] { "orders", "{id:maxlength(1)}" },                  new[] { "maxlength(1)" })]
-        [TestCase("orders/{id:length(1)}",                           new[] { "orders", "{id:length(1)}" },                     new[] { "length(1)" })]
-        [TestCase("orders/{id:length(1,2)}",                         new[] { "orders", "{id:length(1,2)}" },                   new[] { "length(1,2)" })]
+        [TestCase("orders/{id}",                                         new[] { "orders", "{id}" },                                   new string[0])]
+        [TestCase("orders/{id?}",                                        new[] { "orders", "{id?}" },                                  new[] { "?" })]
+        [TestCase("orders/{id:alpha}",                                   new[] { "orders", "{id:alpha}" },                             new[] { "alpha" })]
+        [TestCase("orders/{id:ALPHA}",                                   new[] { "orders", "{id:ALPHA}" },                             new[] { "ALPHA" })]
+        [TestCase("orders/{id:alpha:minlength(1)}",                      new[] { "orders", "{id:alpha:minlength(1)}" },                new[] { "alpha", "minlength(1)" })]
+        [TestCase("orders/{id:minlength(1)}",                            new[] { "orders", "{id:minlength(1)}" },                      new[] { "minlength(1)" })]
+        [TestCase("orders/{id:maxlength(1)}",                            new[] { "orders", "{id:maxlength(1)}" },                      new[] { "maxlength(1)" })]
+        [TestCase("orders/{id:length(1)}",                               new[] { "orders", "{id:length(1)}" },                         new[] { "length(1)" })]
+        [TestCase("orders/{id:length(1,2)}",                             new[] { "orders", "{id:length(1,2)}" },                       new[] { "length(1,2)" })]
         [TestCase("orders/{id:regex(^\\\\d{{3}}-\\\\d{{2}}-\\\\d{4}$)}", new[] { "orders", "{id:regex(^\\d{{3}}-\\d{{2}}-\\d{4}$)}" }, new[] { "regex(^\\d{{3}}-\\d{{2}}-\\d{4}$)" })]
-        [TestCase("orders/{id:regex(a/b)}",                          new[] { "orders", "{id:regex(a/b)}" },                    new[] { "regex(a/b)" })]
+        [TestCase("orders/{id:regex(a/b)}",                              new[] { "orders", "{id:regex(a/b)}" },                        new[] { "regex(a/b)" })]
         ////[TestCase("orders/{id:regex(a[)}/]b)}",                      new[] { "orders", "{id:regex(a[)}/]b)}" })]
         public void TryParseWhenStringParameter(string text, string[] segments, string[] constraints)
         {
@@ -140,7 +140,7 @@ namespace ValidCode
                                                             .ToArray());
         }
 
-        [TestCase("orders/{id:}", new[] { "orders", "{id:}" }, new[] { "" })]
+        [TestCase("orders/{id:}",      new[] { "orders", "{id:}" },      new[] { "" })]
         [TestCase("orders/{id:min(1}", new[] { "orders", "{id:min(1}" }, new[] { "min(1" })]
         [TestCase("orders/{id:min1)}", new[] { "orders", "{id:min1)}" }, new[] { "min1)" })]
         public void TryParseWhenSyntaxError(string text, string[] segments, string[] constraints)

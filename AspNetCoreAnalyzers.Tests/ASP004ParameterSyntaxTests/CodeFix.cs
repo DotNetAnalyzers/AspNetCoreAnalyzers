@@ -5,12 +5,11 @@ namespace AspNetCoreAnalyzers.Tests.ASP004ParameterSyntaxTests
     using Microsoft.CodeAnalysis.Diagnostics;
     using NUnit.Framework;
 
-    [Explicit("Failing tests.")]
     public class CodeFix
     {
         private static readonly DiagnosticAnalyzer Analyzer = new AttributeAnalyzer();
         private static readonly ExpectedDiagnostic ExpectedDiagnostic = ExpectedDiagnostic.Create(ASP004ParameterSyntax.Descriptor);
-        private static readonly CodeFixProvider Fix = new ParameterTypeFix();
+        private static readonly CodeFixProvider Fix = new ParameterSyntaxFix();
 
         [TestCase("api/orders/↓id:long}", "api/orders/{id:long}")]
         [TestCase("api/orders/↓{id:long", "api/orders/{id:long}")]
@@ -40,7 +39,7 @@ namespace ValidCode
     [ApiController]
     public class OrdersController : Controller
     {
-        [HttpGet(""api/orders/{id:ilongnt}"")]
+        [HttpGet(""api/orders/{id:long}"")]
         public IActionResult GetId(long id)
         {
             return this.Ok(id);

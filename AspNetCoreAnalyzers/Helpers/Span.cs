@@ -22,8 +22,6 @@ namespace AspNetCoreAnalyzers
 
         public string Text { get; }
 
-        public Location Location => Location.Create(this.literal.SyntaxTree, this.TextSpan);
-
         public static bool operator ==(Span left, Span right)
         {
             return left.Equals(right);
@@ -54,6 +52,8 @@ namespace AspNetCoreAnalyzers
                 return hashCode;
             }
         }
+
+        public Location GetLocation() => Location.Create(this.literal.SyntaxTree, new TextSpan(this.literal.SpanStart + this.TextSpan.Start + 1, this.TextSpan.Length));
 
         internal Span Slice(int start, int end)
         {
