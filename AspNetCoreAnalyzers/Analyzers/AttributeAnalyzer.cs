@@ -241,6 +241,15 @@ namespace AspNetCoreAnalyzers
                         }
                     }
 
+                    if (HasWrongIntArgumentSyntax(constraint, "min", out location) ||
+                        HasWrongIntArgumentSyntax(constraint, "max", out location) ||
+                        HasWrongIntArgumentSyntax(constraint, "minlength", out location) ||
+                        HasWrongIntArgumentSyntax(constraint, "maxlength", out location))
+                    {
+                        correctSyntax = null;
+                        return true;
+                    }
+
                     if (!text.Equals("?", StringComparison.OrdinalIgnoreCase) &&
                         !text.Equals("int", StringComparison.OrdinalIgnoreCase) &&
                         !text.Equals("bool", StringComparison.OrdinalIgnoreCase) &&
@@ -286,10 +295,31 @@ namespace AspNetCoreAnalyzers
                 }
             }
 
-
             location = null;
             correctSyntax = null;
             return false;
+
+            bool HasWrongIntArgumentSyntax(RouteConstraint constraint, string methodName, out Location result)
+            {
+                var text = constraint.Span.Text;
+                if (text.Length > methodName.Length + 2 &&
+                    text.StartsWith(methodName, StringComparison.OrdinalIgnoreCase) &&
+                    text[methodName.Length] == '(' &&
+                    text[text.Length - 1] == ')')
+                {
+                    for (var i = methodName.Length + 1; i < text.Length - 2; i++)
+                    {
+                        if (!char.IsDigit(text[i]))
+                        {
+                            result = constraint.Span.GetLocation(i);
+                            return true;
+                        }
+                    }
+                }
+
+                result = null;
+                return false;
+            }
         }
     }
 }
