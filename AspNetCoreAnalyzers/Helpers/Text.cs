@@ -11,6 +11,18 @@ namespace AspNetCoreAnalyzers
             }
         }
 
+        public static bool TrySkipDigits(string text, ref int pos)
+        {
+            var before = pos;
+            while (pos < text.Length &&
+                  char.IsDigit(text[pos]))
+            {
+                pos++;
+            }
+
+            return pos != before;
+        }
+
         public static bool TrySkipPast(string text, ref int pos, string substring)
         {
             var before = pos;

@@ -240,6 +240,29 @@ namespace AspNetCoreAnalyzers
                             return true;
                         }
                     }
+
+                    if (!text.Equals("int", StringComparison.OrdinalIgnoreCase) &&
+                        !text.Equals("bool", StringComparison.OrdinalIgnoreCase) &&
+                        !text.Equals("datetime", StringComparison.OrdinalIgnoreCase) &&
+                        !text.Equals("decimal", StringComparison.OrdinalIgnoreCase) &&
+                        !text.Equals("double", StringComparison.OrdinalIgnoreCase) &&
+                        !text.Equals("float", StringComparison.OrdinalIgnoreCase) &&
+                        !text.Equals("guid", StringComparison.OrdinalIgnoreCase) &&
+                        !text.Equals("long", StringComparison.OrdinalIgnoreCase) &&
+                        !text.Equals("alpha", StringComparison.OrdinalIgnoreCase) &&
+                        !text.Equals("required", StringComparison.OrdinalIgnoreCase) &&
+                        !text.StartsWith("minlength(", StringComparison.OrdinalIgnoreCase) &&
+                        !text.StartsWith("maxlength(", StringComparison.OrdinalIgnoreCase) &&
+                        !text.StartsWith("length(", StringComparison.OrdinalIgnoreCase) &&
+                        !text.StartsWith("min(", StringComparison.OrdinalIgnoreCase) &&
+                        !text.StartsWith("max(", StringComparison.OrdinalIgnoreCase) &&
+                        !text.StartsWith("regex(", StringComparison.OrdinalIgnoreCase) &&
+                        !text.StartsWith("range(", StringComparison.OrdinalIgnoreCase))
+                    {
+                        location = constraint.Span.GetLocation();
+                        correctSyntax = null;
+                        return true;
+                    }
                 }
             }
             else
