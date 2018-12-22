@@ -12,7 +12,8 @@ namespace AspNetCoreAnalyzers
     public class ParameterSyntaxFix : CodeFixProvider
     {
         public override ImmutableArray<string> FixableDiagnosticIds { get; } = ImmutableArray.Create(
-            ASP004ParameterSyntax.DiagnosticId);
+            ASP004ParameterSyntax.DiagnosticId,
+            ASP005ParameterRegex.DiagnosticId);
 
         public override async Task RegisterCodeFixesAsync(CodeFixContext context)
         {
@@ -26,7 +27,7 @@ namespace AspNetCoreAnalyzers
                 {
                     context.RegisterCodeFix(
                         CodeAction.Create(
-                            "Fix syntax error.",
+                            diagnostic.Id == ASP004ParameterSyntax.DiagnosticId ? "Fix syntax error." : "Escape regex",
                             _ => Fix(_)),
                         diagnostic);
 

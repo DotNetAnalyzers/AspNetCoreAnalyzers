@@ -26,7 +26,7 @@ namespace AspNetCoreAnalyzers
         public static bool TrySkipPast(string text, ref int pos, string substring)
         {
             var before = pos;
-            while (pos + substring.Length < text.Length)
+            while (pos + substring.Length <= text.Length)
             {
                 if (IsAt(text, pos, substring))
                 {

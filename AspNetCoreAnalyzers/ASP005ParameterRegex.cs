@@ -1,0 +1,22 @@
+namespace AspNetCoreAnalyzers
+{
+    using Microsoft.CodeAnalysis;
+
+    /// <summary>
+    /// https://docs.microsoft.com/en-us/aspnet/core/fundamentals/routing?view=aspnetcore-2.2#regular-expressions
+    /// </summary>
+    internal static class ASP005ParameterRegex
+    {
+        public const string DiagnosticId = "ASP005";
+
+        internal static readonly DiagnosticDescriptor Descriptor = new DiagnosticDescriptor(
+            id: DiagnosticId,
+            title: "Escape constraint regex.",
+            messageFormat: "Escape constraint regex.",
+            category: AnalyzerCategory.Routing,
+            defaultSeverity: DiagnosticSeverity.Warning,
+            isEnabledByDefault: true,
+            description: "Escape constraint regex.",
+            helpLinkUri: HelpLink.ForId(DiagnosticId));
+    }
+}

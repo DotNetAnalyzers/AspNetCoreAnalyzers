@@ -60,7 +60,7 @@ namespace ValidCode
             return this.Ok(value);
         }
 
-        [HttpGet("strings/{value:minlength(1):maxlength(2):required:alpha}")]
+        [HttpGet("strings/{value:minlength(1):maxlength(2):required:alpha:regex(a{{0,1}})}")]
         public IActionResult Get(string value)
         {
             return this.Ok(value);

@@ -17,7 +17,8 @@ namespace AspNetCoreAnalyzers
             ASP001ParameterName.Descriptor,
             ASP002MissingParameter.Descriptor,
             ASP003ParameterType.Descriptor,
-            ASP004ParameterSyntax.Descriptor);
+            ASP004ParameterSyntax.Descriptor,
+            ASP005ParameterRegex.Descriptor);
 
         public override void Initialize(AnalysisContext context)
         {
