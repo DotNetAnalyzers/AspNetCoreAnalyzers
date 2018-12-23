@@ -218,7 +218,6 @@ namespace ValidCode
         [TestCase("api/orders/{id:length(1,3)}")]
         [TestCase("api/orders/{id:alpha}")]
         [TestCase("api/orders/{id:regex(a-(0|1))}")]
-        [TestCase("api/orders/{id:regex(^\\\\d{{3}}-\\\\d{{2}}-\\\\d{{4}}$)}")]
         [TestCase("api/orders/{id:required}")]
         public void ExplicitString(string template)
         {

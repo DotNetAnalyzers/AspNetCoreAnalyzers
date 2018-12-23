@@ -1,6 +1,7 @@
 namespace AspNetCoreAnalyzers
 {
     using System;
+    using System.Collections.Generic;
     using System.Collections.Immutable;
     using System.Linq;
     using Gu.Roslyn.AnalyzerExtensions;
@@ -89,10 +90,23 @@ namespace AspNetCoreAnalyzers
                                     ASP004ParameterSyntax.Descriptor,
                                     location,
                                     syntax == null
-                                    ? ImmutableDictionary<string, string>.Empty
-                                    : ImmutableDictionary<string, string>.Empty.Add(
-                                        nameof(Text),
-                                        syntax)));
+                                        ? ImmutableDictionary<string, string>.Empty
+                                        : ImmutableDictionary<string, string>.Empty.Add(
+                                            nameof(Text),
+                                            syntax)));
+                        }
+
+                        if (HasWrongRegexSyntax(segment, out location, out syntax))
+                        {
+                            context.ReportDiagnostic(
+                                Diagnostic.Create(
+                                    ASP005ParameterRegex.Descriptor,
+                                    location,
+                                    syntax == null
+                                        ? ImmutableDictionary<string, string>.Empty
+                                        : ImmutableDictionary<string, string>.Empty.Add(
+                                            nameof(Text),
+                                            syntax)));
                         }
                     }
                 }
@@ -321,6 +335,60 @@ namespace AspNetCoreAnalyzers
                 result = null;
                 return false;
             }
+        }
+
+        private static bool HasWrongRegexSyntax(PathSegment segment, out Location location, out string correctSyntax)
+        {
+            if (segment.Parameter is TemplateParameter parameter)
+            {
+                foreach (var constraint in parameter.Constraints)
+                {
+                    var text = constraint.Span.Text;
+                    if (text.StartsWith("regex(", StringComparison.OrdinalIgnoreCase))
+                    {
+                        for (var i = 6; i < text.Length - 1; i++)
+                        {
+                            if (NotEscaped())
+                            {
+                                var escaped = new List<char>(text.Length - 7);
+                                for (i = 6; i < text.Length - 1; i++)
+                                {
+                                    escaped.Add(text[i]);
+                                    if (NotEscaped())
+                                    {
+                                        escaped.Add(text[i]);
+                                    }
+                                }
+
+                                location = constraint.Span.GetLocation(6, text.Length - 7);
+                                correctSyntax = new string(escaped.ToArray());
+                                return true;
+                            }
+
+                            bool NotEscaped()
+                            {
+                                return NotEscapedChar('\\') ||
+                                       NotEscapedChar('{') ||
+                                       NotEscapedChar('}') ||
+                                       NotEscapedChar('[') ||
+                                       NotEscapedChar(']');
+
+                                bool NotEscapedChar(char c)
+                                {
+                                    return text[i] == c &&
+                                           text[i - 1] != c &&
+                                           text[i - 1] != '\\' &&
+                                           text[i + 1] != c;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            location = null;
+            correctSyntax = null;
+            return false;
         }
     }
 }

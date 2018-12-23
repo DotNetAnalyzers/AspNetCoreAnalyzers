@@ -57,6 +57,8 @@ namespace AspNetCoreAnalyzers
 
         public Location GetLocation(int start) => Location.Create(this.literal.SyntaxTree, new TextSpan(this.literal.SpanStart + this.TextSpan.Start + start + 1, this.TextSpan.Length));
 
+        public Location GetLocation(int start, int length) => Location.Create(this.literal.SyntaxTree, new TextSpan(this.literal.SpanStart + this.TextSpan.Start + start + 1, length));
+
         internal Span Slice(int start, int end)
         {
             if (start > end)

@@ -32,7 +32,6 @@ namespace AspNetCoreAnalyzers.Tests.ASP004ParameterSyntaxTests
         [TestCase("api/orders/{value:length(1,3)}",                                              "string")]
         [TestCase("api/orders/{value:alpha}",                                                    "string")]
         [TestCase("api/orders/{value:regex(a-(0|1))}",                                           "string")]
-        [TestCase("api/orders/{value:regex(^\\\\d{{3}}-\\\\d{{2}}-\\\\d{{4}}$)}",                "string")]
         [TestCase("api/orders/{value:regex(a{{0,1}})}",                                          "string")]
         [TestCase("api/orders/{value:minlength(1):maxlength(2):required:alpha:regex(a{{0,1}})}", "string")]
         [TestCase("api/orders/{value:required}",                                                 "string")]
