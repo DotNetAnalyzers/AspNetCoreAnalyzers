@@ -9,14 +9,14 @@ namespace AspNetCoreAnalyzers.Tests.ASP004ParameterSyntaxTests
         private static readonly DiagnosticAnalyzer Analyzer = new AttributeAnalyzer();
         private static readonly ExpectedDiagnostic ExpectedDiagnostic = ExpectedDiagnostic.Create(ASP004ParameterSyntax.Descriptor);
 
-        [TestCase("api/orders/{id:↓wrong}")]
-        [TestCase("api/orders/{id:min1)}")]
-        [TestCase("api/orders/{id:max1)}")]
-        [TestCase("api/orders/{id:min(↓wrong))}")]
-        [TestCase("api/orders/{id:max(↓wrong))}")]
-        [TestCase("api/orders/{id:↓:long)}")]
-        [TestCase("api/orders/{id:long:↓)}")]
-        [TestCase("api/orders/{id:long:↓:)}")]
+        [TestCase("\"api/orders/{id:↓wrong}\"")]
+        [TestCase("\"api/orders/{id:min1)}\"")]
+        [TestCase("\"api/orders/{id:max1)}\"")]
+        [TestCase("\"api/orders/{id:min(↓wrong))}\"")]
+        [TestCase("\"api/orders/{id:max(↓wrong))}\"")]
+        [TestCase("\"api/orders/{id:↓:long)}\"")]
+        [TestCase("\"api/orders/{id:long:↓)}\"")]
+        [TestCase("\"api/orders/{id:long:↓:)}\"")]
         public void WhenLong(string before)
         {
             var code = @"
@@ -33,7 +33,7 @@ namespace ValidCode
             return this.Ok(id);
         }
     }
-}".AssertReplace("api/orders/↓{id:wrong}", before);
+}".AssertReplace("\"api/orders/↓{id:wrong}\"", before);
 
             AnalyzerAssert.Diagnostics(Analyzer, ExpectedDiagnostic, code);
         }
