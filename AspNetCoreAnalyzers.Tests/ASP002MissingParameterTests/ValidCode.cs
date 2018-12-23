@@ -172,5 +172,28 @@ namespace ValidCode
 }";
             AnalyzerAssert.Valid(Analyzer, order, db, code);
         }
+
+        [Test]
+        public void WhenWrongName()
+        {
+            var code = @"
+namespace ValidCode
+{
+    using System.Threading.Tasks;
+    using Microsoft.AspNetCore.Mvc;
+    using Microsoft.EntityFrameworkCore;
+
+    [ApiController]
+    public class OrdersController : Controller
+    {
+        [HttpGet(""api/{value}"")]
+        public IActionResult GetValue(string wrongName)
+        {
+            return this.Ok(wrongName);
+        }
+    }
+}";
+            AnalyzerAssert.Valid(Analyzer, ASP002MissingParameter.Descriptor, code);
+        }
     }
 }
