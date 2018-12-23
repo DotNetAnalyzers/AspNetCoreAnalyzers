@@ -38,8 +38,10 @@ namespace ValidCode
             AnalyzerAssert.Diagnostics(Analyzer, ExpectedDiagnostic, code);
         }
 
-        [TestCase("api/orders/{id:minlength(↓wrong))}")]
-        [TestCase("api/orders/{id:maxlength(↓wrong))}")]
+        [TestCase("\"api/orders/{id:regex(\\\\d):minlength(↓wrong))}\"")]
+        [TestCase("@\"api/orders/{id:regex(\\d):minlength(↓wrong))}\"")]
+        [TestCase("\"api/orders/{id:minlength(↓wrong))}\"")]
+        [TestCase("\"api/orders/{id:maxlength(↓wrong))}\"")]
         public void WhenString(string before)
         {
             var code = @"
@@ -56,7 +58,7 @@ namespace ValidCode
             return this.Ok(id);
         }
     }
-}".AssertReplace("api/orders/↓{id:wrong}", before);
+}".AssertReplace("\"api/orders/↓{id:wrong}\"", before);
 
             AnalyzerAssert.Diagnostics(Analyzer, ExpectedDiagnostic, code);
         }

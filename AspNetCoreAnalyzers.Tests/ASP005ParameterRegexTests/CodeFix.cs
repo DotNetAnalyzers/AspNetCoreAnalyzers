@@ -11,8 +11,11 @@ namespace AspNetCoreAnalyzers.Tests.ASP005ParameterRegexTests
         private static readonly ExpectedDiagnostic ExpectedDiagnostic = ExpectedDiagnostic.Create(ASP005ParameterRegex.Descriptor);
         private static readonly CodeFixProvider Fix = new TemplateTextFix();
 
-        [TestCase("api/orders/{id:regex(↓a{1})}",                   "api/orders/{id:regex(a{{1}})}")]
-        [TestCase("api/orders/{id:regex(↓^[a-z]{2}$)}",             "api/orders/{id:regex(^[[a-z]]{{2}}$)}")]
+        [TestCase("\"api/orders/{id:regex(↓a{1})}\"",                       "\"api/orders/{id:regex(a{{1}})}\"")]
+        [TestCase("\"api/orders/{id:regex(↓\\\\d+)}",                       "\"api/orders/{id:regex(\\\\\\\\d+)}\"")]
+        [TestCase("@\"api/orders/{id:regex(↓\\d+)}",                        "@\"api/orders/{id:regex(\\\\d+)}\"")]
+        [TestCase("\"api/orders/{id:regex(↓^\\\\d{3}-\\\\d{2}-\\\\d{4}$)}", "\"api/orders/{id:regex(^\\\\d{{3}}-\\\\d{{2}}-\\\\d{{4}}$)}\"")]
+        [TestCase("\"api/orders/{id:regex(↓^[a-z]{2}$)}\"",                 "\"api/orders/{id:regex(^[[a-z]]{{2}}$)}\"")]
         public void When(string before, string after)
         {
             var code = @"
@@ -29,7 +32,7 @@ namespace ValidCode
             return this.Ok(id);
         }
     }
-}".AssertReplace("api/orders/{id}", before);
+}".AssertReplace("\"api/orders/{id}\"", before);
 
             var fixedCode = @"
 namespace ValidCode
@@ -45,7 +48,7 @@ namespace ValidCode
             return this.Ok(id);
         }
     }
-}".AssertReplace("api/orders/{id}", after);
+}".AssertReplace("\"api/orders/{id}\"", after);
             AnalyzerAssert.CodeFix(Analyzer, Fix, ExpectedDiagnostic, code, fixedCode);
         }
     }
