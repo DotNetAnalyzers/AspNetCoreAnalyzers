@@ -1,5 +1,6 @@
 namespace AspNetCoreAnalyzers
 {
+    using System;
     using System.Collections.Immutable;
     using System.Composition;
     using System.Threading;
@@ -10,11 +11,12 @@ namespace AspNetCoreAnalyzers
     using Microsoft.CodeAnalysis.CodeFixes;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
 
-    [ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(ParameterSyntaxFix))]
+    [ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(TemplateTextFix))]
     [Shared]
-    public class ParameterSyntaxFix : CodeFixProvider
+    public class TemplateTextFix : CodeFixProvider
     {
         public override ImmutableArray<string> FixableDiagnosticIds { get; } = ImmutableArray.Create(
+            ASP002MissingParameter.DiagnosticId,
             ASP004ParameterSyntax.DiagnosticId,
             ASP005ParameterRegex.DiagnosticId);
 
@@ -32,7 +34,7 @@ namespace AspNetCoreAnalyzers
                 {
                     context.RegisterCodeFix(
                         CodeAction.Create(
-                            diagnostic.Id == ASP004ParameterSyntax.DiagnosticId ? "Fix syntax error." : "Escape regex",
+                            GetTitle(diagnostic),
                             _ => Fix(_)),
                         diagnostic);
 
@@ -43,6 +45,21 @@ namespace AspNetCoreAnalyzers
                         return context.Document.WithText(sourceText.Replace(diagnostic.Location.SourceSpan, text));
                     }
                 }
+            }
+        }
+
+        private static string GetTitle(Diagnostic diagnostic)
+        {
+            switch (diagnostic.Id)
+            {
+                case ASP002MissingParameter.DiagnosticId:
+                    return "Rename parameter";
+                case ASP004ParameterSyntax.DiagnosticId:
+                    return "Fix syntax error.";
+                case ASP005ParameterRegex.DiagnosticId:
+                    return "Escape regex.";
+                default:
+                    throw new InvalidOperationException("Should never get here.");
             }
         }
     }

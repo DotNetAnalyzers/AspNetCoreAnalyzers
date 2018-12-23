@@ -48,6 +48,14 @@ namespace AspNetCoreAnalyzers
                                 ImmutableDictionary<string, string>.Empty.Add(
                                     nameof(NameSyntax),
                                     templateParameter.Name.Text)));
+
+                        context.ReportDiagnostic(
+                            Diagnostic.Create(
+                                ASP002MissingParameter.Descriptor,
+                                templateParameter.Name.GetLocation(),
+                                ImmutableDictionary<string, string>.Empty.Add(
+                                    nameof(Text),
+                                    withMethodParameter.Method.Name)));
                     }
                     else if (pairs.Count(x => x.Template == null) > 1 &&
                              pairs.Count(x => x.Method == null) > 1)

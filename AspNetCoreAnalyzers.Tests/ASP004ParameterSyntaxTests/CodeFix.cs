@@ -9,7 +9,7 @@ namespace AspNetCoreAnalyzers.Tests.ASP004ParameterSyntaxTests
     {
         private static readonly DiagnosticAnalyzer Analyzer = new AttributeAnalyzer();
         private static readonly ExpectedDiagnostic ExpectedDiagnostic = ExpectedDiagnostic.Create(ASP004ParameterSyntax.Descriptor);
-        private static readonly CodeFixProvider Fix = new ParameterSyntaxFix();
+        private static readonly CodeFixProvider Fix = new TemplateTextFix();
 
         [TestCase("api/orders/↓id:long}",          "api/orders/{id:long}")]
         [TestCase("api/orders/↓{id:long",          "api/orders/{id:long}")]

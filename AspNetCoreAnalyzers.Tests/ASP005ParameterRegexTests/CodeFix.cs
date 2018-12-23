@@ -9,7 +9,7 @@ namespace AspNetCoreAnalyzers.Tests.ASP005ParameterRegexTests
     {
         private static readonly DiagnosticAnalyzer Analyzer = new AttributeAnalyzer();
         private static readonly ExpectedDiagnostic ExpectedDiagnostic = ExpectedDiagnostic.Create(ASP005ParameterRegex.Descriptor);
-        private static readonly CodeFixProvider Fix = new ParameterSyntaxFix();
+        private static readonly CodeFixProvider Fix = new TemplateTextFix();
 
         [TestCase("api/orders/{id:regex(↓a{1})}",                   "api/orders/{id:regex(a{{1}})}")]
         [TestCase("api/orders/{id:regex(↓^[a-z]{2}$)}",             "api/orders/{id:regex(^[[a-z]]{{2}}$)}")]
