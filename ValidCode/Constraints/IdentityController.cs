@@ -1,4 +1,4 @@
-namespace ValidCode
+namespace ValidCode.Constraints
 {
     using System;
     using Microsoft.AspNetCore.Mvc;
