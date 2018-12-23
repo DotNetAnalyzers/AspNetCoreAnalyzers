@@ -1,12 +1,16 @@
 namespace AspNetCoreAnalyzers
 {
     using System.Collections.Immutable;
+    using System.Composition;
     using System.Threading.Tasks;
     using Gu.Roslyn.CodeFixExtensions;
     using Microsoft.CodeAnalysis;
+    using Microsoft.CodeAnalysis.CodeFixes;
     using Microsoft.CodeAnalysis.CSharp;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
 
+    [ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(ParameterTypeFix))]
+    [Shared]
     public class ParameterTypeFix : DocumentEditorCodeFixProvider
     {
         public override ImmutableArray<string> FixableDiagnosticIds { get; } = ImmutableArray.Create(
