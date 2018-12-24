@@ -54,9 +54,12 @@ namespace ValidCode
             AnalyzerAssert.CodeFix(Analyzer, Fix, ExpectedDiagnostic, code, fixedCode);
         }
 
-        [TestCase("\"api/{text1}/{↓value}\"",               "\"api/{text1}/{text2}\"")]
-        [TestCase("\"api/{text1:regex(\\\\d+)}/{↓value}\"", "\"api/{text1:regex(\\\\d+)}/{text2}\"")]
-        [TestCase("@\"api/{text1:regex(\\d+)}/{↓value}\"",  "@\"api/{text1:regex(\\d+)}/{text2}\"")]
+        [TestCase("\"api/{text1}/{↓value}\"",                                                        "\"api/{text1}/{text2}\"")]
+        [TestCase("\"api/{↓value}/{text2}\"",                                                        "\"api/{text1}/{text2}\"")]
+        [TestCase("\"api/{text1:regex(\\\\d+)}/{↓value}\"",                                          "\"api/{text1:regex(\\\\d+)}/{text2}\"")]
+        [TestCase("\"api/{text1:regex(\\\\\\\\d+)}/{↓value}\"",                                      "\"api/{text1:regex(\\\\\\\\d+)}/{text2}\"")]
+        [TestCase("@\"api/{text1:regex(\\d+)}/{↓value}\"",                                           "@\"api/{text1:regex(\\d+)}/{text2}\"")]
+        [TestCase("\"api/{text1::regex(^\\\\\\\\d{{3}}-\\\\\\\\d{{2}}-\\\\\\\\d{{4}}$)}/{↓value}\"", "\"api/{text1::regex(^\\\\\\\\d{{3}}-\\\\\\\\d{{2}}-\\\\\\\\d{{4}}$)}/{text2}\"")]
         public void WhenWrongNameSecondParameter(string before, string after)
         {
             var code = @"

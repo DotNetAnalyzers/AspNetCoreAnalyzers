@@ -43,6 +43,8 @@ namespace ValidCode
         }
 
         [TestCase("\"api/orders/{id:minlength(↓wrong))}\"")]
+        [TestCase("\"api/orders/{id:minlength(↓1a))}\"")]
+        [TestCase("\"api/orders/{id:minlength(↓a1))}\"")]
         [TestCase("\"api/orders/{id:maxlength(↓wrong))}\"")]
         [TestCase("\"api/orders/{id:regex(\\\\d):minlength(↓wrong))}\"")]
         [TestCase("@\"api/orders/{id:regex(\\d):minlength(↓wrong))}\"")]
@@ -67,8 +69,8 @@ namespace ValidCode
             AnalyzerAssert.Diagnostics(Analyzer, ExpectedDiagnostic, code);
         }
 
-        [TestCase("\"api/orders/{id:regex(\\\\d):minlength(wrong))}\"", 53, 58)]
-        [TestCase("@\"api/orders/{id:regex(\\d):minlength(wrong))}\"", 53, 56)]
+        [TestCase("\"api/orders/{id:regex(\\\\d):minlength(wrong)}\"", 54, 59)]
+        [TestCase("@\"api/orders/{id:regex(\\d):minlength(wrong)}\"", 54, 59)]
         public void WhenStringExplicitSpan(string before, int start, int end)
         {
             var code = @"

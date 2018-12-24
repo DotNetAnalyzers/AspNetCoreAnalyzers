@@ -335,7 +335,7 @@ namespace AspNetCoreAnalyzers
                     {
                         if (!char.IsDigit(text[i]))
                         {
-                            result = constraint.Span.GetLocation(i);
+                            result = constraint.Span.GetLocation(methodName.Length + 1, text.Length - methodName.Length - 2);
                             return true;
                         }
                     }
