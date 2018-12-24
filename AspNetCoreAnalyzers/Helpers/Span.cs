@@ -53,9 +53,9 @@ namespace AspNetCoreAnalyzers
             }
         }
 
-        public Location GetLocation() => Location.Create(this.literal.SyntaxTree, new TextSpan(this.literal.SpanStart + this.TextSpan.Start + 1, this.TextSpan.Length));
+        public Location GetLocation() => GetLocation(this.literal, this.TextSpan);
 
-        public Location GetLocation(int start) => Location.Create(this.literal.SyntaxTree, new TextSpan(this.literal.SpanStart + this.TextSpan.Start + start + 1, this.TextSpan.Length));
+        public Location GetLocation(int start) => Location.Create(this.literal.SyntaxTree, new TextSpan(this.literal.SpanStart + this.TextSpan.Start + start + 1, this.TextSpan.Length - start));
 
         public Location GetLocation(int start, int length) => Location.Create(this.literal.SyntaxTree, new TextSpan(this.literal.SpanStart + this.TextSpan.Start + start + 1, length));
 
@@ -82,6 +82,28 @@ namespace AspNetCoreAnalyzers
         internal Span Substring(int index)
         {
             return new Span(this.literal, this.TextSpan.Start + index, this.TextSpan.Start + index + this.TextSpan.Length);
+        }
+
+        private static Location GetLocation(LiteralExpressionSyntax literal, TextSpan textSpan)
+        {
+            var text = literal.Token.ValueText;
+            return Location.Create(literal.SyntaxTree, TextSpan.FromBounds(GetIndex(textSpan.Start), GetIndex(textSpan.End)));
+
+            int GetIndex(int pos)
+            {
+                var index = literal.SpanStart + 1;
+                for (var j = 0; j < pos; j++)
+                {
+                    if (text[j] == '\\')
+                    {
+                        index++;
+                    }
+
+                    index++;
+                }
+
+                return index;
+            }
         }
     }
 }
