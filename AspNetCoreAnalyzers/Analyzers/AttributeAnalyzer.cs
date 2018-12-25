@@ -366,6 +366,12 @@ namespace AspNetCoreAnalyzers
                                     if (NotEscaped())
                                     {
                                         escaped.Add(text[i]);
+                                        if (text[i] == '\\' &&
+                                            !segment.Span.IsVerbatim)
+                                        {
+                                            escaped.Add('\\');
+                                            escaped.Add('\\');
+                                        }
                                     }
                                 }
 

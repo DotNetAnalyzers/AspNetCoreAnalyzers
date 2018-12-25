@@ -7,18 +7,37 @@ namespace AspNetCoreAnalyzers
 
     public struct Span : IEquatable<Span>
     {
-        private readonly LiteralExpressionSyntax literal;
-
         public Span(LiteralExpressionSyntax literal, int start, int end)
         {
-            this.literal = literal;
+            this.Literal = literal;
             this.TextSpan = new TextSpan(start, end - start);
             this.Text = literal.Token.ValueText.Substring(start, end - start);
         }
 
+        public LiteralExpressionSyntax Literal { get; }
+
         public TextSpan TextSpan { get; }
 
         public string Text { get; }
+
+        public bool IsVerbatim
+        {
+            get
+            {
+                foreach (var c in this.Literal.Token.Text)
+                {
+                    switch (c)
+                    {
+                        case '"':
+                            return false;
+                        case '@':
+                            return true;
+                    }
+                }
+
+                return false;
+            }
+        }
 
         public static bool operator ==(Span left, Span right)
         {
@@ -32,7 +51,7 @@ namespace AspNetCoreAnalyzers
 
         public bool Equals(Span other)
         {
-            return this.literal.Equals(other.literal) && this.TextSpan == other.TextSpan;
+            return this.Literal.Equals(other.Literal) && this.TextSpan == other.TextSpan;
         }
 
         public override bool Equals(object obj)
@@ -45,7 +64,7 @@ namespace AspNetCoreAnalyzers
         {
             unchecked
             {
-                var hashCode = this.literal.GetHashCode();
+                var hashCode = this.Literal.GetHashCode();
                 hashCode = (hashCode * 397) ^ this.TextSpan.GetHashCode();
                 return hashCode;
             }
@@ -53,12 +72,12 @@ namespace AspNetCoreAnalyzers
 
         public override string ToString()
         {
-            return this.literal.Token.ValueText.Substring(this.TextSpan.Start, this.TextSpan.Length);
+            return this.Literal.Token.ValueText.Substring(this.TextSpan.Start, this.TextSpan.Length);
         }
 
-        public Location GetLocation() => GetLocation(this.literal, this.TextSpan);
+        public Location GetLocation() => GetLocation(this.Literal, this.TextSpan);
 
-        public Location GetLocation(int start, int length) => GetLocation(this.literal, new TextSpan(this.TextSpan.Start + start, length));
+        public Location GetLocation(int start, int length) => GetLocation(this.Literal, new TextSpan(this.TextSpan.Start + start, length));
 
         internal Span Slice(int start, int end)
         {
@@ -72,17 +91,17 @@ namespace AspNetCoreAnalyzers
                 throw new InvalidOperationException("Expected end to be less than TextSpan.End.");
             }
 
-            return new Span(this.literal, this.TextSpan.Start + start, this.TextSpan.Start + end);
+            return new Span(this.Literal, this.TextSpan.Start + start, this.TextSpan.Start + end);
         }
 
         internal Span Substring(int index, int length)
         {
-            return new Span(this.literal, this.TextSpan.Start + index, this.TextSpan.Start + index + length);
+            return new Span(this.Literal, this.TextSpan.Start + index, this.TextSpan.Start + index + length);
         }
 
         internal Span Substring(int index)
         {
-            return new Span(this.literal, this.TextSpan.Start + index, this.TextSpan.Start + index + this.TextSpan.Length);
+            return new Span(this.Literal, this.TextSpan.Start + index, this.TextSpan.Start + index + this.TextSpan.Length);
         }
 
         private static Location GetLocation(LiteralExpressionSyntax literal, TextSpan textSpan)
