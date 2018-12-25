@@ -335,7 +335,7 @@ namespace AspNetCoreAnalyzers
                     {
                         if (!char.IsDigit(text[i]))
                         {
-                            result = constraint.Span.GetLocation(i);
+                            result = constraint.Span.GetLocation(methodName.Length + 1, text.Length - methodName.Length - 2);
                             return true;
                         }
                     }
@@ -366,6 +366,12 @@ namespace AspNetCoreAnalyzers
                                     if (NotEscaped())
                                     {
                                         escaped.Add(text[i]);
+                                        if (text[i] == '\\' &&
+                                            !segment.Span.IsVerbatim)
+                                        {
+                                            escaped.Add('\\');
+                                            escaped.Add('\\');
+                                        }
                                     }
                                 }
 
