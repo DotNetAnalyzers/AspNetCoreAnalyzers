@@ -28,7 +28,7 @@ namespace ValidCode
 }".AssertReplace("api/orders/{id}", text));
             var literal = syntaxTree.FindLiteralExpression(text);
             Assert.AreEqual(true, UrlTemplate.TryParse(literal, out var template));
-            CollectionAssert.AreEqual(expected, template.Path.Select(x => x.Span.Text));
+            CollectionAssert.AreEqual(expected, template.Path.Select(x => x.Span.ToString()));
         }
 
         [TestCase("{id}",                 new[] { "{id}" })]
@@ -57,12 +57,12 @@ namespace ValidCode
 }".AssertReplace("api/orders/{id}", text));
             var literal = syntaxTree.FindLiteralExpression(text);
             Assert.AreEqual(true, UrlTemplate.TryParse(literal, out var template));
-            CollectionAssert.AreEqual(expected, template.Path.Select(x => x.Span.Text));
+            CollectionAssert.AreEqual(expected, template.Path.Select(x => x.Span.ToString()));
 
             // ReSharper disable once PossibleInvalidOperationException
             var parameter = template.Path.Single(x => x.Parameter.HasValue)
                                     .Parameter.Value;
-            Assert.AreEqual("id", parameter.Name.Text);
+            Assert.AreEqual("id", parameter.Name.ToString());
         }
 
         [TestCase("orders/{id?}",                  new[] { "orders", "{id?}" },                  new[] { "?" })]
@@ -90,13 +90,13 @@ namespace ValidCode
 }".AssertReplace("orders/{id}", text));
             var literal = syntaxTree.FindLiteralExpression(text);
             Assert.AreEqual(true, UrlTemplate.TryParse(literal, out var template));
-            CollectionAssert.AreEqual(segments, template.Path.Select(x => x.Span.Text));
+            CollectionAssert.AreEqual(segments, template.Path.Select(x => x.Span.ToString()));
 
             // ReSharper disable once PossibleInvalidOperationException
             var parameter = template.Path.Single(x => x.Parameter.HasValue)
                                     .Parameter.Value;
-            Assert.AreEqual("id", parameter.Name.Text);
-            CollectionAssert.AreEqual(constraints, parameter.Constraints.Select(x => x.Span.Text));
+            Assert.AreEqual("id", parameter.Name.ToString());
+            CollectionAssert.AreEqual(constraints, parameter.Constraints.Select(x => x.Span.ToString()));
         }
 
         [TestCase("orders/{id}",                                         new[] { "orders", "{id}" },                                   new string[0])]
@@ -131,13 +131,13 @@ namespace ValidCode
 }".AssertReplace("orders/{id}", text));
             var literal = syntaxTree.FindLiteralExpression(text);
             Assert.AreEqual(true, UrlTemplate.TryParse(literal, out var template));
-            CollectionAssert.AreEqual(segments, template.Path.Select(x => x.Span.Text));
+            CollectionAssert.AreEqual(segments, template.Path.Select(x => x.Span.ToString()));
 
             // ReSharper disable once PossibleInvalidOperationException
             var parameter = template.Path.Single(x => x.Parameter.HasValue)
                                     .Parameter.Value;
-            Assert.AreEqual("id", parameter.Name.Text);
-            CollectionAssert.AreEqual(constraints, parameter.Constraints.Select(x => x.Span.Text)
+            Assert.AreEqual("id", parameter.Name.ToString());
+            CollectionAssert.AreEqual(constraints, parameter.Constraints.Select(x => x.Span.ToString())
                                                             .ToArray());
         }
 
@@ -163,13 +163,13 @@ namespace ValidCode
 }".AssertReplace("orders/{id}", text));
             var literal = syntaxTree.FindLiteralExpression(text);
             Assert.AreEqual(true, UrlTemplate.TryParse(literal, out var template));
-            CollectionAssert.AreEqual(segments, template.Path.Select(x => x.Span.Text));
+            CollectionAssert.AreEqual(segments, template.Path.Select(x => x.Span.ToString()));
 
             // ReSharper disable once PossibleInvalidOperationException
             var parameter = template.Path.Single(x => x.Parameter.HasValue)
                                     .Parameter.Value;
-            Assert.AreEqual("id", parameter.Name.Text);
-            CollectionAssert.AreEqual(constraints, parameter.Constraints.Select(x => x.Span.Text));
+            Assert.AreEqual("id", parameter.Name.ToString());
+            CollectionAssert.AreEqual(constraints, parameter.Constraints.Select(x => x.Span.ToString()));
         }
     }
 }

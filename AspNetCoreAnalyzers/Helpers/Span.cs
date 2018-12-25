@@ -1,12 +1,10 @@
 namespace AspNetCoreAnalyzers
 {
     using System;
-    using System.Diagnostics;
     using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
     using Microsoft.CodeAnalysis.Text;
 
-    [DebuggerDisplay("{this.Text}")]
     public struct Span : IEquatable<Span>
     {
         private readonly LiteralExpressionSyntax literal;
@@ -51,6 +49,11 @@ namespace AspNetCoreAnalyzers
                 hashCode = (hashCode * 397) ^ this.TextSpan.GetHashCode();
                 return hashCode;
             }
+        }
+
+        public override string ToString()
+        {
+            return this.literal.Token.ValueText.Substring(this.TextSpan.Start, this.TextSpan.Length);
         }
 
         public Location GetLocation() => GetLocation(this.literal, this.TextSpan);
