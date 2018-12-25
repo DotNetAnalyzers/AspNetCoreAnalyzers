@@ -12,8 +12,9 @@ namespace AspNetCoreAnalyzers.Tests.ASP002MissingParameterTests
         private static readonly CodeFixProvider Fix = new TemplateTextFix();
 
         [TestCase("\"api/{↓value}\"",       "\"api/{text}\"")]
+        [TestCase("@\"api/{↓value}\"",      "@\"api/{text}\"")]
         [TestCase("\"api/{↓value:alpha}\"", "\"api/{text:alpha}\"")]
-        public void WhenWrongName(string before, string after)
+        public void When(string before, string after)
         {
             var code = @"
 namespace ValidCode

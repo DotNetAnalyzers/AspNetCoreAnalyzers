@@ -8,6 +8,32 @@ namespace AspNetCoreAnalyzers.Tests.ASP002MissingParameterTests
     {
         private static readonly DiagnosticAnalyzer Analyzer = new AttributeAnalyzer();
 
+        [TestCase("\"api/{text}\"")]
+        [TestCase("@\"api/{text}\"")]
+        [TestCase("\"api/{text:alpha}\"")]
+        public void When(string after)
+        {
+            var code = @"
+namespace ValidCode
+{
+    using System.Threading.Tasks;
+    using Microsoft.AspNetCore.Mvc;
+    using Microsoft.EntityFrameworkCore;
+
+    [ApiController]
+    public class OrdersController : Controller
+    {
+        [HttpGet(""api/{text}"")]
+        public IActionResult GetValue(string text)
+        {
+            return this.Ok(text);
+        }
+    }
+}".AssertReplace("\"api/{text}\"", after);
+
+            AnalyzerAssert.Valid(Analyzer, code);
+        }
+
         [Test]
         public void ImplicitFromRoute()
         {
