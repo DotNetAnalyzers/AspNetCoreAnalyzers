@@ -84,20 +84,43 @@ namespace AspNetCoreAnalyzers
 
         private static Location GetLocation(LiteralExpressionSyntax literal, TextSpan textSpan)
         {
-            var text = literal.Token.ValueText;
-            return Location.Create(literal.SyntaxTree, TextSpan.FromBounds(GetIndex(textSpan.Start), GetIndex(textSpan.End)));
+            var text = literal.Token.Text;
+            var start = 0;
+            var verbatim = false;
+            while (start < 3)
+            {
+                if (text[start] == '"')
+                {
+                    start++;
+                    break;
+                }
+
+                if (text[start] == '@')
+                {
+                    verbatim = true;
+                }
+
+                start++;
+            }
+
+            return Location.Create(
+                literal.SyntaxTree,
+                verbatim
+                    ? new TextSpan(literal.SpanStart + start + textSpan.Start, textSpan.Length)
+                    : TextSpan.FromBounds(GetIndex(textSpan.Start), GetIndex(textSpan.End)));
 
             int GetIndex(int pos)
             {
-                var index = literal.SpanStart + 1;
-                for (var j = 0; j < pos; j++)
+                var index = literal.SpanStart + start;
+                for (var i = start; i < pos + start; i++)
                 {
-                    if (text[j] == '\\')
-                    {
-                        index++;
-                    }
-
                     index++;
+                    if (text[i] == '\\' &&
+                        text[i + 1] == '\\')
+                    {
+                        i++;
+                        index += 2;
+                    }
                 }
 
                 return index;
