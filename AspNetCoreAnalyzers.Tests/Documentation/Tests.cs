@@ -12,6 +12,7 @@ namespace AspNetCoreAnalyzers.Tests.Documentation
     using System.Text;
     using Gu.Roslyn.AnalyzerExtensions;
     using Gu.Roslyn.Asserts;
+    using Gu.Roslyn.CodeFixExtensions;
     using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.Diagnostics;
     using NUnit.Framework;
@@ -131,37 +132,37 @@ namespace AspNetCoreAnalyzers.Tests.Documentation
         private static string CreateStub(DescriptorInfo descriptorInfo)
         {
             var descriptor = descriptorInfo.Descriptor;
-            var stub = @"# {ID}
-## ADD TITLE HERE
+            var stub = $@"# {descriptor.Id}
+## {descriptor.Title.ToString(CultureInfo.InvariantCulture)}
 
 <!-- start generated table -->
 <table>
   <tr>
     <td>CheckId</td>
-    <td>{ID}</td>
+    <td>{descriptor.Id}</td>
   </tr>
   <tr>
     <td>Severity</td>
-    <td>{SEVERITY}</td>
+    <td>{descriptor.DefaultSeverity.ToString()}</td>
   </tr>
   <tr>
     <td>Enabled</td>
-    <td>{ENABLED}</td>
+    <td>{(descriptor.IsEnabledByDefault ? "True" : "False")}</td>
   </tr>
   <tr>
     <td>Category</td>
-    <td>{CATEGORY}</td>
+    <td>{descriptor.Category}</td>
   </tr>
   <tr>
     <td>Code</td>
-    <td><a href=""{URL}"">{TYPENAME}</a></td>
+    <td><a href=""<URL>""><TYPENAME></a></td>
   </tr>
 </table>
 <!-- end generated table -->
 
 ## Description
 
-ADD DESCRIPTION HERE
+{descriptor.Description.ToString(CultureInfo.InvariantCulture)}
 
 ## Motivation
 
@@ -180,35 +181,28 @@ Configure the severity per project, for more info see [MSDN](https://msdn.micros
 
 ### Via #pragma directive.
 ```C#
-#pragma warning disable {ID} // {TITLE}
+#pragma warning disable {descriptor.Id} // {descriptor.Title.ToString(CultureInfo.InvariantCulture)}
 Code violating the rule here
-#pragma warning restore {ID} // {TITLE}
+#pragma warning restore {descriptor.Id} // {descriptor.Title.ToString(CultureInfo.InvariantCulture)}
 ```
 
 Or put this at the top of the file to disable all instances.
 ```C#
-#pragma warning disable {ID} // {TITLE}
+#pragma warning disable {descriptor.Id} // {descriptor.Title.ToString(CultureInfo.InvariantCulture)}
 ```
 
 ### Via attribute `[SuppressMessage]`.
 
 ```C#
-[System.Diagnostics.CodeAnalysis.SuppressMessage(""{CATEGORY}"", 
-    ""{ID}:{TITLE}"", 
+[System.Diagnostics.CodeAnalysis.SuppressMessage(""{descriptor.Category}"", 
+    ""{descriptor.Id}:{descriptor.Title.ToString(CultureInfo.InvariantCulture)}"", 
     Justification = ""Reason..."")]
 ```
-<!-- end generated config severity -->"
-                             .AssertReplace("{ID}", descriptor.Id)
-                             .AssertReplace("## ADD TITLE HERE", $"## {descriptor.Title.ToString(CultureInfo.InvariantCulture)}")
-                             .AssertReplace("{SEVERITY}", descriptor.DefaultSeverity.ToString())
-                             .AssertReplace("{ENABLED}", descriptor.IsEnabledByDefault ? "true" : "false")
-                             .AssertReplace("{CATEGORY}", descriptor.Category)
-                             .AssertReplace("ADD DESCRIPTION HERE", descriptor.Description.ToString(CultureInfo.InvariantCulture))
-                             .AssertReplace("{TITLE}", descriptor.Title.ToString(CultureInfo.InvariantCulture));
+<!-- end generated config severity -->";
             if (Analyzers.Count(x => x.SupportedDiagnostics.Any(d => d.Id == descriptor.Id)) == 1)
             {
-                return stub.AssertReplace("{TYPENAME}", descriptorInfo.Analyzer.GetType().Name)
-                           .AssertReplace("{URL}", descriptorInfo.CodeFileUri);
+                return stub.AssertReplace("<TYPENAME>", descriptorInfo.Analyzer.GetType().Name)
+                           .AssertReplace("<URL>", descriptorInfo.CodeFileUri);
             }
 
             var builder = StringBuilderPool.Borrow();
