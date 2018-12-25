@@ -10,6 +10,34 @@ namespace AspNetCoreAnalyzers.Tests.ASP001ParameterNameTests
         private static readonly DiagnosticAnalyzer Analyzer = new AttributeAnalyzer();
         private static readonly DiagnosticDescriptor Descriptor = ASP001ParameterName.Descriptor;
 
+        [TestCase("@\"{value}\"")]
+        [TestCase("\"{value}\"")]
+        [TestCase("\"{value?}\"")]
+        [TestCase("@\"{value?}\"")]
+        [TestCase("\"api/orders/{value}\"")]
+        [TestCase("\"api/orders/{value?}\"")]
+        [TestCase("\"api/orders/{value:alpha}\"")]
+        [TestCase("\"api/orders/{value:regex(a-(0|1))}\"")]
+        public void When(string template)
+        {
+            var code = @"
+namespace ValidCode
+{
+    using Microsoft.AspNetCore.Mvc;
+
+    [ApiController]
+    public class OrdersController : Controller
+    {
+        [HttpGet(""api/orders/{value}"")]
+        public IActionResult GetId(string value)
+        {
+            return this.Ok(value);
+        }
+    }
+}".AssertReplace("\"api/orders/{value}\"", template);
+            AnalyzerAssert.Valid(Analyzer,  code);
+        }
+
         [Test]
         public void ImplicitFromRoute()
         {

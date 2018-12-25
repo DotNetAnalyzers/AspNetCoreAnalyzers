@@ -33,6 +33,8 @@ namespace AspNetCoreAnalyzers.Tests.ASP005ParameterRegexTests
         [TestCase("\"api/orders/{value:alpha}\"",                                                 "string")]
         [TestCase("\"api/orders/{value:regex(a-(0|1))}\"",                                        "string")]
         [TestCase("\"api/orders/{value:regex(^\\\\\\\\d{{3}}-\\\\\\\\d{{2}}-\\\\\\\\d{{4}}$)}\"", "string")]
+        [TestCase("@\"api/orders/{value:regex(^\\\\\\\\d{{3}}-\\\\\\\\d{{2}}-\\\\\\\\d{{4}}$)}\"", "string")]
+        [TestCase("@\"api/orders/{value:regex(^\\\\d{{3}}-\\\\d{{2}}-\\\\d{{4}}$)}\"", "string")]
         [TestCase("\"api/orders/{value:required}\"",                                              "string")]
         public void WithParameter(string parameter, string type)
         {

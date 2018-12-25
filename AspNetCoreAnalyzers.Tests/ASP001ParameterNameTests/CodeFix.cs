@@ -11,6 +11,51 @@ namespace AspNetCoreAnalyzers.Tests.ASP001ParameterNameTests
         private static readonly ExpectedDiagnostic ExpectedDiagnostic = ExpectedDiagnostic.Create(ASP001ParameterName.Descriptor);
         private static readonly CodeFixProvider Fix = new ParameterNameFix();
 
+        [TestCase("@\"{value}\"")]
+        [TestCase("\"{value}\"")]
+        [TestCase("\"{value?}\"")]
+        [TestCase("@\"{value?}\"")]
+        [TestCase("\"api/orders/{value}\"")]
+        [TestCase("\"api/orders/{value?}\"")]
+        [TestCase("\"api/orders/{value:alpha}\"")]
+        [TestCase("\"api/orders/{value:regex(a-(0|1))}\"")]
+        [TestCase("\"api/orders/{value:regex(^\\\\d{{3}}-\\\\d{{2}}-\\\\d{4}$)}\"")]
+        public void When(string template)
+        {
+            var code = @"
+namespace ValidCode
+{
+    using Microsoft.AspNetCore.Mvc;
+
+    [ApiController]
+    public class OrdersController : Controller
+    {
+        [HttpGet(""api/orders/{value}"")]
+        public IActionResult GetId(string ↓wrong)
+        {
+            return this.Ok(wrong);
+        }
+    }
+}".AssertReplace("\"api/orders/{value}\"", template);
+
+            var fixedCode = @"
+namespace ValidCode
+{
+    using Microsoft.AspNetCore.Mvc;
+
+    [ApiController]
+    public class OrdersController : Controller
+    {
+        [HttpGet(""api/orders/{value}"")]
+        public IActionResult GetId(string value)
+        {
+            return this.Ok(value);
+        }
+    }
+}".AssertReplace("\"api/orders/{value}\"", template);
+            AnalyzerAssert.CodeFix(Analyzer, Fix, ExpectedDiagnostic, code, fixedCode);
+        }
+
         [Test]
         public void ImplicitSingleParameter()
         {
