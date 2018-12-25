@@ -131,7 +131,73 @@ namespace AspNetCoreAnalyzers.Tests.Documentation
         private static string CreateStub(DescriptorInfo descriptorInfo)
         {
             var descriptor = descriptorInfo.Descriptor;
-            var stub = Properties.Resources.DiagnosticDocTemplate
+            var stub = @"# {ID}
+## ADD TITLE HERE
+
+<!-- start generated table -->
+<table>
+  <tr>
+    <td>CheckId</td>
+    <td>{ID}</td>
+  </tr>
+  <tr>
+    <td>Severity</td>
+    <td>{SEVERITY}</td>
+  </tr>
+  <tr>
+    <td>Enabled</td>
+    <td>{ENABLED}</td>
+  </tr>
+  <tr>
+    <td>Category</td>
+    <td>{CATEGORY}</td>
+  </tr>
+  <tr>
+    <td>Code</td>
+    <td><a href=""{URL}"">{TYPENAME}</a></td>
+  </tr>
+</table>
+<!-- end generated table -->
+
+## Description
+
+ADD DESCRIPTION HERE
+
+## Motivation
+
+ADD MOTIVATION HERE
+
+## How to fix violations
+
+ADD HOW TO FIX VIOLATIONS HERE
+
+<!-- start generated config severity -->
+## Configure severity
+
+### Via ruleset file.
+
+Configure the severity per project, for more info see [MSDN](https://msdn.microsoft.com/en-us/library/dd264949.aspx).
+
+### Via #pragma directive.
+```C#
+#pragma warning disable {ID} // {TITLE}
+Code violating the rule here
+#pragma warning restore {ID} // {TITLE}
+```
+
+Or put this at the top of the file to disable all instances.
+```C#
+#pragma warning disable {ID} // {TITLE}
+```
+
+### Via attribute `[SuppressMessage]`.
+
+```C#
+[System.Diagnostics.CodeAnalysis.SuppressMessage(""{CATEGORY}"", 
+    ""{ID}:{TITLE}"", 
+    Justification = ""Reason..."")]
+```
+<!-- end generated config severity -->"
                              .AssertReplace("{ID}", descriptor.Id)
                              .AssertReplace("## ADD TITLE HERE", $"## {descriptor.Title.ToString(CultureInfo.InvariantCulture)}")
                              .AssertReplace("{SEVERITY}", descriptor.DefaultSeverity.ToString())
