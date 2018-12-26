@@ -4,9 +4,9 @@ namespace AspNetCoreAnalyzers
     using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.Text;
 
-    public struct StringLiteralSpan : IEquatable<StringLiteralSpan>
+    public struct Span : IEquatable<Span>
     {
-        public StringLiteralSpan(StringLiteral literal, int start, int end)
+        public Span(StringLiteral literal, int start, int end)
         {
             this.Literal = literal;
             this.TextSpan = new TextSpan(start, end - start);
@@ -20,24 +20,24 @@ namespace AspNetCoreAnalyzers
 
         public char this[int index] => this.Literal.ValueText[this.TextSpan.Start + index];
 
-        public static bool operator ==(StringLiteralSpan left, StringLiteralSpan right)
+        public static bool operator ==(Span left, Span right)
         {
             return left.Equals(right);
         }
 
-        public static bool operator !=(StringLiteralSpan left, StringLiteralSpan right)
+        public static bool operator !=(Span left, Span right)
         {
             return !left.Equals(right);
         }
 
-        public bool Equals(StringLiteralSpan other)
+        public bool Equals(Span other)
         {
             return this.Literal.Equals(other.Literal) && this.TextSpan == other.TextSpan;
         }
 
         public override bool Equals(object obj)
         {
-            return obj is StringLiteralSpan other &&
+            return obj is Span other &&
                    this.Equals(other);
         }
 
@@ -59,7 +59,7 @@ namespace AspNetCoreAnalyzers
 
         public Location GetLocation(int start, int length) => this.Literal.GetLocation(new TextSpan(this.TextSpan.Start + start, length));
 
-        internal StringLiteralSpan Slice(int start, int end)
+        internal Span Slice(int start, int end)
         {
             if (start > end)
             {
@@ -71,12 +71,12 @@ namespace AspNetCoreAnalyzers
                 throw new InvalidOperationException("Expected end to be less than TextSpan.End.");
             }
 
-            return new StringLiteralSpan(this.Literal, this.TextSpan.Start + start, this.TextSpan.Start + end);
+            return new Span(this.Literal, this.TextSpan.Start + start, this.TextSpan.Start + end);
         }
 
-        internal StringLiteralSpan Substring(int index, int length)
+        internal Span Substring(int index, int length)
         {
-            return new StringLiteralSpan(this.Literal, this.TextSpan.Start + index, this.TextSpan.Start + index + length);
+            return new Span(this.Literal, this.TextSpan.Start + index, this.TextSpan.Start + index + length);
         }
 
         internal int IndexOf(char value, int startIndex = 0)
@@ -115,13 +115,13 @@ namespace AspNetCoreAnalyzers
 
         internal bool StartsWith(string value, StringComparison comparisonType)
         {
-            return this.Literal.ValueText.IndexOf(value, this.TextSpan.Start, comparisonType) == this.TextSpan.Start;
+            return this.Literal.ValueText.IndexOf(value, this.TextSpan.Start, value.Length, comparisonType) == this.TextSpan.Start;
         }
 
         internal bool EndsWith(string value, StringComparison comparisonType)
         {
             var start = this.TextSpan.End - value.Length;
-            return this.Literal.ValueText.IndexOf(value, start, comparisonType) == start;
+            return this.Literal.ValueText.IndexOf(value, start, value.Length, comparisonType) == start;
         }
     }
 }

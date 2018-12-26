@@ -201,7 +201,7 @@ namespace AspNetCoreAnalyzers
             correctType = null;
             return false;
 
-            bool TryGetType(StringLiteralSpan constraint, out QualifiedType type)
+            bool TryGetType(Span constraint, out QualifiedType type)
             {
                 if (constraint.Equals("bool", StringComparison.Ordinal))
                 {

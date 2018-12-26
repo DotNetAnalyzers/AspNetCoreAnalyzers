@@ -2,7 +2,7 @@ namespace AspNetCoreAnalyzers
 {
     public static class Text
     {
-        public static void SkipWhiteSpace(StringLiteralSpan text, ref int pos)
+        public static void SkipWhiteSpace(Span text, ref int pos)
         {
             while (pos < text.Length &&
                    text[pos] == ' ')
@@ -20,7 +20,7 @@ namespace AspNetCoreAnalyzers
             }
         }
 
-        public static bool TrySkipPast(StringLiteralSpan text, ref int pos, string substring)
+        public static bool TrySkipPast(Span text, ref int pos, string substring)
         {
             var before = pos;
             while (pos + substring.Length <= text.Length)
@@ -56,7 +56,7 @@ namespace AspNetCoreAnalyzers
             return false;
         }
 
-        public static void BackWhiteSpace(StringLiteralSpan text, ref int pos)
+        public static void BackWhiteSpace(Span text, ref int pos)
         {
             while (pos >= 0 &&
                    text[pos] == ' ')
@@ -65,7 +65,7 @@ namespace AspNetCoreAnalyzers
             }
         }
 
-        private static bool IsAt(StringLiteralSpan text, int pos, string substring)
+        private static bool IsAt(Span text, int pos, string substring)
         {
             for (var i = 0; i < substring.Length; i++)
             {

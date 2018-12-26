@@ -7,13 +7,13 @@ namespace AspNetCoreAnalyzers
     [DebuggerDisplay("{this.Name.ToString()}")]
     public struct TemplateParameter : IEquatable<TemplateParameter>
     {
-        public TemplateParameter(StringLiteralSpan name, ImmutableArray<RouteConstraint> constraints)
+        public TemplateParameter(Span name, ImmutableArray<RouteConstraint> constraints)
         {
             this.Name = name;
             this.Constraints = constraints;
         }
 
-        public StringLiteralSpan Name { get; }
+        public Span Name { get; }
 
         public ImmutableArray<RouteConstraint> Constraints { get; }
 
@@ -27,7 +27,7 @@ namespace AspNetCoreAnalyzers
             return !left.Equals(right);
         }
 
-        public static bool TryParse(StringLiteralSpan span, out TemplateParameter result)
+        public static bool TryParse(Span span, out TemplateParameter result)
         {
             var start = span.IndexOf('{');
             if (start < 0 ||

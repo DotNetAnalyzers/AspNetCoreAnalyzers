@@ -7,13 +7,13 @@ namespace AspNetCoreAnalyzers
     {
         public PathSegment(StringLiteral literal, int start, int end)
         {
-            this.Span = new StringLiteralSpan(literal, start, end);
+            this.Span = new Span(literal, start, end);
             this.Parameter = TemplateParameter.TryParse(this.Span, out var parameter)
                 ? parameter
                 : (TemplateParameter?)null;
         }
 
-        public StringLiteralSpan Span { get; }
+        public Span Span { get; }
 
         public TemplateParameter? Parameter { get; }
 
