@@ -1,6 +1,5 @@
 namespace AspNetCoreAnalyzers
 {
-    using System;
     using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
     using Microsoft.CodeAnalysis.Text;
@@ -13,10 +12,6 @@ namespace AspNetCoreAnalyzers
         }
 
         public LiteralExpressionSyntax LiteralExpression { get; }
-
-        public ReadOnlySpan<char> Text => this.LiteralExpression.Token.Text.AsSpan();
-
-        public ReadOnlySpan<char> ValueText => this.LiteralExpression.Token.ValueText.AsSpan();
 
         public bool IsVerbatim
         {

@@ -2,7 +2,6 @@ namespace AspNetCoreAnalyzers
 {
     using System;
     using Microsoft.CodeAnalysis;
-    using Microsoft.CodeAnalysis.CSharp.Syntax;
     using Microsoft.CodeAnalysis.Text;
 
     public struct StringLiteralSpan : IEquatable<StringLiteralSpan>
