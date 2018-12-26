@@ -367,7 +367,7 @@ namespace AspNetCoreAnalyzers
                                     {
                                         escaped.Add(text[i]);
                                         if (text[i] == '\\' &&
-                                            !segment.Span.IsVerbatim)
+                                            !segment.Span.Literal.IsVerbatim)
                                         {
                                             escaped.Add('\\');
                                             escaped.Add('\\');

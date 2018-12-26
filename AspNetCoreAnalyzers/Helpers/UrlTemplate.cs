@@ -39,7 +39,7 @@ namespace AspNetCoreAnalyzers
             {
                 var builder = ImmutableArray.CreateBuilder<PathSegment>();
                 var pos = 0;
-                while (PathSegment.TryRead(literal, pos, out var component))
+                while (PathSegment.TryRead(new StringLiteral(literal), pos, out var component))
                 {
                     builder.Add(component);
                     pos = component.Span.TextSpan.End;

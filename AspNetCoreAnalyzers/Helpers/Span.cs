@@ -7,37 +7,18 @@ namespace AspNetCoreAnalyzers
 
     public struct Span : IEquatable<Span>
     {
-        public Span(LiteralExpressionSyntax literal, int start, int end)
+        public Span(StringLiteral literal, int start, int end)
         {
             this.Literal = literal;
             this.TextSpan = new TextSpan(start, end - start);
-            this.Text = literal.Token.ValueText.Substring(start, end - start);
+            this.Text = literal.LiteralExpression.Token.ValueText.Substring(this.TextSpan.Start, this.TextSpan.Length);
         }
 
-        public LiteralExpressionSyntax Literal { get; }
+        public StringLiteral Literal { get; }
 
         public TextSpan TextSpan { get; }
 
         public string Text { get; }
-
-        public bool IsVerbatim
-        {
-            get
-            {
-                foreach (var c in this.Literal.Token.Text)
-                {
-                    switch (c)
-                    {
-                        case '"':
-                            return false;
-                        case '@':
-                            return true;
-                    }
-                }
-
-                return false;
-            }
-        }
 
         public static bool operator ==(Span left, Span right)
         {
@@ -70,14 +51,11 @@ namespace AspNetCoreAnalyzers
             }
         }
 
-        public override string ToString()
-        {
-            return this.Literal.Token.ValueText.Substring(this.TextSpan.Start, this.TextSpan.Length);
-        }
+        public override string ToString() => this.Literal.LiteralExpression.Token.ValueText.Substring(this.TextSpan.Start, this.TextSpan.Length);
 
-        public Location GetLocation() => GetLocation(this.Literal, this.TextSpan);
+        public Location GetLocation() => this.Literal.GetLocation(this.TextSpan);
 
-        public Location GetLocation(int start, int length) => GetLocation(this.Literal, new TextSpan(this.TextSpan.Start + start, length));
+        public Location GetLocation(int start, int length) => this.Literal.GetLocation(new TextSpan(this.TextSpan.Start + start, length));
 
         internal Span Slice(int start, int end)
         {

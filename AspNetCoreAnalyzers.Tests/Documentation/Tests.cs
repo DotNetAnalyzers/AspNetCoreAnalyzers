@@ -12,7 +12,6 @@ namespace AspNetCoreAnalyzers.Tests.Documentation
     using System.Text;
     using Gu.Roslyn.AnalyzerExtensions;
     using Gu.Roslyn.Asserts;
-    using Gu.Roslyn.CodeFixExtensions;
     using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.Diagnostics;
     using NUnit.Framework;
