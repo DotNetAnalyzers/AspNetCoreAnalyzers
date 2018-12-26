@@ -3,7 +3,7 @@ namespace AspNetCoreAnalyzers
     using System;
     using System.Diagnostics;
 
-    [DebuggerDisplay("{this.Span.Text}")]
+    [DebuggerDisplay("{this.Span.ToString()}")]
     public struct RouteConstraint : IEquatable<RouteConstraint>
     {
         public RouteConstraint(StringLiteralSpan span)
@@ -26,7 +26,7 @@ namespace AspNetCoreAnalyzers
         public static bool TryRead(StringLiteralSpan span, int pos, out RouteConstraint constraint)
         {
             if (pos >= span.TextSpan.End ||
-                span.Text[pos] != ':')
+                span[pos] != ':')
             {
                 constraint = default(RouteConstraint);
                 return false;
@@ -35,10 +35,10 @@ namespace AspNetCoreAnalyzers
             pos++;
             for (var i = pos; i < span.TextSpan.Length; i++)
             {
-                switch (span.Text[i])
+                switch (span[i])
                 {
-                    case '(' when Text.TrySkipPast(span.Text, ref i, "):") ||
-                                  Text.TrySkipPast(span.Text, ref i, ")}"):
+                    case '(' when Text.TrySkipPast(span, ref i, "):") ||
+                                  Text.TrySkipPast(span, ref i, ")}"):
                         constraint = new RouteConstraint(span.Slice(pos, i - 1));
                         return true;
                     case '}':

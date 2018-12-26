@@ -36,10 +36,10 @@ namespace AspNetCoreAnalyzers
             {
                 using (var pairs = GetPairs(template, method))
                 {
-                    if (pairs.TrySingle(x => x.Template == null, out var withMethodParameter) &&
-                        methodDeclaration.TryFindParameter(withMethodParameter.Method.Name, out var parameterSyntax) &&
-                        pairs.TrySingle(x => x.Method == null, out var withTemplateParameter) &&
-                        withTemplateParameter.Template is TemplateParameter templateParameter)
+                    if (pairs.TrySingle(x => x.FromTemplate == null, out var withMethodParameter) &&
+                        methodDeclaration.TryFindParameter(withMethodParameter.FromMethodSymbol.Name, out var parameterSyntax) &&
+                        pairs.TrySingle(x => x.FromMethodSymbol == null, out var withTemplateParameter) &&
+                        withTemplateParameter.FromTemplate is TemplateParameter templateParameter)
                     {
                         context.ReportDiagnostic(
                             Diagnostic.Create(
@@ -47,7 +47,7 @@ namespace AspNetCoreAnalyzers
                                 parameterSyntax.Identifier.GetLocation(),
                                 ImmutableDictionary<string, string>.Empty.Add(
                                     nameof(NameSyntax),
-                                    templateParameter.Name.Text)));
+                                    templateParameter.Name.ToString())));
 
                         context.ReportDiagnostic(
                             Diagnostic.Create(
@@ -55,10 +55,10 @@ namespace AspNetCoreAnalyzers
                                 templateParameter.Name.GetLocation(),
                                 ImmutableDictionary<string, string>.Empty.Add(
                                     nameof(Text),
-                                    withMethodParameter.Method.Name)));
+                                    withMethodParameter.FromMethodSymbol.Name)));
                     }
-                    else if (pairs.Count(x => x.Template == null) > 1 &&
-                             pairs.Count(x => x.Method == null) > 1)
+                    else if (pairs.Count(x => x.FromTemplate == null) > 1 &&
+                             pairs.Count(x => x.FromMethodSymbol == null) > 1)
                     {
                         context.ReportDiagnostic(
                             Diagnostic.Create(
@@ -66,8 +66,8 @@ namespace AspNetCoreAnalyzers
                                 methodDeclaration.ParameterList.GetLocation()));
                     }
 
-                    if (pairs.TryFirst(x => x.Method == null, out _) &&
-                        !pairs.TryFirst(x => x.Template == null, out _))
+                    if (pairs.TryFirst(x => x.FromMethodSymbol == null, out _) &&
+                        !pairs.TryFirst(x => x.FromTemplate == null, out _))
                     {
                         context.ReportDiagnostic(
                             Diagnostic.Create(
@@ -78,7 +78,7 @@ namespace AspNetCoreAnalyzers
                     foreach (var pair in pairs)
                     {
                         if (HasWrongType(pair, out var typeName) &&
-                            methodDeclaration.TryFindParameter(pair.Method?.Name, out parameterSyntax))
+                            methodDeclaration.TryFindParameter(pair.FromMethodSymbol?.Name, out parameterSyntax))
                         {
                             context.ReportDiagnostic(
                                 Diagnostic.Create(
@@ -164,7 +164,7 @@ namespace AspNetCoreAnalyzers
             {
                 if (IsFromRoute(parameter))
                 {
-                    list.Add(template.Path.TrySingle(x => x.Parameter?.Name.Text == parameter.Name, out var templateParameter)
+                    list.Add(template.Path.TrySingle(x => x.Parameter?.Name.Equals(parameter.Name, StringComparison.Ordinal) == true, out var templateParameter)
                                  ? new ParameterPair(templateParameter.Parameter, parameter)
                                  : new ParameterPair(null, parameter));
                 }
@@ -173,7 +173,7 @@ namespace AspNetCoreAnalyzers
             foreach (var component in template.Path)
             {
                 if (component.Parameter is TemplateParameter templateParameter &&
-                    list.All(x => x.Template != templateParameter))
+                    list.All(x => x.FromTemplate != templateParameter))
                 {
                     list.Add(new ParameterPair(templateParameter, null));
                 }
@@ -184,13 +184,13 @@ namespace AspNetCoreAnalyzers
 
         private static bool HasWrongType(ParameterPair pair, out string correctType)
         {
-            if (pair.Template?.Constraints is ImmutableArray<RouteConstraint> constraints &&
-                pair.Method is IParameterSymbol parameter)
+            if (pair.FromTemplate?.Constraints is ImmutableArray<RouteConstraint> constraints &&
+                pair.FromMethodSymbol is IParameterSymbol parameter)
             {
                 foreach (var constraint in constraints)
                 {
                     // https://docs.microsoft.com/en-us/aspnet/core/fundamentals/routing?view=aspnetcore-2.2#route-constraint-reference
-                    if (TryGetType(constraint.Span.Text, out var type))
+                    if (TryGetType(constraint.Span, out var type))
                     {
                         correctType = parameter.Type == type ? null : type.Alias ?? type.FullName;
                         return correctType != null;
@@ -201,7 +201,7 @@ namespace AspNetCoreAnalyzers
             correctType = null;
             return false;
 
-            bool TryGetType(string constraint, out QualifiedType type)
+            bool TryGetType(StringLiteralSpan constraint, out QualifiedType type)
             {
                 if (constraint.Equals("bool", StringComparison.Ordinal))
                 {
@@ -275,7 +275,7 @@ namespace AspNetCoreAnalyzers
             {
                 foreach (var constraint in parameter.Constraints)
                 {
-                    var text = constraint.Span.Text;
+                    var text = constraint.Span;
                     if (text.StartsWith("min(", StringComparison.OrdinalIgnoreCase) ||
                         text.StartsWith("max(", StringComparison.OrdinalIgnoreCase) ||
                         text.StartsWith("minlength(", StringComparison.OrdinalIgnoreCase) ||
@@ -328,7 +328,7 @@ namespace AspNetCoreAnalyzers
             }
             else
             {
-                var text = segment.Span.Text;
+                var text = segment.Span;
                 if (text.StartsWith("{", StringComparison.Ordinal) &&
                     !text.EndsWith("}", StringComparison.Ordinal))
                 {
@@ -352,7 +352,7 @@ namespace AspNetCoreAnalyzers
 
             bool HasWrongIntArgumentSyntax(RouteConstraint constraint, string methodName, out Location result)
             {
-                var text = constraint.Span.Text;
+                var text = constraint.Span;
                 if (text.Length > methodName.Length + 2 &&
                     text.StartsWith(methodName, StringComparison.OrdinalIgnoreCase) &&
                     text[methodName.Length] == '(' &&
@@ -379,7 +379,7 @@ namespace AspNetCoreAnalyzers
             {
                 foreach (var constraint in parameter.Constraints)
                 {
-                    var text = constraint.Span.Text;
+                    var text = constraint.Span;
                     if (text.StartsWith("regex(", StringComparison.OrdinalIgnoreCase))
                     {
                         for (var i = 6; i < text.Length - 1; i++)

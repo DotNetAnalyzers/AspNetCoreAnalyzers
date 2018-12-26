@@ -1,17 +1,19 @@
 namespace AspNetCoreAnalyzers
 {
+    using System.Diagnostics;
     using Microsoft.CodeAnalysis;
 
+    [DebuggerDisplay("{this.FromTemplate?.Name ?? this.FromMethodSymbol.Name}")]
     public struct ParameterPair
     {
-        public ParameterPair(TemplateParameter? template, IParameterSymbol method)
+        public ParameterPair(TemplateParameter? fromTemplate, IParameterSymbol fromMethodSymbol)
         {
-            this.Template = template;
-            this.Method = method;
+            this.FromTemplate = fromTemplate;
+            this.FromMethodSymbol = fromMethodSymbol;
         }
 
-        public TemplateParameter? Template { get; }
+        public TemplateParameter? FromTemplate { get; }
 
-        public IParameterSymbol Method { get; }
+        public IParameterSymbol FromMethodSymbol { get; }
     }
 }

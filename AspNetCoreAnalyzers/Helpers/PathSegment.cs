@@ -2,7 +2,7 @@ namespace AspNetCoreAnalyzers
 {
     using System.Diagnostics;
 
-    [DebuggerDisplay("{this.Span.Text}")]
+    [DebuggerDisplay("{this.Span.ToString()}")]
     public struct PathSegment
     {
         public PathSegment(StringLiteral literal, int start, int end)
@@ -20,7 +20,7 @@ namespace AspNetCoreAnalyzers
         public static bool TryRead(StringLiteral literal, int start, out PathSegment segment)
         {
             // https://tools.ietf.org/html/rfc3986
-            var text = literal.LiteralExpression.Token.ValueText;
+            var text = literal.ValueText;
             var pos = start;
             if (pos < text.Length - 1)
             {
