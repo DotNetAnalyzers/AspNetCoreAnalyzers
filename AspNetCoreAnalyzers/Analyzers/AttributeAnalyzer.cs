@@ -47,7 +47,7 @@ namespace AspNetCoreAnalyzers
                                 parameterSyntax.Identifier.GetLocation(),
                                 ImmutableDictionary<string, string>.Empty.Add(
                                     nameof(NameSyntax),
-                                    templateParameter.Name.Text)));
+                                    templateParameter.Name.ToString())));
 
                         context.ReportDiagnostic(
                             Diagnostic.Create(
@@ -164,7 +164,7 @@ namespace AspNetCoreAnalyzers
             {
                 if (IsFromRoute(parameter))
                 {
-                    list.Add(template.Path.TrySingle(x => x.Parameter?.Name.Text == parameter.Name, out var templateParameter)
+                    list.Add(template.Path.TrySingle(x => x.Parameter?.Name.Equals(parameter.Name, StringComparison.OrdinalIgnoreCase) == true, out var templateParameter)
                                  ? new ParameterPair(templateParameter.Parameter, parameter)
                                  : new ParameterPair(null, parameter));
                 }
@@ -190,56 +190,83 @@ namespace AspNetCoreAnalyzers
                 foreach (var constraint in constraints)
                 {
                     // https://docs.microsoft.com/en-us/aspnet/core/fundamentals/routing?view=aspnetcore-2.2#route-constraint-reference
-                    switch (constraint.Span.Text)
+                    if (TryGetType(constraint, out var type))
                     {
-                        case "bool":
-                            correctType = constraint.Span.Text;
-                            return parameter.Type != KnownSymbol.Boolean;
-                        case "decimal":
-                            correctType = constraint.Span.Text;
-                            return parameter.Type != KnownSymbol.Decimal;
-                        case "double":
-                            correctType = constraint.Span.Text;
-                            return parameter.Type != KnownSymbol.Double;
-                        case "float":
-                            correctType = constraint.Span.Text;
-                            return parameter.Type != KnownSymbol.Float;
-                        case "int":
-                            correctType = constraint.Span.Text;
-                            return parameter.Type != KnownSymbol.Int32;
-                        case "long":
-                            correctType = constraint.Span.Text;
-                            return parameter.Type != KnownSymbol.Int64;
-                        case "datetime" when parameter.Type != KnownSymbol.DateTime:
-                            correctType = "System.DateTime";
-                            return true;
-                        case "guid" when parameter.Type != KnownSymbol.Guid:
-                            correctType = "System.Guid";
-                            return true;
-                        case "alpha" when parameter.Type != KnownSymbol.String:
-                            correctType = "string";
-                            return true;
-                        case "required":
-                            continue;
-                        case string text when parameter.Type != KnownSymbol.String &&
-                                              (text.StartsWith("regex(", StringComparison.OrdinalIgnoreCase) ||
-                                               text.StartsWith("length(", StringComparison.OrdinalIgnoreCase) ||
-                                               text.StartsWith("minlength(", StringComparison.OrdinalIgnoreCase) ||
-                                               text.StartsWith("maxlength(", StringComparison.OrdinalIgnoreCase)):
-                            correctType = "string";
-                            return true;
-                        case string text when parameter.Type != KnownSymbol.Int64 &&
-                                              (text.StartsWith("min(", StringComparison.OrdinalIgnoreCase) ||
-                                               text.StartsWith("max(", StringComparison.OrdinalIgnoreCase) ||
-                                               text.StartsWith("range(", StringComparison.OrdinalIgnoreCase)):
-                            correctType = "long";
-                            return true;
+                        correctType = parameter.Type == type ? null : type.Alias ?? type.FullName;
+                        return correctType != null;
                     }
                 }
             }
 
             correctType = null;
             return false;
+
+            bool TryGetType(RouteConstraint constraint, out QualifiedType type)
+            {
+                if (constraint.Span.Equals("bool", StringComparison.Ordinal))
+                {
+                    type = KnownSymbol.Boolean;
+                    return true;
+                }
+
+                if (constraint.Span.Equals("decimal", StringComparison.Ordinal))
+                {
+                    type = KnownSymbol.Decimal;
+                    return true;
+                }
+
+                if (constraint.Span.Equals("double", StringComparison.Ordinal))
+                {
+                    type = KnownSymbol.Double;
+                    return true;
+                }
+
+                if (constraint.Span.Equals("float", StringComparison.Ordinal))
+                {
+                    type = KnownSymbol.Float;
+                    return true;
+                }
+
+                if (constraint.Span.Equals("int", StringComparison.Ordinal))
+                {
+                    type = KnownSymbol.Int32;
+                    return true;
+                }
+
+                if (constraint.Span.Equals("long", StringComparison.Ordinal) ||
+                    constraint.Span.StartsWith("min(", StringComparison.OrdinalIgnoreCase) ||
+                    constraint.Span.StartsWith("max(", StringComparison.OrdinalIgnoreCase) ||
+                    constraint.Span.StartsWith("range(", StringComparison.OrdinalIgnoreCase))
+                {
+                    type = KnownSymbol.Int64;
+                    return true;
+                }
+
+                if (constraint.Span.Equals("datetime", StringComparison.Ordinal))
+                {
+                    type = KnownSymbol.DateTime;
+                    return true;
+                }
+
+                if (constraint.Span.Equals("guid", StringComparison.Ordinal))
+                {
+                    type = KnownSymbol.Guid;
+                    return true;
+                }
+
+                if (constraint.Span.Equals("alpha", StringComparison.OrdinalIgnoreCase) ||
+                    constraint.Span.StartsWith("regex(", StringComparison.OrdinalIgnoreCase) ||
+                    constraint.Span.StartsWith("length(", StringComparison.OrdinalIgnoreCase) ||
+                    constraint.Span.StartsWith("minlength(", StringComparison.OrdinalIgnoreCase) ||
+                    constraint.Span.StartsWith("maxlength(", StringComparison.OrdinalIgnoreCase))
+                {
+                    type = KnownSymbol.String;
+                    return true;
+                }
+
+                type = null;
+                return false;
+            }
         }
 
         private static bool HasWrongSyntax(PathSegment segment, out Location location, out string correctSyntax)
@@ -248,7 +275,7 @@ namespace AspNetCoreAnalyzers
             {
                 foreach (var constraint in parameter.Constraints)
                 {
-                    var text = constraint.Span.Text;
+                    var text = constraint.Span;
                     if (text.StartsWith("min(", StringComparison.OrdinalIgnoreCase) ||
                         text.StartsWith("max(", StringComparison.OrdinalIgnoreCase) ||
                         text.StartsWith("minlength(", StringComparison.OrdinalIgnoreCase) ||
@@ -301,7 +328,7 @@ namespace AspNetCoreAnalyzers
             }
             else
             {
-                var text = segment.Span.Text;
+                var text = segment.Span;
                 if (text.StartsWith("{", StringComparison.Ordinal) &&
                     !text.EndsWith("}", StringComparison.Ordinal))
                 {
@@ -327,7 +354,7 @@ namespace AspNetCoreAnalyzers
             {
                 var text = constraint.Span.Text;
                 if (text.Length > methodName.Length + 2 &&
-                    text.StartsWith(methodName, StringComparison.OrdinalIgnoreCase) &&
+                    text.StartsWith(methodName.AsSpan(), StringComparison.OrdinalIgnoreCase) &&
                     text[methodName.Length] == '(' &&
                     text[text.Length - 1] == ')')
                 {
@@ -353,7 +380,7 @@ namespace AspNetCoreAnalyzers
                 foreach (var constraint in parameter.Constraints)
                 {
                     var text = constraint.Span.Text;
-                    if (text.StartsWith("regex(", StringComparison.OrdinalIgnoreCase))
+                    if (text.StartsWith("regex(".AsSpan(), StringComparison.OrdinalIgnoreCase))
                     {
                         for (var i = 6; i < text.Length - 1; i++)
                         {
@@ -367,7 +394,7 @@ namespace AspNetCoreAnalyzers
                                     {
                                         escaped.Add(text[i]);
                                         if (text[i] == '\\' &&
-                                            !segment.Span.IsVerbatim)
+                                            !segment.Span.Literal.IsVerbatim)
                                         {
                                             escaped.Add('\\');
                                             escaped.Add('\\');
@@ -390,10 +417,10 @@ namespace AspNetCoreAnalyzers
 
                                 bool NotEscapedChar(char c)
                                 {
-                                    return text[i] == c &&
-                                           text[i - 1] != c &&
-                                           text[i - 1] != '\\' &&
-                                           text[i + 1] != c;
+                                    return constraint.Span.Text[i] == c &&
+                                           constraint.Span.Text[i - 1] != c &&
+                                           constraint.Span.Text[i - 1] != '\\' &&
+                                           constraint.Span.Text[i + 1] != c;
                                 }
                             }
                         }

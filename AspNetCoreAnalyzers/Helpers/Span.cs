@@ -2,42 +2,21 @@ namespace AspNetCoreAnalyzers
 {
     using System;
     using Microsoft.CodeAnalysis;
-    using Microsoft.CodeAnalysis.CSharp.Syntax;
     using Microsoft.CodeAnalysis.Text;
 
     public struct Span : IEquatable<Span>
     {
-        public Span(LiteralExpressionSyntax literal, int start, int end)
+        public Span(StringLiteral literal, int start, int end)
         {
             this.Literal = literal;
             this.TextSpan = new TextSpan(start, end - start);
-            this.Text = literal.Token.ValueText.Substring(start, end - start);
         }
 
-        public LiteralExpressionSyntax Literal { get; }
+        public StringLiteral Literal { get; }
 
         public TextSpan TextSpan { get; }
 
-        public string Text { get; }
-
-        public bool IsVerbatim
-        {
-            get
-            {
-                foreach (var c in this.Literal.Token.Text)
-                {
-                    switch (c)
-                    {
-                        case '"':
-                            return false;
-                        case '@':
-                            return true;
-                    }
-                }
-
-                return false;
-            }
-        }
+        public ReadOnlySpan<char> Text => this.Literal.LiteralExpression.Token.ValueText.AsSpan(this.TextSpan.Start, this.TextSpan.Length);
 
         public static bool operator ==(Span left, Span right)
         {
@@ -53,6 +32,12 @@ namespace AspNetCoreAnalyzers
         {
             return this.Literal.Equals(other.Literal) && this.TextSpan == other.TextSpan;
         }
+
+        public bool Equals(string text, StringComparison stringComparison) => this.Text.Equals(text.AsSpan(), stringComparison);
+
+        public bool StartsWith(string text, StringComparison stringComparison) => this.Text.StartsWith(text.AsSpan(), stringComparison);
+
+        public bool EndsWith(string text, StringComparison stringComparison) => this.Text.EndsWith(text.AsSpan(), stringComparison);
 
         public override bool Equals(object obj)
         {
@@ -70,14 +55,11 @@ namespace AspNetCoreAnalyzers
             }
         }
 
-        public override string ToString()
-        {
-            return this.Literal.Token.ValueText.Substring(this.TextSpan.Start, this.TextSpan.Length);
-        }
+        public override string ToString() => new string(this.Text.ToArray());
 
-        public Location GetLocation() => GetLocation(this.Literal, this.TextSpan);
+        public Location GetLocation() => this.Literal.GetLocation(this.TextSpan);
 
-        public Location GetLocation(int start, int length) => GetLocation(this.Literal, new TextSpan(this.TextSpan.Start + start, length));
+        public Location GetLocation(int start, int length) => this.Literal.GetLocation(new TextSpan(this.TextSpan.Start + start, length));
 
         internal Span Slice(int start, int end)
         {
@@ -102,51 +84,6 @@ namespace AspNetCoreAnalyzers
         internal Span Substring(int index)
         {
             return new Span(this.Literal, this.TextSpan.Start + index, this.TextSpan.Start + index + this.TextSpan.Length);
-        }
-
-        private static Location GetLocation(LiteralExpressionSyntax literal, TextSpan textSpan)
-        {
-            var text = literal.Token.Text;
-            var start = 0;
-            var verbatim = false;
-            while (start < 3)
-            {
-                if (text[start] == '"')
-                {
-                    start++;
-                    break;
-                }
-
-                if (text[start] == '@')
-                {
-                    verbatim = true;
-                }
-
-                start++;
-            }
-
-            return Location.Create(
-                literal.SyntaxTree,
-                verbatim
-                    ? new TextSpan(literal.SpanStart + start + textSpan.Start, textSpan.Length)
-                    : TextSpan.FromBounds(GetIndex(textSpan.Start), GetIndex(textSpan.End)));
-
-            int GetIndex(int pos)
-            {
-                var index = literal.SpanStart + start;
-                for (var i = start; i < pos + start; i++)
-                {
-                    index++;
-                    if (text[i] == '\\' &&
-                        text[i + 1] == '\\')
-                    {
-                        i++;
-                        index += 2;
-                    }
-                }
-
-                return index;
-            }
         }
     }
 }

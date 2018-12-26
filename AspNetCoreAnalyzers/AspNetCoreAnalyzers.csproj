@@ -2,6 +2,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>netstandard1.3</TargetFramework>
+    <LangVersion>latest</LangVersion>
     <PackageTargetFallback>portable-net45+win8</PackageTargetFallback>
     <NeutralLanguage>en-US</NeutralLanguage>
     <CodeAnalysisRuleSet>AspNetCoreAnalyzers.ruleset</CodeAnalysisRuleSet>

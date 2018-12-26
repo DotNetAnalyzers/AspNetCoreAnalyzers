@@ -1,12 +1,11 @@
 namespace AspNetCoreAnalyzers
 {
     using System.Diagnostics;
-    using Microsoft.CodeAnalysis.CSharp.Syntax;
 
     [DebuggerDisplay("{this.Span.Text}")]
     public struct PathSegment
     {
-        public PathSegment(LiteralExpressionSyntax literal, int start, int end)
+        public PathSegment(StringLiteral literal, int start, int end)
         {
             this.Span = new Span(literal, start, end);
             this.Parameter = TemplateParameter.TryParse(this.Span, out var parameter)
@@ -18,10 +17,10 @@ namespace AspNetCoreAnalyzers
 
         public TemplateParameter? Parameter { get; }
 
-        public static bool TryRead(LiteralExpressionSyntax literal, int start, out PathSegment segment)
+        public static bool TryRead(StringLiteral literal, int start, out PathSegment segment)
         {
             // https://tools.ietf.org/html/rfc3986
-            var text = literal.Token.ValueText;
+            var text = literal.ValueText;
             var pos = start;
             if (pos < text.Length - 1)
             {
