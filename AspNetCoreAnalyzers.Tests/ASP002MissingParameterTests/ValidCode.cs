@@ -34,6 +34,27 @@ namespace ValidCode
             AnalyzerAssert.Valid(Analyzer, code);
         }
 
+        [TestCase("\"api/orders/\" + \"{wrong}\"")]
+        public void IgnoreWhen(string template)
+        {
+            var code = @"
+namespace ValidCode
+{
+    using Microsoft.AspNetCore.Mvc;
+
+    [ApiController]
+    public class OrdersController : Controller
+    {
+        [HttpGet(""api/orders/{value}"")]
+        public IActionResult GetId(string value)
+        {
+            return this.Ok(value);
+        }
+    }
+}".AssertReplace("\"api/orders/{value}\"", template);
+            AnalyzerAssert.Valid(Analyzer, code);
+        }
+
         [Test]
         public void ImplicitFromRoute()
         {
