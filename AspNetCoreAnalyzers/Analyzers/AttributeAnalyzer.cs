@@ -190,56 +190,83 @@ namespace AspNetCoreAnalyzers
                 foreach (var constraint in constraints)
                 {
                     // https://docs.microsoft.com/en-us/aspnet/core/fundamentals/routing?view=aspnetcore-2.2#route-constraint-reference
-                    switch (constraint.Span.Text)
+                    if (TryGetType(constraint.Span.Text, out var type))
                     {
-                        case "bool":
-                            correctType = constraint.Span.Text;
-                            return parameter.Type != KnownSymbol.Boolean;
-                        case "decimal":
-                            correctType = constraint.Span.Text;
-                            return parameter.Type != KnownSymbol.Decimal;
-                        case "double":
-                            correctType = constraint.Span.Text;
-                            return parameter.Type != KnownSymbol.Double;
-                        case "float":
-                            correctType = constraint.Span.Text;
-                            return parameter.Type != KnownSymbol.Float;
-                        case "int":
-                            correctType = constraint.Span.Text;
-                            return parameter.Type != KnownSymbol.Int32;
-                        case "long":
-                            correctType = constraint.Span.Text;
-                            return parameter.Type != KnownSymbol.Int64;
-                        case "datetime" when parameter.Type != KnownSymbol.DateTime:
-                            correctType = "System.DateTime";
-                            return true;
-                        case "guid" when parameter.Type != KnownSymbol.Guid:
-                            correctType = "System.Guid";
-                            return true;
-                        case "alpha" when parameter.Type != KnownSymbol.String:
-                            correctType = "string";
-                            return true;
-                        case "required":
-                            continue;
-                        case string text when parameter.Type != KnownSymbol.String &&
-                                              (text.StartsWith("regex(", StringComparison.OrdinalIgnoreCase) ||
-                                               text.StartsWith("length(", StringComparison.OrdinalIgnoreCase) ||
-                                               text.StartsWith("minlength(", StringComparison.OrdinalIgnoreCase) ||
-                                               text.StartsWith("maxlength(", StringComparison.OrdinalIgnoreCase)):
-                            correctType = "string";
-                            return true;
-                        case string text when parameter.Type != KnownSymbol.Int64 &&
-                                              (text.StartsWith("min(", StringComparison.OrdinalIgnoreCase) ||
-                                               text.StartsWith("max(", StringComparison.OrdinalIgnoreCase) ||
-                                               text.StartsWith("range(", StringComparison.OrdinalIgnoreCase)):
-                            correctType = "long";
-                            return true;
+                        correctType = parameter.Type == type ? null : type.Alias ?? type.FullName;
+                        return correctType != null;
                     }
                 }
             }
 
             correctType = null;
             return false;
+
+            bool TryGetType(string constraint, out QualifiedType type)
+            {
+                if (constraint.Equals("bool", StringComparison.Ordinal))
+                {
+                    type = KnownSymbol.Boolean;
+                    return true;
+                }
+
+                if (constraint.Equals("decimal", StringComparison.Ordinal))
+                {
+                    type = KnownSymbol.Decimal;
+                    return true;
+                }
+
+                if (constraint.Equals("double", StringComparison.Ordinal))
+                {
+                    type = KnownSymbol.Double;
+                    return true;
+                }
+
+                if (constraint.Equals("float", StringComparison.Ordinal))
+                {
+                    type = KnownSymbol.Float;
+                    return true;
+                }
+
+                if (constraint.Equals("int", StringComparison.Ordinal))
+                {
+                    type = KnownSymbol.Int32;
+                    return true;
+                }
+
+                if (constraint.Equals("long", StringComparison.Ordinal) ||
+                    constraint.StartsWith("min(", StringComparison.OrdinalIgnoreCase) ||
+                    constraint.StartsWith("max(", StringComparison.OrdinalIgnoreCase) ||
+                    constraint.StartsWith("range(", StringComparison.OrdinalIgnoreCase))
+                {
+                    type = KnownSymbol.Int64;
+                    return true;
+                }
+
+                if (constraint.Equals("datetime", StringComparison.Ordinal))
+                {
+                    type = KnownSymbol.DateTime;
+                    return true;
+                }
+
+                if (constraint.Equals("guid", StringComparison.Ordinal))
+                {
+                    type = KnownSymbol.Guid;
+                    return true;
+                }
+
+                if (constraint.Equals("alpha", StringComparison.OrdinalIgnoreCase) ||
+                    constraint.StartsWith("regex(", StringComparison.OrdinalIgnoreCase) ||
+                    constraint.StartsWith("length(", StringComparison.OrdinalIgnoreCase) ||
+                    constraint.StartsWith("minlength(", StringComparison.OrdinalIgnoreCase) ||
+                    constraint.StartsWith("maxlength(", StringComparison.OrdinalIgnoreCase))
+                {
+                    type = KnownSymbol.String;
+                    return true;
+                }
+
+                type = null;
+                return false;
+            }
         }
 
         private static bool HasWrongSyntax(PathSegment segment, out Location location, out string correctSyntax)

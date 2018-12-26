@@ -6,12 +6,12 @@ namespace AspNetCoreAnalyzers
     [DebuggerDisplay("{this.Span.Text}")]
     public struct RouteConstraint : IEquatable<RouteConstraint>
     {
-        public RouteConstraint(Span span)
+        public RouteConstraint(StringLiteralSpan span)
         {
             this.Span = span;
         }
 
-        public Span Span { get; }
+        public StringLiteralSpan Span { get; }
 
         public static bool operator ==(RouteConstraint left, RouteConstraint right)
         {
@@ -23,7 +23,7 @@ namespace AspNetCoreAnalyzers
             return !left.Equals(right);
         }
 
-        public static bool TryRead(Span span, int pos, out RouteConstraint constraint)
+        public static bool TryRead(StringLiteralSpan span, int pos, out RouteConstraint constraint)
         {
             if (pos >= span.TextSpan.End ||
                 span.Text[pos] != ':')
