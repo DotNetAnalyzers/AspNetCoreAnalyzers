@@ -57,7 +57,6 @@ namespace AspBox.Controllers
         [TestCase("\"abc\"", "bc",   true)]
         [TestCase("\"abc\"", "c",    true)]
         [TestCase("\"abc\"", "ab",   false)]
-        [TestCase("\"abc\"", "bc",   false)]
         [TestCase("\"abc\"", "dabc", false)]
         public void EndsWith(string text, string value, bool expected)
         {

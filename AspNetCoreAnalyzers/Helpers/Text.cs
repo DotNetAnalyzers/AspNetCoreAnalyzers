@@ -2,15 +2,6 @@ namespace AspNetCoreAnalyzers
 {
     public static class Text
     {
-        public static void SkipWhiteSpace(Span text, ref int pos)
-        {
-            while (pos < text.Length &&
-                   text[pos] == ' ')
-            {
-                pos++;
-            }
-        }
-
         public static void SkipWhiteSpace(string text, ref int pos)
         {
             while (pos < text.Length &&
@@ -54,15 +45,6 @@ namespace AspNetCoreAnalyzers
 
             pos = before;
             return false;
-        }
-
-        public static void BackWhiteSpace(Span text, ref int pos)
-        {
-            while (pos >= 0 &&
-                   text[pos] == ' ')
-            {
-                pos--;
-            }
         }
 
         private static bool IsAt(Span text, int pos, string substring)

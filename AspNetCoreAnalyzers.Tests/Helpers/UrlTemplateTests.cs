@@ -64,7 +64,7 @@ namespace ValidCode
             var segment = template.Path.Single(x => x.Parameter.HasValue);
 
             Assert.AreEqual(expected.Single(x => x.StartsWith("{", StringComparison.Ordinal)), segment.Span.ToString());
-            Assert.AreEqual("id",                                                              segment.Parameter.Value.Name.ToString());
+            Assert.AreEqual("id", segment.Parameter?.Name.ToString());
         }
 
         [TestCase("\"orders/{id}\"",                   new[] { "orders", "{id}" },                   new string[0])]

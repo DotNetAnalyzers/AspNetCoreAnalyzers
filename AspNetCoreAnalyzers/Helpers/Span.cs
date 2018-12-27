@@ -127,7 +127,6 @@ namespace AspNetCoreAnalyzers
                 return this.Literal.ValueText.IndexOf(value, start, value.Length, comparisonType) == start;
             }
 
-
             return false;
         }
     }

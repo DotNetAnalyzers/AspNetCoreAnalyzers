@@ -35,7 +35,8 @@ namespace AspNetCoreAnalyzers
                     context.RegisterCodeFix(
                         CodeAction.Create(
                             GetTitle(diagnostic),
-                            _ => Fix(_)),
+                            _ => Fix(_),
+                            equivalenceKey: null),
                         diagnostic);
 
                     async Task<Document> Fix(CancellationToken cancellationToken)
