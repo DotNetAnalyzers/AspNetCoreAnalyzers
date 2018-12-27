@@ -1,4 +1,7 @@
 image: Visual Studio 2017
 
-test_script:
-- cmd: dotnet test
+build_script:
+  - ps: dotnet test
+
+# disable built-in tests.
+test: off
