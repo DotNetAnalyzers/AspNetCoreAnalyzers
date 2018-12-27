@@ -13,13 +13,13 @@ namespace AspNetCoreAnalyzers
     [DebuggerDisplay("{this.Literal.ToString()}")]
     public struct UrlTemplate : IEquatable<UrlTemplate>
     {
-        private UrlTemplate(LiteralExpressionSyntax literal, ImmutableArray<PathSegment> path)
+        private UrlTemplate(StringLiteral literal, ImmutableArray<PathSegment> path)
         {
             this.Literal = literal;
             this.Path = path;
         }
 
-        public LiteralExpressionSyntax Literal { get; }
+        public StringLiteral Literal { get; }
 
         public ImmutableArray<PathSegment> Path { get; }
 
@@ -37,9 +37,10 @@ namespace AspNetCoreAnalyzers
         {
             if (literal.IsKind(SyntaxKind.StringLiteralExpression))
             {
+                var stringLiteral = new StringLiteral(literal);
                 var builder = ImmutableArray.CreateBuilder<PathSegment>();
                 var pos = 0;
-                while (PathSegment.TryRead(new StringLiteral(literal), pos, out var component))
+                while (PathSegment.TryRead(stringLiteral, pos, out var component))
                 {
                     builder.Add(component);
                     pos = component.Span.TextSpan.End;
@@ -47,7 +48,7 @@ namespace AspNetCoreAnalyzers
 
                 if (pos == literal.Token.ValueText.Length)
                 {
-                    template = new UrlTemplate(literal, builder.Count == builder.Capacity ? builder.MoveToImmutable() : builder.ToImmutable());
+                    template = new UrlTemplate(stringLiteral, builder.Count == builder.Capacity ? builder.MoveToImmutable() : builder.ToImmutable());
                     return true;
                 }
             }

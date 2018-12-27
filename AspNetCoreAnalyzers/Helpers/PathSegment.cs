@@ -2,25 +2,25 @@ namespace AspNetCoreAnalyzers
 {
     using System.Diagnostics;
 
-    [DebuggerDisplay("{this.Span.Text}")]
+    [DebuggerDisplay("{this.Span.ToString()}")]
     public struct PathSegment
     {
         public PathSegment(StringLiteral literal, int start, int end)
         {
-            this.Span = new StringLiteralSpan(literal, start, end);
+            this.Span = new Span(literal, start, end);
             this.Parameter = TemplateParameter.TryParse(this.Span, out var parameter)
                 ? parameter
                 : (TemplateParameter?)null;
         }
 
-        public StringLiteralSpan Span { get; }
+        public Span Span { get; }
 
         public TemplateParameter? Parameter { get; }
 
         public static bool TryRead(StringLiteral literal, int start, out PathSegment segment)
         {
             // https://tools.ietf.org/html/rfc3986
-            var text = literal.LiteralExpression.Token.ValueText;
+            var text = literal.ValueText;
             var pos = start;
             if (pos < text.Length - 1)
             {

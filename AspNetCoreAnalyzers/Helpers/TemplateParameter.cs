@@ -2,16 +2,18 @@ namespace AspNetCoreAnalyzers
 {
     using System;
     using System.Collections.Immutable;
+    using System.Diagnostics;
 
+    [DebuggerDisplay("{this.Name.ToString()}")]
     public struct TemplateParameter : IEquatable<TemplateParameter>
     {
-        public TemplateParameter(StringLiteralSpan name, ImmutableArray<RouteConstraint> constraints)
+        public TemplateParameter(Span name, ImmutableArray<RouteConstraint> constraints)
         {
             this.Name = name;
             this.Constraints = constraints;
         }
 
-        public StringLiteralSpan Name { get; }
+        public Span Name { get; }
 
         public ImmutableArray<RouteConstraint> Constraints { get; }
 
@@ -25,41 +27,38 @@ namespace AspNetCoreAnalyzers
             return !left.Equals(right);
         }
 
-        public static bool TryParse(StringLiteralSpan source, out TemplateParameter result)
+        public static bool TryParse(Span span, out TemplateParameter result)
         {
-            var text = source.Text;
-            var start = text.IndexOf('{');
+            var start = span.IndexOf('{');
             if (start < 0 ||
-                text.IndexOf('{', start) > 0)
+                span.IndexOf('{', start) > 0)
             {
                 result = default(TemplateParameter);
                 return false;
             }
 
             start++;
-            Text.SkipWhiteSpace(text, ref start);
-            var end = text.LastIndexOf('}');
+            var end = span.LastIndexOf('}');
             if (end < start)
             {
                 result = default(TemplateParameter);
                 return false;
             }
 
-            Text.BackWhiteSpace(text, ref end);
-            if (text[end - 1] == '?')
+            if (span[end - 1] == '?')
             {
-                result = new TemplateParameter(source.Slice(start, end - 1), ImmutableArray.Create(new RouteConstraint(source.Substring(end - 1, 1))));
+                result = new TemplateParameter(span.Slice(start, end - 1), ImmutableArray.Create(new RouteConstraint(span.Substring(end - 1, 1))));
                 return true;
             }
 
-            if (text.IndexOf(':') is int i &&
+            if (span.IndexOf(':') is int i &&
                 i > start)
             {
-                var name = source.Slice(start, i);
-                if (text.IndexOf(':', i + 1) > i)
+                var name = span.Slice(start, i);
+                if (span.IndexOf(':', i + 1) > i)
                 {
                     var builder = ImmutableArray.CreateBuilder<RouteConstraint>();
-                    while (RouteConstraint.TryRead(source, i, out var constraint))
+                    while (RouteConstraint.TryRead(span, i, out var constraint))
                     {
                         builder.Add(constraint);
                         i += constraint.Span.TextSpan.Length + 1;
@@ -69,11 +68,11 @@ namespace AspNetCoreAnalyzers
                     return true;
                 }
 
-                result = new TemplateParameter(name, ImmutableArray.Create(new RouteConstraint(source.Slice(i + 1, end))));
+                result = new TemplateParameter(name, ImmutableArray.Create(new RouteConstraint(span.Slice(i + 1, end))));
                 return true;
             }
 
-            result = new TemplateParameter(source.Slice(start, end), ImmutableArray<RouteConstraint>.Empty);
+            result = new TemplateParameter(span.Slice(start, end), ImmutableArray<RouteConstraint>.Empty);
             return true;
         }
 

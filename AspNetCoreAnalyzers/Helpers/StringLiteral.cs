@@ -1,23 +1,25 @@
 namespace AspNetCoreAnalyzers
 {
+    using System.Diagnostics;
     using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
     using Microsoft.CodeAnalysis.Text;
 
+    [DebuggerDisplay("{this.Text}")]
     public struct StringLiteral
     {
+        private readonly LiteralExpressionSyntax literalExpression;
+
         public StringLiteral(LiteralExpressionSyntax literalExpression)
         {
-            this.LiteralExpression = literalExpression;
+            this.literalExpression = literalExpression;
         }
-
-        public LiteralExpressionSyntax LiteralExpression { get; }
 
         public bool IsVerbatim
         {
             get
             {
-                foreach (var c in this.LiteralExpression.Token.Text)
+                foreach (var c in this.literalExpression.Token.Text)
                 {
                     switch (c)
                     {
@@ -32,9 +34,13 @@ namespace AspNetCoreAnalyzers
             }
         }
 
+        public string Text => this.literalExpression.Token.Text;
+
+        public string ValueText => this.literalExpression.Token.ValueText;
+
         public Location GetLocation(TextSpan textSpan)
         {
-            var text = this.LiteralExpression.Token.Text;
+            var text = this.literalExpression.Token.Text;
             var start = 0;
             var verbatim = false;
             while (start < 3)
@@ -53,14 +59,15 @@ namespace AspNetCoreAnalyzers
                 start++;
             }
 
-            return Location.Create(this.LiteralExpression.SyntaxTree,
-                                   verbatim
-                                       ? new TextSpan(
-                                           this.LiteralExpression.SpanStart + start + textSpan.Start,
-                                           textSpan.Length)
-                                       : TextSpan.FromBounds(
-                                           this.LiteralExpression.SpanStart + GetIndex(textSpan.Start),
-                                           this.LiteralExpression.SpanStart + GetIndex(textSpan.End)));
+            return Location.Create(
+                this.literalExpression.SyntaxTree,
+                verbatim
+                    ? new TextSpan(
+                        this.literalExpression.SpanStart + start + textSpan.Start,
+                        textSpan.Length)
+                    : TextSpan.FromBounds(
+                        this.literalExpression.SpanStart + GetIndex(textSpan.Start),
+                        this.literalExpression.SpanStart + GetIndex(textSpan.End)));
 
             int GetIndex(int pos)
             {

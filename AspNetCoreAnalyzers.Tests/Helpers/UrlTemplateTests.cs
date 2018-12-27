@@ -1,5 +1,6 @@
 namespace AspNetCoreAnalyzers.Tests.Helpers
 {
+    using System;
     using System.Linq;
     using Gu.Roslyn.Asserts;
     using Microsoft.CodeAnalysis.CSharp;
@@ -60,9 +61,10 @@ namespace ValidCode
             CollectionAssert.AreEqual(expected, template.Path.Select(x => x.Span.ToString()));
 
             // ReSharper disable once PossibleInvalidOperationException
-            var parameter = template.Path.Single(x => x.Parameter.HasValue)
-                                    .Parameter.Value;
-            Assert.AreEqual("id", parameter.Name.ToString());
+            var segment = template.Path.Single(x => x.Parameter.HasValue);
+
+            Assert.AreEqual(expected.Single(x => x.StartsWith("{", StringComparison.Ordinal)), segment.Span.ToString());
+            Assert.AreEqual("id",                                                              segment.Parameter.Value.Name.ToString());
         }
 
         [TestCase("\"orders/{id}\"",                   new[] { "orders", "{id}" },                   new string[0])]
