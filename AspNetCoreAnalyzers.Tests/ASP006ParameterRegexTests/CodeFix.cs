@@ -1,4 +1,4 @@
-namespace AspNetCoreAnalyzers.Tests.ASP005ParameterRegexTests
+namespace AspNetCoreAnalyzers.Tests.ASP006ParameterRegexTests
 {
     using Gu.Roslyn.Asserts;
     using Microsoft.CodeAnalysis.CodeFixes;
@@ -8,7 +8,7 @@ namespace AspNetCoreAnalyzers.Tests.ASP005ParameterRegexTests
     public class CodeFix
     {
         private static readonly DiagnosticAnalyzer Analyzer = new AttributeAnalyzer();
-        private static readonly ExpectedDiagnostic ExpectedDiagnostic = ExpectedDiagnostic.Create(ASP005ParameterRegex.Descriptor);
+        private static readonly ExpectedDiagnostic ExpectedDiagnostic = ExpectedDiagnostic.Create(ASP006ParameterRegex.Descriptor);
         private static readonly CodeFixProvider Fix = new TemplateTextFix();
 
         [TestCase("\"api/orders/{id:regex(↓a{1})}\"",                         "\"api/orders/{id:regex(a{{1}})}\"")]

@@ -19,7 +19,7 @@ namespace AspNetCoreAnalyzers
             ASP002MissingParameter.Descriptor,
             ASP003ParameterType.Descriptor,
             ASP004ParameterSyntax.Descriptor,
-            ASP005ParameterRegex.Descriptor);
+            ASP006ParameterRegex.Descriptor);
 
         public override void Initialize(AnalysisContext context)
         {
@@ -109,7 +109,7 @@ namespace AspNetCoreAnalyzers
                         {
                             context.ReportDiagnostic(
                                 Diagnostic.Create(
-                                    ASP005ParameterRegex.Descriptor,
+                                    ASP006ParameterRegex.Descriptor,
                                     location,
                                     syntax == null
                                         ? ImmutableDictionary<string, string>.Empty

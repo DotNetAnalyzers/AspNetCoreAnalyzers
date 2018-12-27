@@ -27,7 +27,7 @@ Roslyn analyzers for ASP.NET.Core.
     <td>Syntax error in parameter.</td>
   </tr>
   <tr>
-    <td><a href="https://github.com/DotNetAnalyzers/AspNetCoreAnalyzers/tree/master/documentation/ASP005.md">ASP005</a></td>
+    <td><a href="https://github.com/DotNetAnalyzers/AspNetCoreAnalyzers/tree/master/documentation/ASP006.md">ASP006</a></td>
     <td>Escape constraint regex.</td>
   </tr>
 <table>
