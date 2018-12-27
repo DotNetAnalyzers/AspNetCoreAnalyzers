@@ -43,13 +43,13 @@ namespace ValidCode
     [ApiController]
     public class OrdersController : Controller
     {
-        [HttpGet(""api/orders/{id:int}"")]
+        [HttpGet(""api/orders/{id}"")]
         public IActionResult GetId(↓byte id)
         {
             return this.Ok(id);
         }
     }
-}".AssertReplace("\"api/orders/{id:int}\"", template);
+}".AssertReplace("\"api/orders/{id}\"", template);
 
             var fixedCode = @"
 namespace ValidCode
@@ -59,14 +59,54 @@ namespace ValidCode
     [ApiController]
     public class OrdersController : Controller
     {
-        [HttpGet(""api/orders/{id:int}"")]
+        [HttpGet(""api/orders/{id}"")]
         public IActionResult GetId(byte id)
         {
             return this.Ok(id);
         }
     }
-}".AssertReplace("\"api/orders/{id:int}\"", template)
+}".AssertReplace("\"api/orders/{id}\"", template)
   .AssertReplace("byte id", parameter);
+            AnalyzerAssert.CodeFix(Analyzer, Fix, ExpectedDiagnostic, code, fixedCode);
+        }
+
+        [TestCase("int?")]
+        [TestCase("Nullable<int>")]
+        public void WhenOptional(string parameter)
+        {
+            var code = @"
+namespace ValidCode
+{
+    using System;
+    using Microsoft.AspNetCore.Mvc;
+
+    [ApiController]
+    public class OrdersController : Controller
+    {
+        [HttpGet(""api/orders/{id}"")]
+        public IActionResult GetId(↓int? id)
+        {
+            return this.Ok(id);
+        }
+    }
+}".AssertReplace("int?", parameter);
+
+            var fixedCode = @"
+namespace ValidCode
+{
+    using System;
+    using Microsoft.AspNetCore.Mvc;
+
+    [ApiController]
+    public class OrdersController : Controller
+    {
+        [HttpGet(""api/orders/{id}"")]
+        public IActionResult GetId(int id)
+        {
+            return this.Ok(id);
+        }
+    }
+}";
             AnalyzerAssert.CodeFix(Analyzer, Fix, ExpectedDiagnostic, code, fixedCode);
         }
     }

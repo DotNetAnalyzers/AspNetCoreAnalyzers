@@ -196,6 +196,15 @@ namespace AspNetCoreAnalyzers
                         return correctType != null;
                     }
                 }
+
+                if (!constraints.TryFirst(x => x.Span.Equals("?", StringComparison.Ordinal), out _) &&
+                    parameter.Type.OriginalDefinition.SpecialType == SpecialType.System_Nullable_T &&
+                    parameter.Type is INamedTypeSymbol namedType &&
+                    namedType.TypeArguments.TrySingle(out var typeArg))
+                {
+                    correctType = typeArg.ToString();
+                    return true;
+                }
             }
 
             correctType = null;
