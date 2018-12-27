@@ -20,7 +20,7 @@ Roslyn analyzers for ASP.NET.Core.
   </tr>
   <tr>
     <td><a href="https://github.com/DotNetAnalyzers/AspNetCoreAnalyzers/tree/master/documentation/ASP003.md">ASP003</a></td>
-    <td>Parameter type does not match template.</td>
+    <td>Parameter type does not match.</td>
   </tr>
   <tr>
     <td><a href="https://github.com/DotNetAnalyzers/AspNetCoreAnalyzers/tree/master/documentation/ASP004.md">ASP004</a></td>
