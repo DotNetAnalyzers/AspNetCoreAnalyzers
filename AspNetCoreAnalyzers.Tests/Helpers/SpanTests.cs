@@ -5,11 +5,13 @@ namespace AspNetCoreAnalyzers.Tests.Helpers
     using Microsoft.CodeAnalysis.CSharp;
     using NUnit.Framework;
 
-    public class StringLiteralSpanTests
+    public class SpanTests
     {
-        [TestCase("\"abc\"", "abc", true)]
-        [TestCase("\"abc\"", "ab", false)]
-        [TestCase("\"abc\"", "bc", false)]
+        [TestCase("\"abc\"", "abc",  true)]
+        [TestCase("\"abc\"", "ab",   false)]
+        [TestCase("\"abc\"", "bc",   false)]
+        [TestCase("\"abc\"", "a",    false)]
+        [TestCase("\"abc\"", "abcd", false)]
         public void Equals(string text, string value, bool expected)
         {
             var syntaxTree = CSharpSyntaxTree.ParseText(@"
@@ -28,10 +30,11 @@ namespace AspBox.Controllers
             Assert.AreEqual(expected, span.Equals(value, StringComparison.Ordinal));
         }
 
-        [TestCase("\"abc\"", "abc", true)]
-        [TestCase("\"abc\"", "ab",  true)]
-        [TestCase("\"abc\"", "a",  true)]
-        [TestCase("\"abc\"", "bc",  false)]
+        [TestCase("\"abc\"", "abc",  true)]
+        [TestCase("\"abc\"", "ab",   true)]
+        [TestCase("\"abc\"", "a",    true)]
+        [TestCase("\"abc\"", "bc",   false)]
+        [TestCase("\"abc\"", "abcd", false)]
         public void StartsWith(string text, string value, bool expected)
         {
             var syntaxTree = CSharpSyntaxTree.ParseText(@"
@@ -50,10 +53,12 @@ namespace AspBox.Controllers
             Assert.AreEqual(expected, span.StartsWith(value, StringComparison.Ordinal));
         }
 
-        [TestCase("\"abc\"", "abc", true)]
-        [TestCase("\"abc\"", "bc",  true)]
-        [TestCase("\"abc\"", "c",   true)]
-        [TestCase("\"abc\"", "ab",  false)]
+        [TestCase("\"abc\"", "abc",  true)]
+        [TestCase("\"abc\"", "bc",   true)]
+        [TestCase("\"abc\"", "c",    true)]
+        [TestCase("\"abc\"", "ab",   false)]
+        [TestCase("\"abc\"", "bc",   false)]
+        [TestCase("\"abc\"", "dabc", false)]
         public void EndsWith(string text, string value, bool expected)
         {
             var syntaxTree = CSharpSyntaxTree.ParseText(@"

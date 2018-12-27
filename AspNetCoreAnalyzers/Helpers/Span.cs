@@ -115,13 +115,20 @@ namespace AspNetCoreAnalyzers
 
         internal bool StartsWith(string value, StringComparison comparisonType)
         {
-            return this.Literal.ValueText.IndexOf(value, this.TextSpan.Start, value.Length, comparisonType) == this.TextSpan.Start;
+            return this.Length >= value.Length &&
+                   this.Literal.ValueText.IndexOf(value, this.TextSpan.Start, value.Length, comparisonType) == this.TextSpan.Start;
         }
 
         internal bool EndsWith(string value, StringComparison comparisonType)
         {
-            var start = this.TextSpan.End - value.Length;
-            return this.Literal.ValueText.IndexOf(value, start, value.Length, comparisonType) == start;
+            if (this.Length >= value.Length)
+            {
+                var start = this.TextSpan.End - value.Length;
+                return this.Literal.ValueText.IndexOf(value, start, value.Length, comparisonType) == start;
+            }
+
+
+            return false;
         }
     }
 }
