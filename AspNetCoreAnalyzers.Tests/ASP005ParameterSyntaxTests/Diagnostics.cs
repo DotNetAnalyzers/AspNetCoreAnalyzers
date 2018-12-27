@@ -1,4 +1,4 @@
-namespace AspNetCoreAnalyzers.Tests.ASP004ParameterSyntaxTests
+namespace AspNetCoreAnalyzers.Tests.ASP005ParameterSyntaxTests
 {
     using System.Globalization;
     using Gu.Roslyn.Asserts;
@@ -10,7 +10,7 @@ namespace AspNetCoreAnalyzers.Tests.ASP004ParameterSyntaxTests
     public class Diagnostics
     {
         private static readonly DiagnosticAnalyzer Analyzer = new AttributeAnalyzer();
-        private static readonly ExpectedDiagnostic ExpectedDiagnostic = ExpectedDiagnostic.Create(ASP004ParameterSyntax.Descriptor);
+        private static readonly ExpectedDiagnostic ExpectedDiagnostic = ExpectedDiagnostic.Create(ASP005ParameterSyntax.Descriptor);
 
         [TestCase("\"api/orders/{id:↓wrong}\"")]
         [TestCase("@\"api/orders/{id:↓wrong}\"")]
@@ -90,8 +90,8 @@ namespace ValidCode
 }".AssertReplace("\"api/orders/{id:wrong}\"", before);
 
             var expectedDiagnostic = new ExpectedDiagnostic(
-                ASP004ParameterSyntax.DiagnosticId,
-                ASP004ParameterSyntax.Descriptor.MessageFormat.ToString(CultureInfo.InvariantCulture),
+                ASP005ParameterSyntax.DiagnosticId,
+                ASP005ParameterSyntax.Descriptor.MessageFormat.ToString(CultureInfo.InvariantCulture),
                 new FileLinePositionSpan("OrdersController.cs", new LinePosition(8, start), new LinePosition(8, end)));
             AnalyzerAssert.Diagnostics(Analyzer, expectedDiagnostic, code);
         }

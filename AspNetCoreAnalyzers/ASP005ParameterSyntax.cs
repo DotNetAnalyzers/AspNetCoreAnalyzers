@@ -2,9 +2,9 @@ namespace AspNetCoreAnalyzers
 {
     using Microsoft.CodeAnalysis;
 
-    internal static class ASP004ParameterSyntax
+    internal static class ASP005ParameterSyntax
     {
-        public const string DiagnosticId = "ASP004";
+        public const string DiagnosticId = "ASP005";
 
         internal static readonly DiagnosticDescriptor Descriptor = new DiagnosticDescriptor(
             id: DiagnosticId,

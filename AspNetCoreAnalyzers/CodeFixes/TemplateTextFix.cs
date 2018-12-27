@@ -17,7 +17,7 @@ namespace AspNetCoreAnalyzers
     {
         public override ImmutableArray<string> FixableDiagnosticIds { get; } = ImmutableArray.Create(
             ASP002MissingParameter.DiagnosticId,
-            ASP004ParameterSyntax.DiagnosticId,
+            ASP005ParameterSyntax.DiagnosticId,
             ASP006ParameterRegex.DiagnosticId);
 
         public override FixAllProvider GetFixAllProvider() => null;
@@ -55,7 +55,7 @@ namespace AspNetCoreAnalyzers
             {
                 case ASP002MissingParameter.DiagnosticId:
                     return "Rename parameter";
-                case ASP004ParameterSyntax.DiagnosticId:
+                case ASP005ParameterSyntax.DiagnosticId:
                     return "Fix syntax error.";
                 case ASP006ParameterRegex.DiagnosticId:
                     return "Escape regex.";

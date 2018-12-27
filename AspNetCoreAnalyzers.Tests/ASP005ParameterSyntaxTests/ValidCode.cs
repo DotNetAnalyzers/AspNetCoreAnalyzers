@@ -1,4 +1,4 @@
-namespace AspNetCoreAnalyzers.Tests.ASP004ParameterSyntaxTests
+namespace AspNetCoreAnalyzers.Tests.ASP005ParameterSyntaxTests
 {
     using Gu.Roslyn.Asserts;
     using Microsoft.CodeAnalysis.Diagnostics;
