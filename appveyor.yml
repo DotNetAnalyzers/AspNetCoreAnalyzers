@@ -6,6 +6,3 @@ before_build:
 configuration: Release
 build:
   verbosity: minimal
-
-test:
-  - ps: dotnet test --no-build
