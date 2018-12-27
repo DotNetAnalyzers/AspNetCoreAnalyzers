@@ -18,6 +18,8 @@ namespace AspNetCoreAnalyzers
         public override ImmutableArray<string> FixableDiagnosticIds { get; } = ImmutableArray.Create(
             ASP001ParameterName.DiagnosticId);
 
+        public override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
+
         public override async Task RegisterCodeFixesAsync(CodeFixContext context)
         {
             var syntaxRoot = await context.Document.GetSyntaxRootAsync(context.CancellationToken)

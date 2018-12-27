@@ -36,10 +36,10 @@ namespace AspNetCoreAnalyzers
             {
                 using (var pairs = GetPairs(template, method))
                 {
-                    if (pairs.TrySingle(x => x.FromTemplate == null, out var withMethodParameter) &&
-                        methodDeclaration.TryFindParameter(withMethodParameter.FromMethodSymbol.Name, out var parameterSyntax) &&
-                        pairs.TrySingle(x => x.FromMethodSymbol == null, out var withTemplateParameter) &&
-                        withTemplateParameter.FromTemplate is TemplateParameter templateParameter)
+                    if (pairs.TrySingle(x => x.Route == null, out var withMethodParameter) &&
+                        methodDeclaration.TryFindParameter(withMethodParameter.Symbol.Name, out var parameterSyntax) &&
+                        pairs.TrySingle(x => x.Symbol == null, out var withTemplateParameter) &&
+                        withTemplateParameter.Route is TemplateParameter templateParameter)
                     {
                         context.ReportDiagnostic(
                             Diagnostic.Create(
@@ -55,10 +55,10 @@ namespace AspNetCoreAnalyzers
                                 templateParameter.Name.GetLocation(),
                                 ImmutableDictionary<string, string>.Empty.Add(
                                     nameof(Text),
-                                    withMethodParameter.FromMethodSymbol.Name)));
+                                    withMethodParameter.Symbol.Name)));
                     }
-                    else if (pairs.Count(x => x.FromTemplate == null) > 1 &&
-                             pairs.Count(x => x.FromMethodSymbol == null) > 1)
+                    else if (pairs.Count(x => x.Route == null) > 1 &&
+                             pairs.Count(x => x.Symbol == null) > 1)
                     {
                         context.ReportDiagnostic(
                             Diagnostic.Create(
@@ -66,8 +66,8 @@ namespace AspNetCoreAnalyzers
                                 methodDeclaration.ParameterList.GetLocation()));
                     }
 
-                    if (pairs.TryFirst(x => x.FromMethodSymbol == null, out _) &&
-                        !pairs.TryFirst(x => x.FromTemplate == null, out _))
+                    if (pairs.TryFirst(x => x.Symbol == null, out _) &&
+                        !pairs.TryFirst(x => x.Route == null, out _))
                     {
                         context.ReportDiagnostic(
                             Diagnostic.Create(
@@ -78,7 +78,7 @@ namespace AspNetCoreAnalyzers
                     foreach (var pair in pairs)
                     {
                         if (HasWrongType(pair, out var typeName) &&
-                            methodDeclaration.TryFindParameter(pair.FromMethodSymbol?.Name, out parameterSyntax))
+                            methodDeclaration.TryFindParameter(pair.Symbol?.Name, out parameterSyntax))
                         {
                             context.ReportDiagnostic(
                                 Diagnostic.Create(
@@ -173,7 +173,7 @@ namespace AspNetCoreAnalyzers
             foreach (var component in template.Path)
             {
                 if (component.Parameter is TemplateParameter templateParameter &&
-                    list.All(x => x.FromTemplate != templateParameter))
+                    list.All(x => x.Route != templateParameter))
                 {
                     list.Add(new ParameterPair(templateParameter, null));
                 }
@@ -184,8 +184,8 @@ namespace AspNetCoreAnalyzers
 
         private static bool HasWrongType(ParameterPair pair, out string correctType)
         {
-            if (pair.FromTemplate?.Constraints is ImmutableArray<RouteConstraint> constraints &&
-                pair.FromMethodSymbol is IParameterSymbol parameter)
+            if (pair.Route?.Constraints is ImmutableArray<RouteConstraint> constraints &&
+                pair.Symbol is IParameterSymbol parameter)
             {
                 foreach (var constraint in constraints)
                 {

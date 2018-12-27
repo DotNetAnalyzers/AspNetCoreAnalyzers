@@ -1,9 +1,10 @@
 namespace AspNetCoreAnalyzers
 {
+    using System;
     using System.Diagnostics;
 
     [DebuggerDisplay("{this.Span.ToString()}")]
-    public struct PathSegment
+    public struct PathSegment : IEquatable<PathSegment>
     {
         public PathSegment(StringLiteral literal, int start, int end)
         {
@@ -16,6 +17,16 @@ namespace AspNetCoreAnalyzers
         public Span Span { get; }
 
         public TemplateParameter? Parameter { get; }
+
+        public static bool operator ==(PathSegment left, PathSegment right)
+        {
+            return left.Equals(right);
+        }
+
+        public static bool operator !=(PathSegment left, PathSegment right)
+        {
+            return !left.Equals(right);
+        }
 
         public static bool TryRead(StringLiteral literal, int start, out PathSegment segment)
         {
@@ -77,6 +88,22 @@ namespace AspNetCoreAnalyzers
 
             segment = default(PathSegment);
             return false;
+        }
+
+        public bool Equals(PathSegment other)
+        {
+            return this.Span.Equals(other.Span);
+        }
+
+        public override bool Equals(object obj)
+        {
+            return obj is PathSegment other &&
+                   this.Equals(other);
+        }
+
+        public override int GetHashCode()
+        {
+            return this.Span.GetHashCode();
         }
     }
 }

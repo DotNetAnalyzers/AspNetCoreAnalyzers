@@ -1,12 +1,13 @@
 namespace AspNetCoreAnalyzers
 {
+    using System;
     using System.Diagnostics;
     using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
     using Microsoft.CodeAnalysis.Text;
 
     [DebuggerDisplay("{this.Text}")]
-    public struct StringLiteral
+    public struct StringLiteral : IEquatable<StringLiteral>
     {
         private readonly LiteralExpressionSyntax literalExpression;
 
@@ -37,6 +38,16 @@ namespace AspNetCoreAnalyzers
         public string Text => this.literalExpression.Token.Text;
 
         public string ValueText => this.literalExpression.Token.ValueText;
+
+        public static bool operator ==(StringLiteral left, StringLiteral right)
+        {
+            return left.Equals(right);
+        }
+
+        public static bool operator !=(StringLiteral left, StringLiteral right)
+        {
+            return !left.Equals(right);
+        }
 
         public Location GetLocation(TextSpan textSpan)
         {
@@ -85,6 +96,26 @@ namespace AspNetCoreAnalyzers
 
                 return index;
             }
+        }
+
+        public bool Equals(StringLiteral other)
+        {
+            return this.literalExpression.Equals(other.literalExpression);
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj))
+            {
+                return false;
+            }
+
+            return obj is StringLiteral other && this.Equals(other);
+        }
+
+        public override int GetHashCode()
+        {
+            return this.literalExpression.GetHashCode();
         }
     }
 }
