@@ -1,7 +1,8 @@
 resources:
 - repo: self
-queue:
-  name: Hosted Ubuntu 1604
+
+pool:
+  vmImage: VS2017-Win2016
 
 steps:
 - task: DotNetCoreCLI@2
@@ -9,16 +10,8 @@ steps:
   inputs:
     command: restore
 
-- task: DotNetCoreCLI@2
+- task: VSBuild@1
   displayName: Build
-  inputs:
-    command: build
 
-- task: DotNetCoreCLI@2
+- task: VSTest@2
   displayName: Test
-  inputs:
-    command: test
-
-    projects: '$(Parameters.TestProjects)'
-
-    arguments: '--configuration $(BuildConfiguration)'
