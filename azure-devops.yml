@@ -2,7 +2,7 @@ resources:
 - repo: self
 
 steps:
-- task: DotNetCoreCLI@2
+- task: DotNetCoreCLI@2.2
   displayName: Restore
   inputs:
     command: restore
