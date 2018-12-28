@@ -1,9 +1,6 @@
 resources:
 - repo: self
 
-pool:
-  vmImage: VS2017-Win2016
-
 steps:
 - task: DotNetCoreCLI@2
   displayName: Restore
