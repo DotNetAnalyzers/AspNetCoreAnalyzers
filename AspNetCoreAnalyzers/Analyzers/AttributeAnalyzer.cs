@@ -17,7 +17,7 @@ namespace AspNetCoreAnalyzers
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get; } = ImmutableArray.Create(
             ASP001ParameterName.Descriptor,
             ASP002MissingParameter.Descriptor,
-            ASP003ParameterType.Descriptor,
+            ASP003ParameterSymbolType.Descriptor,
             ASP005ParameterSyntax.Descriptor,
             ASP006ParameterRegex.Descriptor);
 
@@ -77,12 +77,12 @@ namespace AspNetCoreAnalyzers
 
                     foreach (var pair in pairs)
                     {
-                        if (HasWrongType(pair, out var typeName) &&
+                        if (HasWrongType(pair, out var typeName, out _) &&
                             methodDeclaration.TryFindParameter(pair.Symbol?.Name, out parameterSyntax))
                         {
                             context.ReportDiagnostic(
                                 Diagnostic.Create(
-                                    ASP003ParameterType.Descriptor,
+                                    ASP003ParameterSymbolType.Descriptor,
                                     parameterSyntax.Type.GetLocation(),
                                     ImmutableDictionary<string, string>.Empty.Add(
                                         nameof(TypeSyntax),
@@ -182,7 +182,7 @@ namespace AspNetCoreAnalyzers
             return list;
         }
 
-        private static bool HasWrongType(ParameterPair pair, out string correctType)
+        private static bool HasWrongType(ParameterPair pair, out string correctType, out string correctConstraint)
         {
             if (pair.Route?.Constraints is ImmutableArray<RouteConstraint> constraints &&
                 pair.Symbol is IParameterSymbol parameter)
@@ -193,6 +193,7 @@ namespace AspNetCoreAnalyzers
                     if (TryGetType(constraint.Span, out var type))
                     {
                         correctType = parameter.Type == type ? null : type.Alias ?? type.FullName;
+                        correctConstraint = null;
                         return correctType != null;
                     }
                 }
@@ -203,10 +204,12 @@ namespace AspNetCoreAnalyzers
                     namedType.TypeArguments.TrySingle(out var typeArg))
                 {
                     correctType = typeArg.ToString();
+                    correctConstraint = null;
                     return true;
                 }
             }
 
+            correctConstraint = null;
             correctType = null;
             return false;
 

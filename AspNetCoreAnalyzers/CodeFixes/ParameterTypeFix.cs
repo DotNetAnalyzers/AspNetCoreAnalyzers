@@ -14,7 +14,7 @@ namespace AspNetCoreAnalyzers
     public class ParameterTypeFix : DocumentEditorCodeFixProvider
     {
         public override ImmutableArray<string> FixableDiagnosticIds { get; } = ImmutableArray.Create(
-            ASP003ParameterType.DiagnosticId);
+            ASP003ParameterSymbolType.DiagnosticId);
 
         protected override async Task RegisterCodeFixesAsync(DocumentEditorCodeFixContext context)
         {
