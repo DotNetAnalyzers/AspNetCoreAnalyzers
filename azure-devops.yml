@@ -16,7 +16,6 @@ steps:
   displayName: Build
   inputs:
    configuration: Release
-   msbuildArgs: verbosity minimal
 
 - task: VSTest@2
   displayName: Test
