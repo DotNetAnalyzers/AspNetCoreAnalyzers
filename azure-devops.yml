@@ -12,8 +12,12 @@ steps:
   inputs:
     command: restore
 
-- task: VSBuild@1
+- task: DotNetCoreCLI@2
   displayName: Build
+  inputs:
+    command: build
+    arguments: --configuration release --verbosity minimal
+    
 
 - task: VSTest@2
   displayName: Test
