@@ -27,7 +27,7 @@ namespace AspNetCoreAnalyzers
                     diagnostic.Properties.TryGetValue(nameof(TypeSyntax), out var typeName))
                 {
                     context.RegisterCodeFix(
-                        $"Change to {typeName}",
+                        $"Change type to match route: {typeName}",
                         (e, _) => e.ReplaceNode(
                             typeSyntax,
                             x => SyntaxFactory.ParseTypeName(typeName)

@@ -18,6 +18,7 @@ namespace AspNetCoreAnalyzers
             ASP001ParameterName.Descriptor,
             ASP002MissingParameter.Descriptor,
             ASP003ParameterSymbolType.Descriptor,
+            ASP004RouteParameterType.Descriptor,
             ASP005ParameterSyntax.Descriptor,
             ASP006ParameterRegex.Descriptor);
 
@@ -77,7 +78,7 @@ namespace AspNetCoreAnalyzers
 
                     foreach (var pair in pairs)
                     {
-                        if (HasWrongType(pair, out var typeName, out _) &&
+                        if (HasWrongType(pair, out var typeName, out var constraintLocation, out var text) &&
                             methodDeclaration.TryFindParameter(pair.Symbol?.Name, out parameterSyntax))
                         {
                             context.ReportDiagnostic(
@@ -87,6 +88,16 @@ namespace AspNetCoreAnalyzers
                                     ImmutableDictionary<string, string>.Empty.Add(
                                         nameof(TypeSyntax),
                                         typeName)));
+
+                            context.ReportDiagnostic(
+                                Diagnostic.Create(
+                                    ASP004RouteParameterType.Descriptor,
+                                    constraintLocation,
+                                    text == null
+                                        ? ImmutableDictionary<string, string>.Empty
+                                        : ImmutableDictionary<string, string>.Empty.Add(
+                                            nameof(Text),
+                                            text)));
                         }
                     }
 
@@ -182,35 +193,39 @@ namespace AspNetCoreAnalyzers
             return list;
         }
 
-        private static bool HasWrongType(ParameterPair pair, out string correctType, out string correctConstraint)
+        private static bool HasWrongType(ParameterPair pair, out string correctType, out Location constraintLocation, out string correctConstraint)
         {
-            if (pair.Route?.Constraints is ImmutableArray<RouteConstraint> constraints &&
-                pair.Symbol is IParameterSymbol parameter)
+            if (pair.Route is TemplateParameter parameter &&
+                parameter.Constraints is ImmutableArray<RouteConstraint> constraints &&
+                pair.Symbol is IParameterSymbol symbol)
             {
                 foreach (var constraint in constraints)
                 {
                     // https://docs.microsoft.com/en-us/aspnet/core/fundamentals/routing?view=aspnetcore-2.2#route-constraint-reference
                     if (TryGetType(constraint.Span, out var type))
                     {
-                        correctType = parameter.Type == type ? null : type.Alias ?? type.FullName;
+                        correctType = symbol.Type == type ? null : type.Alias ?? type.FullName;
+                        constraintLocation = constraint.Span.GetLocation();
                         correctConstraint = null;
                         return correctType != null;
                     }
                 }
 
                 if (!constraints.TryFirst(x => x.Span.Equals("?", StringComparison.Ordinal), out _) &&
-                    parameter.Type.OriginalDefinition.SpecialType == SpecialType.System_Nullable_T &&
-                    parameter.Type is INamedTypeSymbol namedType &&
+                    symbol.Type.OriginalDefinition.SpecialType == SpecialType.System_Nullable_T &&
+                    symbol.Type is INamedTypeSymbol namedType &&
                     namedType.TypeArguments.TrySingle(out var typeArg))
                 {
                     correctType = typeArg.ToString();
-                    correctConstraint = null;
+                    constraintLocation = parameter.Name.GetLocation();
+                    correctConstraint = $"{parameter.Name}?";
                     return true;
                 }
             }
 
-            correctConstraint = null;
             correctType = null;
+            constraintLocation = null;
+            correctConstraint = null;
             return false;
 
             bool TryGetType(Span constraint, out QualifiedType type)

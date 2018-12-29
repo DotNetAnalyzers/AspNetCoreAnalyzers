@@ -72,7 +72,7 @@ namespace ValidCode
 
         [TestCase("int?")]
         [TestCase("Nullable<int>")]
-        public void WhenOptional(string parameter)
+        public void WhenNullableAndNotOptional(string parameter)
         {
             var code = @"
 namespace ValidCode
