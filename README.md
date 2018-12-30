@@ -44,7 +44,7 @@ Roslyn analyzers for ASP.NET.Core.
 The preferable way to use the analyzers is to add the nuget package [AspNetCoreAnalyzers](https://www.nuget.org/packages/AspNetCoreAnalyzers/)
 to the project(s).
 
-The severity of individual rules may be configured using [rule set files](https://msdn.microsoft.com/en-us/library/dd264996.aspx)
+The severity of individual rules may be configured using [.ruleset](https://msdn.microsoft.com/en-us/library/dd264996.aspx) files
 in Visual Studio.
 
 ## Installation
@@ -65,7 +65,7 @@ The ruleset editor does not handle changes IDs well, if things get out of sync y
 2) Edit the ProjectName.rulset file and remove the AspNetCoreAnalyzers element.
 3) Start visual studio and add back the desired configuration.
 
-Above is not ideal, sorry about this. Not sure this is our bug.
+Above is not ideal, sorry about this. Not sure if this is our bug.
 
 
 ## Current status

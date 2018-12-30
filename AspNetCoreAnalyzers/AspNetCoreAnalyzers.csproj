@@ -20,11 +20,11 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <Version>0.1.18.0-dev</Version>
-    <Description>Analyzers for System.Reflection</Description>
+    <Version>0.1.0.0-dev</Version>
+    <Description>Analyzers for Microsoft.AspNetCore</Description>
     <PackageLicenseUrl>https://github.com/DotNetAnalyzers/AspNetCoreAnalyzers</PackageLicenseUrl>
     <RepositoryUrl>https://github.com/DotNetAnalyzers/AspNetCoreAnalyzers</RepositoryUrl>
-    <PackageTags>Asp Roslyn Diagnostic Analyzer DotnetAnalyzers</PackageTags>
+    <PackageTags>ASP Roslyn Diagnostic Analyzer DotnetAnalyzers</PackageTags>
     <PackageReleaseNotes></PackageReleaseNotes>
   </PropertyGroup>
 
