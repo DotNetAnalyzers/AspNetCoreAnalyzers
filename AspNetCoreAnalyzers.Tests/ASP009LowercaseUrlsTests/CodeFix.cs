@@ -47,4 +47,5 @@ namespace ValidCode
 }".AssertReplace("\"api/orders/{id}\"", after);
             AnalyzerAssert.CodeFix(Analyzer, Fix, ExpectedDiagnostic, code, fixedCode);
         }
+    }
 }
