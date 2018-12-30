@@ -11,7 +11,6 @@ namespace AspNetCoreAnalyzers.Tests.ASP004RouteParameterTypeTests
         private static readonly ExpectedDiagnostic ExpectedDiagnostic = ExpectedDiagnostic.Create(ASP004RouteParameterType.Descriptor);
         private static readonly CodeFixProvider Fix = new TemplateTextFix();
 
-        [Explicit]
         [TestCase("\"{id:↓float}\"",                   "\"{id:int}\"",                   "int id")]
         [TestCase("\"api/orders/{id:↓float}\"",        "\"api/orders/{id:int}\"",        "int id")]
         [TestCase("\"api/orders/{id:↓float:min(1)}\"", "\"api/orders/{id:int:min(1)}\"", "int id")]
@@ -20,7 +19,7 @@ namespace AspNetCoreAnalyzers.Tests.ASP004RouteParameterTypeTests
         [TestCase("\"api/orders/{id:↓float}\"",        "\"api/orders/{id:datetime}\"",   "System.DateTime id")]
         [TestCase("\"api/orders/{id:↓float}\"",        "\"api/orders/{id:decimal}\"",    "decimal id")]
         [TestCase("\"api/orders/{id:↓float}\"",        "\"api/orders/{id:double}\"",     "double id")]
-        [TestCase("\"api/orders/{id:↓float}\"",        "\"api/orders/{id:float}\"",      "float id")]
+        [TestCase("\"api/orders/{id:↓int}\"",          "\"api/orders/{id:float}\"",      "float id")]
         [TestCase("\"api/orders/{id:↓float}\"",        "\"api/orders/{id:guid}\"",       "System.Guid id")]
         public void When(string before, string after, string parameter)
         {

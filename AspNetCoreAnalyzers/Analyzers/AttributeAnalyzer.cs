@@ -195,30 +195,30 @@ namespace AspNetCoreAnalyzers
 
         private static bool HasWrongType(ParameterPair pair, out string correctType, out Location constraintLocation, out string correctConstraint)
         {
-            if (pair.Route is TemplateParameter parameter &&
-                parameter.Constraints is ImmutableArray<RouteConstraint> constraints &&
-                pair.Symbol is IParameterSymbol symbol)
+            if (pair.Route is TemplateParameter templateParameter &&
+                templateParameter.Constraints is ImmutableArray<RouteConstraint> constraints &&
+                pair.Symbol is IParameterSymbol parameterSymbol)
             {
                 foreach (var constraint in constraints)
                 {
                     // https://docs.microsoft.com/en-us/aspnet/core/fundamentals/routing?view=aspnetcore-2.2#route-constraint-reference
                     if (TryGetType(constraint.Span, out var type))
                     {
-                        correctType = symbol.Type == type ? null : type.Alias ?? type.FullName;
+                        correctType = parameterSymbol.Type == type ? null : type.Alias ?? type.FullName;
                         constraintLocation = constraint.Span.GetLocation();
-                        correctConstraint = null;
+                        correctConstraint = GetCorrectConstraintType(constraint);
                         return correctType != null;
                     }
                 }
 
                 if (!constraints.TryFirst(x => x.Span.Equals("?", StringComparison.Ordinal), out _) &&
-                    symbol.Type.OriginalDefinition.SpecialType == SpecialType.System_Nullable_T &&
-                    symbol.Type is INamedTypeSymbol namedType &&
+                    parameterSymbol.Type.OriginalDefinition.SpecialType == SpecialType.System_Nullable_T &&
+                    parameterSymbol.Type is INamedTypeSymbol namedType &&
                     namedType.TypeArguments.TrySingle(out var typeArg))
                 {
                     correctType = typeArg.ToString();
-                    constraintLocation = parameter.Name.GetLocation();
-                    correctConstraint = $"{parameter.Name}?";
+                    constraintLocation = templateParameter.Name.GetLocation();
+                    correctConstraint = $"{templateParameter.Name}?";
                     return true;
                 }
             }
@@ -293,6 +293,23 @@ namespace AspNetCoreAnalyzers
 
                 type = null;
                 return false;
+            }
+
+            string GetCorrectConstraintType(RouteConstraint constraint)
+            {
+                if (constraint.Span.Equals("bool", StringComparison.Ordinal) ||
+                    constraint.Span.Equals("decimal", StringComparison.Ordinal) ||
+                    constraint.Span.Equals("double", StringComparison.Ordinal) ||
+                    constraint.Span.Equals("float", StringComparison.Ordinal) ||
+                    constraint.Span.Equals("int", StringComparison.Ordinal) ||
+                    constraint.Span.Equals("long", StringComparison.Ordinal) ||
+                    constraint.Span.Equals("datetime", StringComparison.Ordinal) ||
+                    constraint.Span.Equals("guid", StringComparison.Ordinal))
+                {
+                    return parameterSymbol.Type.ToDisplayString(SymbolDisplayFormat.MinimallyQualifiedFormat).ToLower();
+                }
+
+                return null;
             }
         }
 
