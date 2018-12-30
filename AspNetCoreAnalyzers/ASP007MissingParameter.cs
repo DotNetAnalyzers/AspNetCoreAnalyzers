@@ -2,7 +2,7 @@ namespace AspNetCoreAnalyzers
 {
     using Microsoft.CodeAnalysis;
 
-    internal static class ASP002MissingParameter
+    internal static class ASP007MissingParameter
     {
         public const string DiagnosticId = "ASP002";
 

@@ -16,7 +16,7 @@ namespace AspNetCoreAnalyzers
     public class ParameterNameFix : CodeFixProvider
     {
         public override ImmutableArray<string> FixableDiagnosticIds { get; } = ImmutableArray.Create(
-            ASP001ParameterName.DiagnosticId);
+            ASP001ParameterSymbolName.DiagnosticId);
 
         public override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
 

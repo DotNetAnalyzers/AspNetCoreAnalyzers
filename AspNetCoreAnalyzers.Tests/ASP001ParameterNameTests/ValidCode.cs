@@ -8,7 +8,7 @@ namespace AspNetCoreAnalyzers.Tests.ASP001ParameterNameTests
     public class ValidCode
     {
         private static readonly DiagnosticAnalyzer Analyzer = new AttributeAnalyzer();
-        private static readonly DiagnosticDescriptor Descriptor = ASP001ParameterName.Descriptor;
+        private static readonly DiagnosticDescriptor Descriptor = ASP001ParameterSymbolName.Descriptor;
 
         [TestCase("@\"{value}\"")]
         [TestCase("\"{value}\"")]

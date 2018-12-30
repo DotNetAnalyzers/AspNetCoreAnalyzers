@@ -16,7 +16,7 @@ namespace AspNetCoreAnalyzers
     public class TemplateTextFix : CodeFixProvider
     {
         public override ImmutableArray<string> FixableDiagnosticIds { get; } = ImmutableArray.Create(
-            ASP002MissingParameter.DiagnosticId,
+            ASP007MissingParameter.DiagnosticId,
             ASP004RouteParameterType.DiagnosticId,
             ASP005ParameterSyntax.DiagnosticId,
             ASP006ParameterRegex.DiagnosticId);
@@ -54,7 +54,7 @@ namespace AspNetCoreAnalyzers
         {
             switch (diagnostic.Id)
             {
-                case ASP002MissingParameter.DiagnosticId:
+                case ASP007MissingParameter.DiagnosticId:
                     return "Rename parameter.";
                 case ASP004RouteParameterType.DiagnosticId:
                     return "Change type to match symbol.";

@@ -15,8 +15,8 @@ namespace AspNetCoreAnalyzers
     public class AttributeAnalyzer : DiagnosticAnalyzer
     {
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get; } = ImmutableArray.Create(
-            ASP001ParameterName.Descriptor,
-            ASP002MissingParameter.Descriptor,
+            ASP001ParameterSymbolName.Descriptor,
+            ASP007MissingParameter.Descriptor,
             ASP003ParameterSymbolType.Descriptor,
             ASP004RouteParameterType.Descriptor,
             ASP005ParameterSyntax.Descriptor,
@@ -44,7 +44,7 @@ namespace AspNetCoreAnalyzers
                     {
                         context.ReportDiagnostic(
                             Diagnostic.Create(
-                                ASP001ParameterName.Descriptor,
+                                ASP001ParameterSymbolName.Descriptor,
                                 parameterSyntax.Identifier.GetLocation(),
                                 ImmutableDictionary<string, string>.Empty.Add(
                                     nameof(NameSyntax),
@@ -52,7 +52,7 @@ namespace AspNetCoreAnalyzers
 
                         context.ReportDiagnostic(
                             Diagnostic.Create(
-                                ASP002MissingParameter.Descriptor,
+                                ASP007MissingParameter.Descriptor,
                                 templateParameter.Name.GetLocation(),
                                 ImmutableDictionary<string, string>.Empty.Add(
                                     nameof(Text),
@@ -63,7 +63,7 @@ namespace AspNetCoreAnalyzers
                     {
                         context.ReportDiagnostic(
                             Diagnostic.Create(
-                                ASP001ParameterName.Descriptor,
+                                ASP001ParameterSymbolName.Descriptor,
                                 methodDeclaration.ParameterList.GetLocation()));
                     }
 
@@ -72,7 +72,7 @@ namespace AspNetCoreAnalyzers
                     {
                         context.ReportDiagnostic(
                             Diagnostic.Create(
-                                ASP002MissingParameter.Descriptor,
+                                ASP007MissingParameter.Descriptor,
                                 methodDeclaration.ParameterList.GetLocation()));
                     }
 

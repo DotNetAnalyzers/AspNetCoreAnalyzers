@@ -8,7 +8,7 @@ namespace AspNetCoreAnalyzers.Tests.ASP002MissingParameterTests
     public class CodeFix
     {
         private static readonly DiagnosticAnalyzer Analyzer = new AttributeAnalyzer();
-        private static readonly ExpectedDiagnostic ExpectedDiagnostic = ExpectedDiagnostic.Create(ASP002MissingParameter.Descriptor);
+        private static readonly ExpectedDiagnostic ExpectedDiagnostic = ExpectedDiagnostic.Create(ASP007MissingParameter.Descriptor);
         private static readonly CodeFixProvider Fix = new TemplateTextFix();
 
         [TestCase("\"api/{↓value}\"",       "\"api/{text}\"")]

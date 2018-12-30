@@ -13,7 +13,7 @@ Roslyn analyzers for ASP.NET.Core.
 <table>
   <tr>
     <td><a href="https://github.com/DotNetAnalyzers/AspNetCoreAnalyzers/tree/master/documentation/ASP001.md">ASP001</a></td>
-    <td>The parameter name does not match the url parameter.</td>
+    <td>Parameter name does not match the name specified by the route parameter.</td>
   </tr>
   <tr>
     <td><a href="https://github.com/DotNetAnalyzers/AspNetCoreAnalyzers/tree/master/documentation/ASP002.md">ASP002</a></td>
@@ -21,7 +21,7 @@ Roslyn analyzers for ASP.NET.Core.
   </tr>
   <tr>
     <td><a href="https://github.com/DotNetAnalyzers/AspNetCoreAnalyzers/tree/master/documentation/ASP003.md">ASP003</a></td>
-    <td>Parameter type does not match the type specified by the route parameter.</td>
+    <td>Parameter type does not match the type specified by the name specified by the route parameter.</td>
   </tr>
   <tr>
     <td><a href="https://github.com/DotNetAnalyzers/AspNetCoreAnalyzers/tree/master/documentation/ASP004.md">ASP004</a></td>
