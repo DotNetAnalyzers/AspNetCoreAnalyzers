@@ -49,5 +49,31 @@ namespace ValidCode
 }".AssertReplace("\"api/orders/{id}\"", after);
             AnalyzerAssert.CodeFix(Analyzer, Fix, ExpectedDiagnostic, code, fixedCode);
         }
+
+        [TestCase("\"api/orders/{↓action}\"")]
+        [TestCase("\"api/orders/{↓area}\"")]
+        [TestCase("\"api/orders/{↓controller}\"")]
+        [TestCase("\"api/orders/{↓handler}\"")]
+        [TestCase("\"api/orders/{↓page}\"")]
+        public void NoFixWhen(string before)
+        {
+            var code = @"
+namespace ValidCode
+{
+    using Microsoft.AspNetCore.Mvc;
+
+    [ApiController]
+    public class OrdersController : Controller
+    {
+        [HttpGet(""api/orders/{id}"")]
+        public IActionResult GetId(string id)
+        {
+            return this.Ok(id);
+        }
+    }
+}".AssertReplace("\"api/orders/{id}\"", before);
+
+            AnalyzerAssert.NoFix(Analyzer, Fix, ExpectedDiagnostic, code);
+        }
     }
 }

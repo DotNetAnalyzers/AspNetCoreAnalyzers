@@ -504,6 +504,17 @@ namespace AspNetCoreAnalyzers
                     correctName = parameter.Name.ToString().Trim();
                     return true;
                 }
+
+                if (parameter.Name.Equals("action", StringComparison.OrdinalIgnoreCase) ||
+                    parameter.Name.Equals("area", StringComparison.OrdinalIgnoreCase) ||
+                    parameter.Name.Equals("controller", StringComparison.OrdinalIgnoreCase) ||
+                    parameter.Name.Equals("handler", StringComparison.OrdinalIgnoreCase) ||
+                    parameter.Name.Equals("page", StringComparison.OrdinalIgnoreCase))
+                {
+                    location = parameter.Name.GetLocation();
+                    correctName = null;
+                    return true;
+                }
             }
 
             location = null;
