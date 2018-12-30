@@ -1,4 +1,4 @@
-namespace AspNetCoreAnalyzers.Tests.ASP003ParameterTypeTests
+namespace AspNetCoreAnalyzers.Tests.ASP003ParameterSymbolTypeTests
 {
     using Gu.Roslyn.Asserts;
     using Microsoft.CodeAnalysis.CodeFixes;
@@ -72,7 +72,7 @@ namespace ValidCode
 
         [TestCase("int?")]
         [TestCase("Nullable<int>")]
-        public void WhenNullableAndNotOptional(string parameter)
+        public void RemoveNullableWhenNotOptional(string parameter)
         {
             var code = @"
 namespace ValidCode
@@ -102,6 +102,45 @@ namespace ValidCode
     {
         [HttpGet(""api/orders/{id}"")]
         public IActionResult GetId(int id)
+        {
+            return this.Ok(id);
+        }
+    }
+}";
+            AnalyzerAssert.CodeFix(Analyzer, Fix, ExpectedDiagnostic, code, fixedCode);
+        }
+
+        [Test]
+        public void MakeNullableToMatchOptional()
+        {
+            var code = @"
+namespace ValidCode
+{
+    using System;
+    using Microsoft.AspNetCore.Mvc;
+
+    [ApiController]
+    public class OrdersController : Controller
+    {
+        [HttpGet(""api/orders/{id?}"")]
+        public IActionResult GetId(↓int id)
+        {
+            return this.Ok(id);
+        }
+    }
+}";
+
+            var fixedCode = @"
+namespace ValidCode
+{
+    using System;
+    using Microsoft.AspNetCore.Mvc;
+
+    [ApiController]
+    public class OrdersController : Controller
+    {
+        [HttpGet(""api/orders/{id?}"")]
+        public IActionResult GetId(int? id)
         {
             return this.Ok(id);
         }

@@ -209,6 +209,16 @@ namespace AspNetCoreAnalyzers
                         correctConstraint = GetCorrectConstraintType(constraint);
                         return correctType != null;
                     }
+
+                    if (constraint.Span.Equals("?", StringComparison.Ordinal) &&
+                        parameterSymbol.Type.IsValueType &&
+                        parameterSymbol.Type.OriginalDefinition.SpecialType != SpecialType.System_Nullable_T)
+                    {
+                        correctType = parameterSymbol.Type.ToDisplayString(SymbolDisplayFormat.MinimallyQualifiedFormat) + "?";
+                        constraintLocation = constraint.Span.GetLocation();
+                        correctConstraint = string.Empty;
+                        return true;
+                    }
                 }
 
                 if (!constraints.TryFirst(x => x.Span.Equals("?", StringComparison.Ordinal), out _) &&
