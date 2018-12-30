@@ -25,7 +25,7 @@ Roslyn analyzers for ASP.NET.Core.
   </tr>
   <tr>
     <td><a href="https://github.com/DotNetAnalyzers/AspNetCoreAnalyzers/tree/master/documentation/ASP004.md">ASP004</a></td>
-    <td>Parameter type does not match.</td>
+    <td>Route parameter type does not match.</td>
   </tr>
   <tr>
     <td><a href="https://github.com/DotNetAnalyzers/AspNetCoreAnalyzers/tree/master/documentation/ASP005.md">ASP005</a></td>
