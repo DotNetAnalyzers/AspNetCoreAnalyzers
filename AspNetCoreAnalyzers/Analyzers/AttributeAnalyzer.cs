@@ -22,7 +22,8 @@ namespace AspNetCoreAnalyzers
             ASP005ParameterSyntax.Descriptor,
             ASP006ParameterRegex.Descriptor,
             ASP007MissingParameter.Descriptor,
-            ASP008ValidRouteParameterName.Descriptor);
+            ASP008ValidRouteParameterName.Descriptor,
+            ASP009LowercaseUrl.Descriptor);
 
         public override void Initialize(AnalysisContext context)
         {
@@ -132,6 +133,17 @@ namespace AspNetCoreAnalyzers
                                     name == null
                                         ? ImmutableDictionary<string, string>.Empty
                                         : ImmutableDictionary<string, string>.Empty.Add(nameof(Text), name)));
+                        }
+
+                        if (IsUpperCase(segment, out var lowercase))
+                        {
+                            context.ReportDiagnostic(
+                                Diagnostic.Create(
+                                    ASP009LowercaseUrl.Descriptor,
+                                    segment.Span.GetLocation(),
+                                    lowercase == null
+                                        ? ImmutableDictionary<string, string>.Empty
+                                        : ImmutableDictionary<string, string>.Empty.Add(nameof(Text), lowercase)));
                         }
                     }
                 }
@@ -501,7 +513,8 @@ namespace AspNetCoreAnalyzers
                     parameter.Name.EndsWith(" ", StringComparison.OrdinalIgnoreCase))
                 {
                     location = parameter.Name.GetLocation();
-                    correctName = parameter.Name.ToString().Trim();
+                    correctName = parameter.Name.ToString()
+                                           .Trim();
                     return true;
                 }
 
@@ -519,6 +532,29 @@ namespace AspNetCoreAnalyzers
 
             location = null;
             correctName = null;
+            return false;
+        }
+
+        private static bool IsUpperCase(PathSegment segment, out string lowercase)
+        {
+            if (segment.Parameter == null &&
+                segment.Span.Length > 0 &&
+                char.IsUpper(segment.Span[0]))
+            {
+                for (var i = 1; i < segment.Span.Length; i++)
+                {
+                    if (char.IsUpper(segment.Span[i]))
+                    {
+                        lowercase = null;
+                        return false;
+                    }
+                }
+
+                lowercase = segment.Span.ToString().ToLower();
+                return true;
+            }
+
+            lowercase = null;
             return false;
         }
     }

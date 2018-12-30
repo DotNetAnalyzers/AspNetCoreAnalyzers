@@ -36,6 +36,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".docs", ".docs", "{1C271AF2
 		documentation\ASP005.md = documentation\ASP005.md
 		documentation\ASP006.md = documentation\ASP006.md
 		documentation\ASP008.md = documentation\ASP008.md
+		documentation\ASP009.md = documentation\ASP009.md
 		README.md = README.md
 		RELEASE_NOTES.md = RELEASE_NOTES.md
 	EndProjectSection

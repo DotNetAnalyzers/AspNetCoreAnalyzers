@@ -43,6 +43,10 @@ Roslyn analyzers for ASP.NET.Core.
     <td><a href="https://github.com/DotNetAnalyzers/AspNetCoreAnalyzers/tree/master/documentation/ASP008.md">ASP008</a></td>
     <td>Invalid route parameter name.</td>
   </tr>
+  <tr>
+    <td><a href="https://github.com/DotNetAnalyzers/AspNetCoreAnalyzers/tree/master/documentation/ASP009.md">ASP009</a></td>
+    <td>Use lowercase urls.</td>
+  </tr>
 <table>
 <!-- end generated table -->
 
