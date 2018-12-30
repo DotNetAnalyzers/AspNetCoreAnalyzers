@@ -1,4 +1,4 @@
-namespace AspNetCoreAnalyzers.Tests.ASP002MissingParameterTests
+namespace AspNetCoreAnalyzers.Tests.ASP007MissingParameterTests
 {
     using Gu.Roslyn.Asserts;
     using Microsoft.CodeAnalysis.Diagnostics;

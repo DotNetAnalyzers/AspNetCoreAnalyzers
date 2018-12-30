@@ -16,11 +16,12 @@ namespace AspNetCoreAnalyzers
     {
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get; } = ImmutableArray.Create(
             ASP001ParameterSymbolName.Descriptor,
-            ASP007MissingParameter.Descriptor,
+            ASP002RouteParameterName.Descriptor,
             ASP003ParameterSymbolType.Descriptor,
             ASP004RouteParameterType.Descriptor,
             ASP005ParameterSyntax.Descriptor,
-            ASP006ParameterRegex.Descriptor);
+            ASP006ParameterRegex.Descriptor,
+            ASP007MissingParameter.Descriptor);
 
         public override void Initialize(AnalysisContext context)
         {
@@ -52,7 +53,7 @@ namespace AspNetCoreAnalyzers
 
                         context.ReportDiagnostic(
                             Diagnostic.Create(
-                                ASP007MissingParameter.Descriptor,
+                                ASP002RouteParameterName.Descriptor,
                                 templateParameter.Name.GetLocation(),
                                 ImmutableDictionary<string, string>.Empty.Add(
                                     nameof(Text),

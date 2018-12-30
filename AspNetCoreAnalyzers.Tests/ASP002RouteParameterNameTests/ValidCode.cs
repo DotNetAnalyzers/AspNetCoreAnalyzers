@@ -1,57 +1,18 @@
-namespace AspNetCoreAnalyzers.Tests.ASP002MissingParameterTests
+namespace AspNetCoreAnalyzers.Tests.ASP002RouteParameterNameTests
 {
     using Gu.Roslyn.Asserts;
     using Microsoft.CodeAnalysis.Diagnostics;
     using NUnit.Framework;
 
-    public class Diagnostics
+    public class ValidCode
     {
         private static readonly DiagnosticAnalyzer Analyzer = new AttributeAnalyzer();
-        private static readonly ExpectedDiagnostic ExpectedDiagnostic = ExpectedDiagnostic.Create(ASP007MissingParameter.Descriptor);
 
-        [Test]
-        public void WhenNoParameter()
+        [TestCase("\"api/{text}\"")]
+        [TestCase("@\"api/{text}\"")]
+        [TestCase("\"api/{text:alpha}\"")]
+        public void When(string after)
         {
-            var code = @"
-namespace ValidCode
-{
-    using System.Threading.Tasks;
-    using Microsoft.AspNetCore.Mvc;
-
-    [ApiController]
-    public class OrdersController : Controller
-    {
-        [HttpGet(""api/orders/{id}"")]
-        public async Task<IActionResult> GetOrder↓()
-        {
-        }
-    }
-}";
-            AnalyzerAssert.Diagnostics(Analyzer, ExpectedDiagnostic, code);
-        }
-
-        [Test]
-        public void WhenLastIsMissing()
-        {
-            var order = @"
-namespace ValidCode
-{
-    public class Order
-    {
-        public int Id { get; set; }
-    }
-}";
-
-            var db = @"
-namespace ValidCode
-{
-    using Microsoft.EntityFrameworkCore;
-
-    public class Db : DbContext
-    {
-        public DbSet<Order> Orders { get; set; }
-    }
-}";
             var code = @"
 namespace ValidCode
 {
@@ -62,87 +23,40 @@ namespace ValidCode
     [ApiController]
     public class OrdersController : Controller
     {
-        private readonly Db db;
-
-        public OrdersController(Db db)
+        [HttpGet(""api/{text}"")]
+        public IActionResult GetValue(string text)
         {
-            this.db = db;
-        }
-
-        [HttpGet(""api/orders/{orderId}/items/{itemId}"")]
-        public async Task<IActionResult> GetOrder↓(int orderId)
-        {
-            var match = await this.db.Orders.FirstOrDefaultAsync(x => x.Id == orderId);
-            if (match == null)
-            {
-                return this.NotFound();
-            }
-
-            return this.Ok(match);
+            return this.Ok(text);
         }
     }
-}";
-            AnalyzerAssert.Diagnostics(Analyzer, ExpectedDiagnostic, order, db, code);
+}".AssertReplace("\"api/{text}\"", after);
+
+            AnalyzerAssert.Valid(Analyzer, code);
         }
 
-        [Test]
-        public void WhenFirstIsMissing()
+        [TestCase("\"api/orders/\" + \"{wrong}\"")]
+        public void IgnoreWhen(string template)
         {
-            var order = @"
-namespace ValidCode
-{
-    public class Order
-    {
-        public int Id { get; set; }
-    }
-}";
-
-            var db = @"
-namespace ValidCode
-{
-    using Microsoft.EntityFrameworkCore;
-
-    public class Db : DbContext
-    {
-        public DbSet<Order> Orders { get; set; }
-    }
-}";
             var code = @"
 namespace ValidCode
 {
-    using System.Threading.Tasks;
     using Microsoft.AspNetCore.Mvc;
-    using Microsoft.EntityFrameworkCore;
 
     [ApiController]
     public class OrdersController : Controller
     {
-        private readonly Db db;
-
-        public OrdersController(Db db)
+        [HttpGet(""api/orders/{value}"")]
+        public IActionResult GetId(string value)
         {
-            this.db = db;
-        }
-
-        [HttpGet(""api/orders/{orderId}/items/{itemId}"")]
-        public async Task<IActionResult> GetOrder↓(int itemId)
-        {
-            var match = await this.db.Orders.FirstOrDefaultAsync(x => x.Id == itemId);
-            if (match == null)
-            {
-                return this.NotFound();
-            }
-
-            return this.Ok(match);
+            return this.Ok(value);
         }
     }
-}";
-            AnalyzerAssert.Diagnostics(Analyzer, ExpectedDiagnostic, order, db, code);
+}".AssertReplace("\"api/orders/{value}\"", template);
+            AnalyzerAssert.Valid(Analyzer, code);
         }
 
-        [TestCase("[FromHeader]")]
-        [TestCase("[FromBody]")]
-        public void WhenWrongAttribute(string attribute)
+        [Test]
+        public void ImplicitFromRoute()
         {
             var order = @"
 namespace ValidCode
@@ -181,9 +95,9 @@ namespace ValidCode
         }
 
         [HttpGet(""api/orders/{id}"")]
-        public async Task<IActionResult> GetOrder↓([FromHeader]int headerValue)
+        public async Task<IActionResult> GetOrder(int id)
         {
-            var match = await this.db.Orders.FirstOrDefaultAsync(x => x.Id == headerValue);
+            var match = await this.db.Orders.FirstOrDefaultAsync(x => x.Id == id);
             if (match == null)
             {
                 return this.NotFound();
@@ -192,8 +106,118 @@ namespace ValidCode
             return this.Ok(match);
         }
     }
-}".AssertReplace("[FromHeader]", attribute);
-            AnalyzerAssert.Diagnostics(Analyzer, ExpectedDiagnostic, order, db, code);
+}";
+            AnalyzerAssert.Valid(Analyzer, order, db, code);
+        }
+
+        [Test]
+        public void ExplicitFromRoute()
+        {
+            var order = @"
+namespace ValidCode
+{
+    public class Order
+    {
+        public int Id { get; set; }
+    }
+}";
+
+            var db = @"
+namespace ValidCode
+{
+    using Microsoft.EntityFrameworkCore;
+
+    public class Db : DbContext
+    {
+        public DbSet<Order> Orders { get; set; }
+    }
+}";
+            var code = @"
+namespace ValidCode
+{
+    using System.Threading.Tasks;
+    using Microsoft.AspNetCore.Mvc;
+    using Microsoft.EntityFrameworkCore;
+
+    [ApiController]
+    public class OrdersController : Controller
+    {
+        private readonly Db db;
+
+        public OrdersController(Db db)
+        {
+            this.db = db;
+        }
+
+        [HttpGet(""api/orders/{id}"")]
+        public async Task<IActionResult> GetOrder([FromRoute]int id)
+        {
+            var match = await this.db.Orders.FirstOrDefaultAsync(x => x.Id == id);
+            if (match == null)
+            {
+                return this.NotFound();
+            }
+
+            return this.Ok(match);
+        }
+    }
+}";
+            AnalyzerAssert.Valid(Analyzer, order, db, code);
+        }
+
+        [Test]
+        public void WhenFromHeaderAndNoRouteParameter()
+        {
+            var order = @"
+namespace ValidCode
+{
+    public class Order
+    {
+        public int Id { get; set; }
+    }
+}";
+
+            var db = @"
+namespace ValidCode
+{
+    using Microsoft.EntityFrameworkCore;
+
+    public class Db : DbContext
+    {
+        public DbSet<Order> Orders { get; set; }
+    }
+}";
+            var code = @"
+namespace ValidCode
+{
+    using System.Threading.Tasks;
+    using Microsoft.AspNetCore.Mvc;
+    using Microsoft.EntityFrameworkCore;
+
+    [ApiController]
+    public class OrdersController : Controller
+    {
+        private readonly Db db;
+
+        public OrdersController(Db db)
+        {
+            this.db = db;
+        }
+
+        [HttpGet(""api/orders"")]
+        public async Task<IActionResult> GetOrder([FromHeader]int id)
+        {
+            var match = await this.db.Orders.FirstOrDefaultAsync(x => x.Id == id);
+            if (match == null)
+            {
+                return this.NotFound();
+            }
+
+            return this.Ok(match);
+        }
+    }
+}";
+            AnalyzerAssert.Valid(Analyzer, order, db, code);
         }
     }
 }

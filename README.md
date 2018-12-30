@@ -17,7 +17,7 @@ Roslyn analyzers for ASP.NET.Core.
   </tr>
   <tr>
     <td><a href="https://github.com/DotNetAnalyzers/AspNetCoreAnalyzers/tree/master/documentation/ASP002.md">ASP002</a></td>
-    <td>The method has no corresponding parameter.</td>
+    <td>Route parameter type does not match the method parameter name.</td>
   </tr>
   <tr>
     <td><a href="https://github.com/DotNetAnalyzers/AspNetCoreAnalyzers/tree/master/documentation/ASP003.md">ASP003</a></td>
@@ -34,6 +34,10 @@ Roslyn analyzers for ASP.NET.Core.
   <tr>
     <td><a href="https://github.com/DotNetAnalyzers/AspNetCoreAnalyzers/tree/master/documentation/ASP006.md">ASP006</a></td>
     <td>Escape constraint regex.</td>
+  </tr>
+  <tr>
+    <td><a href="https://github.com/DotNetAnalyzers/AspNetCoreAnalyzers/tree/master/documentation/ASP007.md">ASP007</a></td>
+    <td>The method has no corresponding parameter.</td>
   </tr>
 <table>
 <!-- end generated table -->

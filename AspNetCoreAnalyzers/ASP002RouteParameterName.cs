@@ -2,18 +2,18 @@ namespace AspNetCoreAnalyzers
 {
     using Microsoft.CodeAnalysis;
 
-    internal static class ASP007MissingParameter
+    internal static class ASP002RouteParameterName
     {
-        public const string DiagnosticId = "ASP007";
+        public const string DiagnosticId = "ASP002";
 
         internal static readonly DiagnosticDescriptor Descriptor = new DiagnosticDescriptor(
             id: DiagnosticId,
-            title: "The method has no corresponding parameter.",
-            messageFormat: "The method has no corresponding parameter.",
+            title: "Route parameter type does not match the method parameter name.",
+            messageFormat: "Route parameter type does not match the method parameter name.",
             category: AnalyzerCategory.Routing,
             defaultSeverity: DiagnosticSeverity.Warning,
             isEnabledByDefault: true,
-            description: "The method has no corresponding parameter.",
+            description: "Route parameter type does not match the method parameter name.",
             helpLinkUri: HelpLink.ForId(DiagnosticId));
     }
 }
