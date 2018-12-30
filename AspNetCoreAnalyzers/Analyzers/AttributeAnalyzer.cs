@@ -21,7 +21,8 @@ namespace AspNetCoreAnalyzers
             ASP004RouteParameterType.Descriptor,
             ASP005ParameterSyntax.Descriptor,
             ASP006ParameterRegex.Descriptor,
-            ASP007MissingParameter.Descriptor);
+            ASP007MissingParameter.Descriptor,
+            ASP008ValidRouteParameterName.Descriptor);
 
         public override void Initialize(AnalysisContext context)
         {
@@ -86,9 +87,7 @@ namespace AspNetCoreAnalyzers
                                 Diagnostic.Create(
                                     ASP003ParameterSymbolType.Descriptor,
                                     parameterSyntax.Type.GetLocation(),
-                                    ImmutableDictionary<string, string>.Empty.Add(
-                                        nameof(TypeSyntax),
-                                        typeName)));
+                                    ImmutableDictionary<string, string>.Empty.Add(nameof(TypeSyntax), typeName)));
 
                             context.ReportDiagnostic(
                                 Diagnostic.Create(
@@ -96,9 +95,7 @@ namespace AspNetCoreAnalyzers
                                     constraintLocation,
                                     text == null
                                         ? ImmutableDictionary<string, string>.Empty
-                                        : ImmutableDictionary<string, string>.Empty.Add(
-                                            nameof(Text),
-                                            text)));
+                                        : ImmutableDictionary<string, string>.Empty.Add(nameof(Text), text)));
                         }
                     }
 
@@ -112,9 +109,7 @@ namespace AspNetCoreAnalyzers
                                     location,
                                     syntax == null
                                         ? ImmutableDictionary<string, string>.Empty
-                                        : ImmutableDictionary<string, string>.Empty.Add(
-                                            nameof(Text),
-                                            syntax)));
+                                        : ImmutableDictionary<string, string>.Empty.Add(nameof(Text), syntax)));
                         }
 
                         if (HasWrongRegexSyntax(segment, out location, out syntax))
@@ -125,9 +120,18 @@ namespace AspNetCoreAnalyzers
                                     location,
                                     syntax == null
                                         ? ImmutableDictionary<string, string>.Empty
-                                        : ImmutableDictionary<string, string>.Empty.Add(
-                                            nameof(Text),
-                                            syntax)));
+                                        : ImmutableDictionary<string, string>.Empty.Add(nameof(Text), syntax)));
+                        }
+
+                        if (HasInvalidName(segment, out location, out var name))
+                        {
+                            context.ReportDiagnostic(
+                                Diagnostic.Create(
+                                    ASP008ValidRouteParameterName.Descriptor,
+                                    location,
+                                    name == null
+                                        ? ImmutableDictionary<string, string>.Empty
+                                        : ImmutableDictionary<string, string>.Empty.Add(nameof(Text), name)));
                         }
                     }
                 }
@@ -154,21 +158,6 @@ namespace AspNetCoreAnalyzers
             return false;
         }
 
-        private static bool IsFromRoute(IParameterSymbol p)
-        {
-            foreach (var attributeData in p.GetAttributes())
-            {
-                if (attributeData.AttributeClass == KnownSymbol.FromRouteAttribute)
-                {
-                    continue;
-                }
-
-                return false;
-            }
-
-            return true;
-        }
-
         private static PooledList<ParameterPair> GetPairs(UrlTemplate template, IMethodSymbol method)
         {
             var list = PooledList<ParameterPair>.Borrow();
@@ -192,6 +181,21 @@ namespace AspNetCoreAnalyzers
             }
 
             return list;
+
+            bool IsFromRoute(IParameterSymbol p)
+            {
+                foreach (var attributeData in p.GetAttributes())
+                {
+                    if (attributeData.AttributeClass == KnownSymbol.FromRouteAttribute)
+                    {
+                        continue;
+                    }
+
+                    return false;
+                }
+
+                return true;
+            }
         }
 
         private static bool HasWrongType(ParameterPair pair, out string correctType, out Location constraintLocation, out string correctConstraint)
@@ -317,7 +321,8 @@ namespace AspNetCoreAnalyzers
                     constraint.Span.Equals("datetime", StringComparison.Ordinal) ||
                     constraint.Span.Equals("guid", StringComparison.Ordinal))
                 {
-                    return parameterSymbol.Type.ToDisplayString(SymbolDisplayFormat.MinimallyQualifiedFormat).ToLower();
+                    return parameterSymbol.Type.ToDisplayString(SymbolDisplayFormat.MinimallyQualifiedFormat)
+                                          .ToLower();
                 }
 
                 return null;
@@ -485,6 +490,24 @@ namespace AspNetCoreAnalyzers
 
             location = null;
             correctSyntax = null;
+            return false;
+        }
+
+        private static bool HasInvalidName(PathSegment segment, out Location location, out string correctName)
+        {
+            if (segment.Parameter is TemplateParameter parameter)
+            {
+                if (parameter.Name.StartsWith(" ", StringComparison.OrdinalIgnoreCase) ||
+                    parameter.Name.EndsWith(" ", StringComparison.OrdinalIgnoreCase))
+                {
+                    location = parameter.Name.GetLocation();
+                    correctName = parameter.Name.ToString().Trim();
+                    return true;
+                }
+            }
+
+            location = null;
+            correctName = null;
             return false;
         }
     }

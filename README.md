@@ -39,6 +39,10 @@ Roslyn analyzers for ASP.NET.Core.
     <td><a href="https://github.com/DotNetAnalyzers/AspNetCoreAnalyzers/tree/master/documentation/ASP007.md">ASP007</a></td>
     <td>The method has no corresponding parameter.</td>
   </tr>
+  <tr>
+    <td><a href="https://github.com/DotNetAnalyzers/AspNetCoreAnalyzers/tree/master/documentation/ASP008.md">ASP008</a></td>
+    <td>Invalid route parameter name.</td>
+  </tr>
 <table>
 <!-- end generated table -->
 

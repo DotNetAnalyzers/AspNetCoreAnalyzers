@@ -19,7 +19,8 @@ namespace AspNetCoreAnalyzers
             ASP002RouteParameterName.DiagnosticId,
             ASP004RouteParameterType.DiagnosticId,
             ASP005ParameterSyntax.DiagnosticId,
-            ASP006ParameterRegex.DiagnosticId);
+            ASP006ParameterRegex.DiagnosticId,
+            ASP008ValidRouteParameterName.DiagnosticId);
 
         public override FixAllProvider GetFixAllProvider() => null;
 
@@ -62,6 +63,8 @@ namespace AspNetCoreAnalyzers
                     return "Fix syntax error.";
                 case ASP006ParameterRegex.DiagnosticId:
                     return "Escape regex.";
+                case ASP008ValidRouteParameterName.DiagnosticId:
+                    return "Fix name.";
                 default:
                     throw new InvalidOperationException("Should never get here.");
             }
