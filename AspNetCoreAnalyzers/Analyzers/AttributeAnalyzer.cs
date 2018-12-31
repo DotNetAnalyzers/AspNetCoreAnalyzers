@@ -537,29 +537,6 @@ namespace AspNetCoreAnalyzers
             return false;
         }
 
-        private static bool IsUppercase(PathSegment segment, out string lowercase)
-        {
-            if (segment.Parameter == null &&
-                segment.Span.Length > 0 &&
-                char.IsUpper(segment.Span[0]))
-            {
-                for (var i = 1; i < segment.Span.Length; i++)
-                {
-                    if (char.IsUpper(segment.Span[i]))
-                    {
-                        lowercase = null;
-                        return false;
-                    }
-                }
-
-                lowercase = segment.Span.ToString().ToLower();
-                return true;
-            }
-
-            lowercase = null;
-            return false;
-        }
-
         private static bool ShouldKebabCase(PathSegment segment, out string kebabCase)
         {
             if (segment.Parameter == null &&
@@ -597,9 +574,9 @@ namespace AspNetCoreAnalyzers
 
             bool IsHumpOrSnakeCased(Span span)
             {
-                for (var i = 0; i < segment.Span.Length; i++)
+                for (var i = 0; i < span.Length; i++)
                 {
-                    var c = segment.Span[i];
+                    var c = span[i];
                     if (char.IsUpper(c) ||
                         c == '_')
                     {
