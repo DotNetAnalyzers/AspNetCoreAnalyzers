@@ -55,6 +55,8 @@ namespace AspNetCoreAnalyzers
             ? string.Empty
             : this.Literal.ValueText.Substring(this.TextSpan.Start, this.TextSpan.Length);
 
+        public string ToString(Location location) => this.Literal.ToString(location);
+
         public Location GetLocation() => this.Literal.GetLocation(this.TextSpan);
 
         public Location GetLocation(int start, int length) => this.Literal.GetLocation(new TextSpan(this.TextSpan.Start + start, length));

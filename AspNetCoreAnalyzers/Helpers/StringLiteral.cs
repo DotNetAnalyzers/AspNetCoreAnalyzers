@@ -105,17 +105,17 @@ namespace AspNetCoreAnalyzers
 
         public override bool Equals(object obj)
         {
-            if (ReferenceEquals(null, obj))
-            {
-                return false;
-            }
-
-            return obj is StringLiteral other && this.Equals(other);
+            return obj is StringLiteral other &&
+                   this.Equals(other);
         }
 
         public override int GetHashCode()
         {
             return this.literalExpression.GetHashCode();
         }
+
+        public string ToString(Location location) => location.SourceSpan.Length == 0
+            ? string.Empty
+            : this.Text.Substring(location.SourceSpan.Start - this.literalExpression.SpanStart, location.SourceSpan.Length);
     }
 }

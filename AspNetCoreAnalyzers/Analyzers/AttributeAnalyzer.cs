@@ -23,7 +23,8 @@ namespace AspNetCoreAnalyzers
             ASP006ParameterRegex.Descriptor,
             ASP007MissingParameter.Descriptor,
             ASP008ValidRouteParameterName.Descriptor,
-            ASP009KebabCaseUrl.Descriptor);
+            ASP009KebabCaseUrl.Descriptor,
+            ASP010UrlSyntax.Descriptor);
 
         public override void Initialize(AnalysisContext context)
         {
@@ -145,6 +146,15 @@ namespace AspNetCoreAnalyzers
                                 ASP009KebabCaseUrl.Descriptor,
                                 segment.Span.GetLocation(),
                                 ImmutableDictionary<string, string>.Empty.Add(nameof(Text), kebabCase)));
+                    }
+
+                    if (ContainsReservedCharacter(segment, out location))
+                    {
+                        context.ReportDiagnostic(
+                            Diagnostic.Create(
+                                ASP010UrlSyntax.Descriptor,
+                                location,
+                                segment.Span.ToString(location)));
                     }
                 }
             }
@@ -586,6 +596,34 @@ namespace AspNetCoreAnalyzers
 
                 return false;
             }
+        }
+
+        /// <summary>
+        /// https://tools.ietf.org/html/rfc3986#section-2.2.
+        /// </summary>
+        private static bool ContainsReservedCharacter(PathSegment segment, out Location location)
+        {
+            if (segment.Parameter == null)
+            {
+                for (var i = 0; i < segment.Span.Length; i++)
+                {
+                    switch (segment.Span[i])
+                    {
+                        //case ':':
+                        //case '/':
+                        case '?':
+                        //case '#':
+                        //case '[':
+                        //case ']':
+                        //case '@':
+                            location = segment.Span.GetLocation(i, 1);
+                            return true;
+                    }
+                }
+            }
+
+            location = null;
+            return false;
         }
     }
 }

@@ -47,6 +47,10 @@ Roslyn analyzers for ASP.NET.Core.
     <td><a href="https://github.com/DotNetAnalyzers/AspNetCoreAnalyzers/tree/master/documentation/ASP009.md">ASP009</a></td>
     <td>Use kebab-cased urls.</td>
   </tr>
+  <tr>
+    <td><a href="https://github.com/DotNetAnalyzers/AspNetCoreAnalyzers/tree/master/documentation/ASP010.md">ASP010</a></td>
+    <td>Unexpected character in url.</td>
+  </tr>
 <table>
 <!-- end generated table -->
 
