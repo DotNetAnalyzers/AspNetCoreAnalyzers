@@ -24,7 +24,7 @@ namespace AspNetCoreAnalyzers.Tests.ASP005ParameterSyntaxTests
         public void WhenLong(string before)
         {
             var code = @"
-namespace ValidCode
+namespace AspBox
 {
     using Microsoft.AspNetCore.Mvc;
 
@@ -51,7 +51,7 @@ namespace ValidCode
         public void WhenString(string before)
         {
             var code = @"
-namespace ValidCode
+namespace AspBox
 {
     using Microsoft.AspNetCore.Mvc;
 
@@ -74,7 +74,7 @@ namespace ValidCode
         public void WhenStringExplicitSpan(string before, int start, int end)
         {
             var code = @"
-namespace ValidCode
+namespace AspBox
 {
     using Microsoft.AspNetCore.Mvc;
 

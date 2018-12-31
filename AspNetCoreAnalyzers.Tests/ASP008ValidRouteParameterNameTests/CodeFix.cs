@@ -17,7 +17,7 @@ namespace AspNetCoreAnalyzers.Tests.ASP008ValidRouteParameterNameTests
         public void When(string before, string after)
         {
             var code = @"
-namespace ValidCode
+namespace AspBox
 {
     using Microsoft.AspNetCore.Mvc;
 
@@ -33,7 +33,7 @@ namespace ValidCode
 }".AssertReplace("\"api/orders/{id}\"", before);
 
             var fixedCode = @"
-namespace ValidCode
+namespace AspBox
 {
     using Microsoft.AspNetCore.Mvc;
 
@@ -58,7 +58,7 @@ namespace ValidCode
         public void NoFixWhen(string before)
         {
             var code = @"
-namespace ValidCode
+namespace AspBox
 {
     using Microsoft.AspNetCore.Mvc;
 

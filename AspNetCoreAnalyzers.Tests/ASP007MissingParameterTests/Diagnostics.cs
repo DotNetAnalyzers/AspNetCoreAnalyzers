@@ -13,7 +13,7 @@ namespace AspNetCoreAnalyzers.Tests.ASP007MissingParameterTests
         public void WhenNoParameter()
         {
             var code = @"
-namespace ValidCode
+namespace AspBox
 {
     using System.Threading.Tasks;
     using Microsoft.AspNetCore.Mvc;
@@ -34,7 +34,7 @@ namespace ValidCode
         public void WhenLastIsMissing()
         {
             var order = @"
-namespace ValidCode
+namespace AspBox
 {
     public class Order
     {
@@ -43,7 +43,7 @@ namespace ValidCode
 }";
 
             var db = @"
-namespace ValidCode
+namespace AspBox
 {
     using Microsoft.EntityFrameworkCore;
 
@@ -53,7 +53,7 @@ namespace ValidCode
     }
 }";
             var code = @"
-namespace ValidCode
+namespace AspBox
 {
     using System.Threading.Tasks;
     using Microsoft.AspNetCore.Mvc;
@@ -89,7 +89,7 @@ namespace ValidCode
         public void WhenFirstIsMissing()
         {
             var order = @"
-namespace ValidCode
+namespace AspBox
 {
     public class Order
     {
@@ -98,7 +98,7 @@ namespace ValidCode
 }";
 
             var db = @"
-namespace ValidCode
+namespace AspBox
 {
     using Microsoft.EntityFrameworkCore;
 
@@ -108,7 +108,7 @@ namespace ValidCode
     }
 }";
             var code = @"
-namespace ValidCode
+namespace AspBox
 {
     using System.Threading.Tasks;
     using Microsoft.AspNetCore.Mvc;
@@ -145,7 +145,7 @@ namespace ValidCode
         public void WhenWrongAttribute(string attribute)
         {
             var order = @"
-namespace ValidCode
+namespace AspBox
 {
     public class Order
     {
@@ -154,7 +154,7 @@ namespace ValidCode
 }";
 
             var db = @"
-namespace ValidCode
+namespace AspBox
 {
     using Microsoft.EntityFrameworkCore;
 
@@ -164,7 +164,7 @@ namespace ValidCode
     }
 }";
             var code = @"
-namespace ValidCode
+namespace AspBox
 {
     using System.Threading.Tasks;
     using Microsoft.AspNetCore.Mvc;

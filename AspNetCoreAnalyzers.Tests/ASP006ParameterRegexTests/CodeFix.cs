@@ -20,7 +20,7 @@ namespace AspNetCoreAnalyzers.Tests.ASP006ParameterRegexTests
         public void When(string before, string after)
         {
             var code = @"
-namespace ValidCode
+namespace AspBox
 {
     using Microsoft.AspNetCore.Mvc;
 
@@ -36,7 +36,7 @@ namespace ValidCode
 }".AssertReplace("\"api/orders/{id}\"", before);
 
             var fixedCode = @"
-namespace ValidCode
+namespace AspBox
 {
     using Microsoft.AspNetCore.Mvc;
 

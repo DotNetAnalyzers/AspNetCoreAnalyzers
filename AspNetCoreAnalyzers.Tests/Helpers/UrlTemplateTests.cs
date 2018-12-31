@@ -13,7 +13,7 @@ namespace AspNetCoreAnalyzers.Tests.Helpers
         public void TryParse(string text, string[] expected)
         {
             var syntaxTree = CSharpSyntaxTree.ParseText(@"
-namespace ValidCode
+namespace AspBox
 {
     using System.Threading.Tasks;
     using Microsoft.AspNetCore.Mvc;
@@ -42,7 +42,7 @@ namespace ValidCode
         public void TryParseWithParameter(string text, string[] expected)
         {
             var syntaxTree = CSharpSyntaxTree.ParseText(@"
-namespace ValidCode
+namespace AspBox
 {
     using System.Threading.Tasks;
     using Microsoft.AspNetCore.Mvc;
@@ -78,7 +78,7 @@ namespace ValidCode
         public void TryParseWhenIntParameter(string text, string[] segments, string[] constraints)
         {
             var syntaxTree = CSharpSyntaxTree.ParseText(@"
-namespace ValidCode
+namespace AspBox
 {
     using System.Threading.Tasks;
     using Microsoft.AspNetCore.Mvc;
@@ -121,7 +121,7 @@ namespace ValidCode
         public void TryParseWhenStringParameter(string text, string[] segments, string[] constraints)
         {
             var syntaxTree = CSharpSyntaxTree.ParseText(@"
-namespace ValidCode
+namespace AspBox
 {
     using System.Threading.Tasks;
     using Microsoft.AspNetCore.Mvc;
@@ -152,7 +152,7 @@ namespace ValidCode
         public void TryParseWhenSyntaxError(string text, string[] segments, string[] constraints)
         {
             var syntaxTree = CSharpSyntaxTree.ParseText(@"
-namespace ValidCode
+namespace AspBox
 {
     using System.Threading.Tasks;
     using Microsoft.AspNetCore.Mvc;

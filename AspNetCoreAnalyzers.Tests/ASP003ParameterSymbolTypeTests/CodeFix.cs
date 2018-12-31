@@ -36,7 +36,7 @@ namespace AspNetCoreAnalyzers.Tests.ASP003ParameterSymbolTypeTests
         public void When(string template, string parameter)
         {
             var code = @"
-namespace ValidCode
+namespace AspBox
 {
     using Microsoft.AspNetCore.Mvc;
 
@@ -52,7 +52,7 @@ namespace ValidCode
 }".AssertReplace("\"api/orders/{id}\"", template);
 
             var fixedCode = @"
-namespace ValidCode
+namespace AspBox
 {
     using Microsoft.AspNetCore.Mvc;
 
@@ -75,7 +75,7 @@ namespace ValidCode
         public void RemoveNullableWhenNotOptional(string parameter)
         {
             var code = @"
-namespace ValidCode
+namespace AspBox
 {
     using System;
     using Microsoft.AspNetCore.Mvc;
@@ -92,7 +92,7 @@ namespace ValidCode
 }".AssertReplace("int?", parameter);
 
             var fixedCode = @"
-namespace ValidCode
+namespace AspBox
 {
     using System;
     using Microsoft.AspNetCore.Mvc;
@@ -114,7 +114,7 @@ namespace ValidCode
         public void MakeNullableToMatchOptional()
         {
             var code = @"
-namespace ValidCode
+namespace AspBox
 {
     using System;
     using Microsoft.AspNetCore.Mvc;
@@ -131,7 +131,7 @@ namespace ValidCode
 }";
 
             var fixedCode = @"
-namespace ValidCode
+namespace AspBox
 {
     using System;
     using Microsoft.AspNetCore.Mvc;

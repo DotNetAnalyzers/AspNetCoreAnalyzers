@@ -34,7 +34,7 @@ namespace AspNetCoreAnalyzers.Tests.ASP003ParameterSymbolTypeTests
         public void When(string template, string parameter)
         {
             var code = @"
-namespace ValidCode
+namespace AspBox
 {
     using Microsoft.AspNetCore.Mvc;
 
@@ -56,7 +56,7 @@ namespace ValidCode
         public void IgnoreWhen(string template)
         {
             var code = @"
-namespace ValidCode
+namespace AspBox
 {
     using Microsoft.AspNetCore.Mvc;
 
@@ -77,7 +77,7 @@ namespace ValidCode
         public void ImplicitType()
         {
             var order = @"
-namespace ValidCode
+namespace AspBox
 {
     public class Order
     {
@@ -86,7 +86,7 @@ namespace ValidCode
 }";
 
             var db = @"
-namespace ValidCode
+namespace AspBox
 {
     using Microsoft.EntityFrameworkCore;
 
@@ -96,7 +96,7 @@ namespace ValidCode
     }
 }";
             var code = @"
-namespace ValidCode
+namespace AspBox
 {
     using System.Threading.Tasks;
     using Microsoft.AspNetCore.Mvc;
@@ -139,7 +139,7 @@ namespace ValidCode
         public void ExplicitType(string constraint, string type)
         {
             var code = @"
-namespace ValidCode
+namespace AspBox
 {
     using System.Threading.Tasks;
     using Microsoft.AspNetCore.Mvc;
@@ -168,7 +168,7 @@ namespace ValidCode
         public void ExplicitInt(string template)
         {
             var order = @"
-namespace ValidCode
+namespace AspBox
 {
     public class Order
     {
@@ -177,7 +177,7 @@ namespace ValidCode
 }";
 
             var db = @"
-namespace ValidCode
+namespace AspBox
 {
     using Microsoft.EntityFrameworkCore;
 
@@ -187,7 +187,7 @@ namespace ValidCode
     }
 }";
             var code = @"
-namespace ValidCode
+namespace AspBox
 {
     using System.Threading.Tasks;
     using Microsoft.AspNetCore.Mvc;
@@ -226,7 +226,7 @@ namespace ValidCode
         public void ImplicitLong(string template)
         {
             var order = @"
-namespace ValidCode
+namespace AspBox
 {
     public class Order
     {
@@ -235,7 +235,7 @@ namespace ValidCode
 }";
 
             var db = @"
-namespace ValidCode
+namespace AspBox
 {
     using Microsoft.EntityFrameworkCore;
 
@@ -245,7 +245,7 @@ namespace ValidCode
     }
 }";
             var code = @"
-namespace ValidCode
+namespace AspBox
 {
     using System.Threading.Tasks;
     using Microsoft.AspNetCore.Mvc;
@@ -287,7 +287,7 @@ namespace ValidCode
         public void ImplicitString(string template)
         {
             var order = @"
-namespace ValidCode
+namespace AspBox
 {
     public class Order
     {
@@ -296,7 +296,7 @@ namespace ValidCode
 }";
 
             var db = @"
-namespace ValidCode
+namespace AspBox
 {
     using Microsoft.EntityFrameworkCore;
 
@@ -306,7 +306,7 @@ namespace ValidCode
     }
 }";
             var code = @"
-namespace ValidCode
+namespace AspBox
 {
     using System.Threading.Tasks;
     using Microsoft.AspNetCore.Mvc;

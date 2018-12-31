@@ -38,7 +38,7 @@ namespace AspNetCoreAnalyzers.Tests.ASP005ParameterSyntaxTests
         public void WithParameter(string parameter, string type)
         {
             var code = @"
-namespace ValidCode
+namespace AspBox
 {
     using System.Threading.Tasks;
     using Microsoft.AspNetCore.Mvc;

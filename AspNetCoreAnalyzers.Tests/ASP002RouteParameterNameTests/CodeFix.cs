@@ -17,7 +17,7 @@ namespace AspNetCoreAnalyzers.Tests.ASP002RouteParameterNameTests
         public void When(string before, string after)
         {
             var code = @"
-namespace ValidCode
+namespace AspBox
 {
     using System.Threading.Tasks;
     using Microsoft.AspNetCore.Mvc;
@@ -35,7 +35,7 @@ namespace ValidCode
 }".AssertReplace("\"api/{↓value}\"", before);
 
             var fixedCode = @"
-namespace ValidCode
+namespace AspBox
 {
     using System.Threading.Tasks;
     using Microsoft.AspNetCore.Mvc;
@@ -64,7 +64,7 @@ namespace ValidCode
         public void WhenWrongNameSecondParameter(string before, string after)
         {
             var code = @"
-namespace ValidCode
+namespace AspBox
 {
     using System.Threading.Tasks;
     using Microsoft.AspNetCore.Mvc;
@@ -82,7 +82,7 @@ namespace ValidCode
 }".AssertReplace("\"api/{text1}/{↓value}\"", before);
 
             var fixedCode = @"
-namespace ValidCode
+namespace AspBox
 {
     using System.Threading.Tasks;
     using Microsoft.AspNetCore.Mvc;

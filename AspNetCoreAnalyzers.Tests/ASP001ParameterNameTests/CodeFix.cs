@@ -23,7 +23,7 @@ namespace AspNetCoreAnalyzers.Tests.ASP001ParameterNameTests
         public void When(string template)
         {
             var code = @"
-namespace ValidCode
+namespace AspBox
 {
     using Microsoft.AspNetCore.Mvc;
 
@@ -39,7 +39,7 @@ namespace ValidCode
 }".AssertReplace("\"api/orders/{value}\"", template);
 
             var fixedCode = @"
-namespace ValidCode
+namespace AspBox
 {
     using Microsoft.AspNetCore.Mvc;
 
@@ -60,7 +60,7 @@ namespace ValidCode
         public void ImplicitSingleParameter()
         {
             var order = @"
-namespace ValidCode
+namespace AspBox
 {
     public class Order
     {
@@ -69,7 +69,7 @@ namespace ValidCode
 }";
 
             var db = @"
-namespace ValidCode
+namespace AspBox
 {
     using Microsoft.EntityFrameworkCore;
 
@@ -79,7 +79,7 @@ namespace ValidCode
     }
 }";
             var before = @"
-namespace ValidCode
+namespace AspBox
 {
     using System.Threading.Tasks;
     using Microsoft.AspNetCore.Mvc;
@@ -110,7 +110,7 @@ namespace ValidCode
 }";
 
             var after = @"
-namespace ValidCode
+namespace AspBox
 {
     using System.Threading.Tasks;
     using Microsoft.AspNetCore.Mvc;
@@ -146,7 +146,7 @@ namespace ValidCode
         public void ImplicitFirstParameter()
         {
             var orderItem = @"
-namespace ValidCode
+namespace AspBox
 {
     public class OrderItem
     {
@@ -154,7 +154,7 @@ namespace ValidCode
     }
 }";
             var order = @"
-namespace ValidCode
+namespace AspBox
 {
     using System.Collections.Generic;
 
@@ -167,7 +167,7 @@ namespace ValidCode
 }";
 
             var db = @"
-namespace ValidCode
+namespace AspBox
 {
     using Microsoft.EntityFrameworkCore;
 
@@ -177,7 +177,7 @@ namespace ValidCode
     }
 }";
             var before = @"
-namespace ValidCode
+namespace AspBox
 {
     using System.Linq;
     using System.Threading.Tasks;
@@ -215,7 +215,7 @@ namespace ValidCode
 }";
 
             var after = @"
-namespace ValidCode
+namespace AspBox
 {
     using System.Linq;
     using System.Threading.Tasks;
@@ -258,7 +258,7 @@ namespace ValidCode
         public void ImplicitLastParameter()
         {
             var orderItem = @"
-namespace ValidCode
+namespace AspBox
 {
     public class OrderItem
     {
@@ -266,7 +266,7 @@ namespace ValidCode
     }
 }";
             var order = @"
-namespace ValidCode
+namespace AspBox
 {
     using System.Collections.Generic;
 
@@ -279,7 +279,7 @@ namespace ValidCode
 }";
 
             var db = @"
-namespace ValidCode
+namespace AspBox
 {
     using Microsoft.EntityFrameworkCore;
 
@@ -289,7 +289,7 @@ namespace ValidCode
     }
 }";
             var before = @"
-namespace ValidCode
+namespace AspBox
 {
     using System.Linq;
     using System.Threading.Tasks;
@@ -327,7 +327,7 @@ namespace ValidCode
 }";
 
             var after = @"
-namespace ValidCode
+namespace AspBox
 {
     using System.Linq;
     using System.Threading.Tasks;
@@ -370,7 +370,7 @@ namespace ValidCode
         public void ExplicitAttributeSingleParameter()
         {
             var order = @"
-namespace ValidCode
+namespace AspBox
 {
     public class Order
     {
@@ -379,7 +379,7 @@ namespace ValidCode
 }";
 
             var db = @"
-namespace ValidCode
+namespace AspBox
 {
     using Microsoft.EntityFrameworkCore;
 
@@ -389,7 +389,7 @@ namespace ValidCode
     }
 }";
             var before = @"
-namespace ValidCode
+namespace AspBox
 {
     using System.Threading.Tasks;
     using Microsoft.AspNetCore.Mvc;
@@ -420,7 +420,7 @@ namespace ValidCode
 }";
 
             var after = @"
-namespace ValidCode
+namespace AspBox
 {
     using System.Threading.Tasks;
     using Microsoft.AspNetCore.Mvc;
@@ -456,7 +456,7 @@ namespace ValidCode
         public void BothParameters()
         {
             var orderItem = @"
-namespace ValidCode
+namespace AspBox
 {
     public class OrderItem
     {
@@ -464,7 +464,7 @@ namespace ValidCode
     }
 }";
             var order = @"
-namespace ValidCode
+namespace AspBox
 {
     public class Order
     {
@@ -475,7 +475,7 @@ namespace ValidCode
 }";
 
             var db = @"
-namespace ValidCode
+namespace AspBox
 {
     using Microsoft.EntityFrameworkCore;
 
@@ -485,7 +485,7 @@ namespace ValidCode
     }
 }";
             var before = @"
-namespace ValidCode
+namespace AspBox
 {
     using System.Threading.Tasks;
     using Microsoft.AspNetCore.Mvc;

@@ -14,7 +14,7 @@ namespace AspNetCoreAnalyzers.Tests.ASP009KebabCaseUrlTests
         public void WithParameter(string parameter)
         {
             var code = @"
-namespace ValidCode
+namespace AspBox
 {
     using System.Threading.Tasks;
     using Microsoft.AspNetCore.Mvc;

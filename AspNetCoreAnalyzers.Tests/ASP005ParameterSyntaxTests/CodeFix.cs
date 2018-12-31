@@ -19,7 +19,7 @@ namespace AspNetCoreAnalyzers.Tests.ASP005ParameterSyntaxTests
         public void WhenLong(string before, string after)
         {
             var code = @"
-namespace ValidCode
+namespace AspBox
 {
     using Microsoft.AspNetCore.Mvc;
 
@@ -35,7 +35,7 @@ namespace ValidCode
 }".AssertReplace("api/orders/{id:long}", before);
 
             var fixedCode = @"
-namespace ValidCode
+namespace AspBox
 {
     using Microsoft.AspNetCore.Mvc;
 
@@ -61,7 +61,7 @@ namespace ValidCode
         public void WhenString(string before, string after)
         {
             var code = @"
-namespace ValidCode
+namespace AspBox
 {
     using Microsoft.AspNetCore.Mvc;
 
@@ -77,7 +77,7 @@ namespace ValidCode
 }".AssertReplace("\"api/orders/{id}\"", before);
 
             var fixedCode = @"
-namespace ValidCode
+namespace AspBox
 {
     using Microsoft.AspNetCore.Mvc;
 

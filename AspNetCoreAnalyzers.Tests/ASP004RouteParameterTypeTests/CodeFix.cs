@@ -24,7 +24,7 @@ namespace AspNetCoreAnalyzers.Tests.ASP004RouteParameterTypeTests
         public void When(string before, string after, string parameter)
         {
             var code = @"
-namespace ValidCode
+namespace AspBox
 {
     using Microsoft.AspNetCore.Mvc;
 
@@ -41,7 +41,7 @@ namespace ValidCode
   .AssertReplace("byte id", parameter);
 
             var fixedCode = @"
-namespace ValidCode
+namespace AspBox
 {
     using Microsoft.AspNetCore.Mvc;
 
@@ -74,7 +74,7 @@ namespace ValidCode
         public void NoFixWhen(string template)
         {
             var code = @"
-namespace ValidCode
+namespace AspBox
 {
     using Microsoft.AspNetCore.Mvc;
 
@@ -97,7 +97,7 @@ namespace ValidCode
         public void WhenOptional(string parameter)
         {
             var code = @"
-namespace ValidCode
+namespace AspBox
 {
     using System;
     using Microsoft.AspNetCore.Mvc;
@@ -114,7 +114,7 @@ namespace ValidCode
 }".AssertReplace("int?", parameter);
 
             var fixedCode = @"
-namespace ValidCode
+namespace AspBox
 {
     using System;
     using Microsoft.AspNetCore.Mvc;

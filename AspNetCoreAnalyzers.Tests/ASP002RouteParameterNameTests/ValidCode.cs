@@ -14,7 +14,7 @@ namespace AspNetCoreAnalyzers.Tests.ASP002RouteParameterNameTests
         public void When(string after)
         {
             var code = @"
-namespace ValidCode
+namespace AspBox
 {
     using System.Threading.Tasks;
     using Microsoft.AspNetCore.Mvc;
@@ -38,7 +38,7 @@ namespace ValidCode
         public void IgnoreWhen(string template)
         {
             var code = @"
-namespace ValidCode
+namespace AspBox
 {
     using Microsoft.AspNetCore.Mvc;
 
@@ -59,7 +59,7 @@ namespace ValidCode
         public void ImplicitFromRoute()
         {
             var order = @"
-namespace ValidCode
+namespace AspBox
 {
     public class Order
     {
@@ -68,7 +68,7 @@ namespace ValidCode
 }";
 
             var db = @"
-namespace ValidCode
+namespace AspBox
 {
     using Microsoft.EntityFrameworkCore;
 
@@ -78,7 +78,7 @@ namespace ValidCode
     }
 }";
             var code = @"
-namespace ValidCode
+namespace AspBox
 {
     using System.Threading.Tasks;
     using Microsoft.AspNetCore.Mvc;
@@ -114,7 +114,7 @@ namespace ValidCode
         public void ExplicitFromRoute()
         {
             var order = @"
-namespace ValidCode
+namespace AspBox
 {
     public class Order
     {
@@ -123,7 +123,7 @@ namespace ValidCode
 }";
 
             var db = @"
-namespace ValidCode
+namespace AspBox
 {
     using Microsoft.EntityFrameworkCore;
 
@@ -133,7 +133,7 @@ namespace ValidCode
     }
 }";
             var code = @"
-namespace ValidCode
+namespace AspBox
 {
     using System.Threading.Tasks;
     using Microsoft.AspNetCore.Mvc;
@@ -169,7 +169,7 @@ namespace ValidCode
         public void WhenFromHeaderAndNoRouteParameter()
         {
             var order = @"
-namespace ValidCode
+namespace AspBox
 {
     public class Order
     {
@@ -178,7 +178,7 @@ namespace ValidCode
 }";
 
             var db = @"
-namespace ValidCode
+namespace AspBox
 {
     using Microsoft.EntityFrameworkCore;
 
@@ -188,7 +188,7 @@ namespace ValidCode
     }
 }";
             var code = @"
-namespace ValidCode
+namespace AspBox
 {
     using System.Threading.Tasks;
     using Microsoft.AspNetCore.Mvc;

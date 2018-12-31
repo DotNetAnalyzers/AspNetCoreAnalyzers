@@ -18,7 +18,7 @@ namespace AspNetCoreAnalyzers.Tests.ASP009KebabCaseUrlTests
         public void WhenMethodAttribute(string before, string after)
         {
             var code = @"
-namespace ValidCode
+namespace AspBox
 {
     using Microsoft.AspNetCore.Mvc;
 
@@ -34,7 +34,7 @@ namespace ValidCode
 }".AssertReplace("\"api/Orders/{id}\"", before);
 
             var fixedCode = @"
-namespace ValidCode
+namespace AspBox
 {
     using Microsoft.AspNetCore.Mvc;
 
@@ -58,7 +58,7 @@ namespace ValidCode
         public void WhenRouteAttribute(string before, string after)
         {
             var code = @"
-namespace ValidCode
+namespace AspBox
 {
     using Microsoft.AspNetCore.Mvc;
 
@@ -75,7 +75,7 @@ namespace ValidCode
 }".AssertReplace("\"api/↓TwoWords\"", before);
 
             var fixedCode = @"
-namespace ValidCode
+namespace AspBox
 {
     using Microsoft.AspNetCore.Mvc;
 
