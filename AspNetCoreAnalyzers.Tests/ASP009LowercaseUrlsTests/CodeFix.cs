@@ -1,4 +1,4 @@
-namespace AspNetCoreAnalyzers.Tests.ASP009LowercaseUrlsTests
+namespace AspNetCoreAnalyzers.Tests.ASP009LowerCaseUrlsTests
 {
     using Gu.Roslyn.Asserts;
     using Microsoft.CodeAnalysis.CodeFixes;
@@ -8,7 +8,7 @@ namespace AspNetCoreAnalyzers.Tests.ASP009LowercaseUrlsTests
     public class CodeFix
     {
         private static readonly DiagnosticAnalyzer Analyzer = new AttributeAnalyzer();
-        private static readonly ExpectedDiagnostic ExpectedDiagnostic = ExpectedDiagnostic.Create(ASP009LowercaseUrl.Descriptor);
+        private static readonly ExpectedDiagnostic ExpectedDiagnostic = ExpectedDiagnostic.Create(ASP009LowerCaseUrl.Descriptor);
         private static readonly CodeFixProvider Fix = new TemplateTextFix();
 
         [TestCase("\"api/↓Orders/{id}\"", "\"api/orders/{id}\"")]

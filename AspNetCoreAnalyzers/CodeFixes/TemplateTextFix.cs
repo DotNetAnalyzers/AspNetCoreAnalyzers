@@ -21,7 +21,7 @@ namespace AspNetCoreAnalyzers
             ASP005ParameterSyntax.DiagnosticId,
             ASP006ParameterRegex.DiagnosticId,
             ASP008ValidRouteParameterName.DiagnosticId,
-            ASP009LowercaseUrl.DiagnosticId);
+            ASP009LowerCaseUrl.DiagnosticId);
 
         public override FixAllProvider GetFixAllProvider() => null;
 
@@ -66,7 +66,7 @@ namespace AspNetCoreAnalyzers
                     return "Escape regex.";
                 case ASP008ValidRouteParameterName.DiagnosticId:
                     return "Fix name.";
-                case ASP009LowercaseUrl.DiagnosticId:
+                case ASP009LowerCaseUrl.DiagnosticId:
                     return "To lowercase.";
                 default:
                     throw new InvalidOperationException("Should never get here.");

@@ -2,7 +2,7 @@ namespace AspNetCoreAnalyzers
 {
     using Microsoft.CodeAnalysis;
 
-    internal static class ASP009LowercaseUrl
+    internal static class ASP009LowerCaseUrl
     {
         public const string DiagnosticId = "ASP009";
 
