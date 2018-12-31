@@ -87,5 +87,4 @@ namespace ValidCode
             AnalyzerAssert.CodeFix(Analyzer, Fix, ExpectedDiagnostic, code, fixedCode);
         }
     }
-    }
 }

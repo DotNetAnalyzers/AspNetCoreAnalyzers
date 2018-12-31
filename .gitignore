@@ -52,3 +52,4 @@ packages/*
 publish/*
 .vs/*
 /paket-files/*
+*.cs.orig
