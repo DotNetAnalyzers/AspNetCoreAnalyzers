@@ -4,6 +4,7 @@ projectUrl https://github.com/DotNetAnalyzers/AspNetCoreAnalyzers
 licenseUrl http://opensource.org/licenses/MIT
 
 releasenotes
+  Initial
 
 excludedgroups
   Main
