@@ -34,117 +34,119 @@ namespace AspNetCoreAnalyzers
         {
             if (!context.IsExcludedFromAnalysis() &&
                 context.Node is AttributeSyntax attribute &&
-                context.ContainingSymbol is IMethodSymbol method &&
-                attribute.TryFirstAncestor(out MethodDeclarationSyntax methodDeclaration) &&
                 TryGetTemplate(attribute, context, out var template))
             {
-                using (var pairs = GetPairs(template, method))
+                if (context.ContainingSymbol is IMethodSymbol method &&
+                    attribute.TryFirstAncestor(out MethodDeclarationSyntax methodDeclaration))
                 {
-                    if (pairs.TrySingle(x => x.Route == null, out var withMethodParameter) &&
-                        methodDeclaration.TryFindParameter(withMethodParameter.Symbol.Name, out var parameterSyntax) &&
-                        pairs.TrySingle(x => x.Symbol == null, out var withTemplateParameter) &&
-                        withTemplateParameter.Route is TemplateParameter templateParameter)
+                    using (var pairs = GetPairs(template, method))
+                    {
+                        if (pairs.TrySingle(x => x.Route == null, out var withMethodParameter) &&
+                            methodDeclaration.TryFindParameter(withMethodParameter.Symbol.Name, out var parameterSyntax) &&
+                            pairs.TrySingle(x => x.Symbol == null, out var withTemplateParameter) &&
+                            withTemplateParameter.Route is TemplateParameter templateParameter)
+                        {
+                            context.ReportDiagnostic(
+                                Diagnostic.Create(
+                                    ASP001ParameterSymbolName.Descriptor,
+                                    parameterSyntax.Identifier.GetLocation(),
+                                    ImmutableDictionary<string, string>.Empty.Add(
+                                        nameof(NameSyntax),
+                                        templateParameter.Name.ToString())));
+
+                            context.ReportDiagnostic(
+                                Diagnostic.Create(
+                                    ASP002RouteParameterName.Descriptor,
+                                    templateParameter.Name.GetLocation(),
+                                    ImmutableDictionary<string, string>.Empty.Add(
+                                        nameof(Text),
+                                        withMethodParameter.Symbol.Name)));
+                        }
+                        else if (pairs.Count(x => x.Route == null) > 1 &&
+                                 pairs.Count(x => x.Symbol == null) > 1)
+                        {
+                            context.ReportDiagnostic(
+                                Diagnostic.Create(
+                                    ASP001ParameterSymbolName.Descriptor,
+                                    methodDeclaration.ParameterList.GetLocation()));
+                        }
+
+                        if (pairs.TryFirst(x => x.Symbol == null, out _) &&
+                            !pairs.TryFirst(x => x.Route == null, out _))
+                        {
+                            context.ReportDiagnostic(
+                                Diagnostic.Create(
+                                    ASP007MissingParameter.Descriptor,
+                                    methodDeclaration.ParameterList.GetLocation()));
+                        }
+
+                        foreach (var pair in pairs)
+                        {
+                            if (HasWrongType(pair, out var typeName, out var constraintLocation, out var text) &&
+                                methodDeclaration.TryFindParameter(pair.Symbol?.Name, out parameterSyntax))
+                            {
+                                context.ReportDiagnostic(
+                                    Diagnostic.Create(
+                                        ASP003ParameterSymbolType.Descriptor,
+                                        parameterSyntax.Type.GetLocation(),
+                                        ImmutableDictionary<string, string>.Empty.Add(nameof(TypeSyntax), typeName)));
+
+                                context.ReportDiagnostic(
+                                    Diagnostic.Create(
+                                        ASP004RouteParameterType.Descriptor,
+                                        constraintLocation,
+                                        text == null
+                                            ? ImmutableDictionary<string, string>.Empty
+                                            : ImmutableDictionary<string, string>.Empty.Add(nameof(Text), text)));
+                            }
+                        }
+                    }
+                }
+
+                foreach (var segment in template.Path)
+                {
+                    if (HasWrongSyntax(segment, out var location, out var syntax))
                     {
                         context.ReportDiagnostic(
                             Diagnostic.Create(
-                                ASP001ParameterSymbolName.Descriptor,
-                                parameterSyntax.Identifier.GetLocation(),
-                                ImmutableDictionary<string, string>.Empty.Add(
-                                    nameof(NameSyntax),
-                                    templateParameter.Name.ToString())));
-
-                        context.ReportDiagnostic(
-                            Diagnostic.Create(
-                                ASP002RouteParameterName.Descriptor,
-                                templateParameter.Name.GetLocation(),
-                                ImmutableDictionary<string, string>.Empty.Add(
-                                    nameof(Text),
-                                    withMethodParameter.Symbol.Name)));
+                                ASP005ParameterSyntax.Descriptor,
+                                location,
+                                syntax == null
+                                    ? ImmutableDictionary<string, string>.Empty
+                                    : ImmutableDictionary<string, string>.Empty.Add(nameof(Text), syntax)));
                     }
-                    else if (pairs.Count(x => x.Route == null) > 1 &&
-                             pairs.Count(x => x.Symbol == null) > 1)
+
+                    if (HasWrongRegexSyntax(segment, out location, out syntax))
                     {
                         context.ReportDiagnostic(
                             Diagnostic.Create(
-                                ASP001ParameterSymbolName.Descriptor,
-                                methodDeclaration.ParameterList.GetLocation()));
+                                ASP006ParameterRegex.Descriptor,
+                                location,
+                                syntax == null
+                                    ? ImmutableDictionary<string, string>.Empty
+                                    : ImmutableDictionary<string, string>.Empty.Add(nameof(Text), syntax)));
                     }
 
-                    if (pairs.TryFirst(x => x.Symbol == null, out _) &&
-                        !pairs.TryFirst(x => x.Route == null, out _))
+                    if (HasInvalidName(segment, out location, out var name))
                     {
                         context.ReportDiagnostic(
                             Diagnostic.Create(
-                                ASP007MissingParameter.Descriptor,
-                                methodDeclaration.ParameterList.GetLocation()));
+                                ASP008ValidRouteParameterName.Descriptor,
+                                location,
+                                name == null
+                                    ? ImmutableDictionary<string, string>.Empty
+                                    : ImmutableDictionary<string, string>.Empty.Add(nameof(Text), name)));
                     }
 
-                    foreach (var pair in pairs)
+                    if (IsUpperCase(segment, out var lowercase))
                     {
-                        if (HasWrongType(pair, out var typeName, out var constraintLocation, out var text) &&
-                            methodDeclaration.TryFindParameter(pair.Symbol?.Name, out parameterSyntax))
-                        {
-                            context.ReportDiagnostic(
-                                Diagnostic.Create(
-                                    ASP003ParameterSymbolType.Descriptor,
-                                    parameterSyntax.Type.GetLocation(),
-                                    ImmutableDictionary<string, string>.Empty.Add(nameof(TypeSyntax), typeName)));
-
-                            context.ReportDiagnostic(
-                                Diagnostic.Create(
-                                    ASP004RouteParameterType.Descriptor,
-                                    constraintLocation,
-                                    text == null
-                                        ? ImmutableDictionary<string, string>.Empty
-                                        : ImmutableDictionary<string, string>.Empty.Add(nameof(Text), text)));
-                        }
-                    }
-
-                    foreach (var segment in template.Path)
-                    {
-                        if (HasWrongSyntax(segment, out var location, out var syntax))
-                        {
-                            context.ReportDiagnostic(
-                                Diagnostic.Create(
-                                    ASP005ParameterSyntax.Descriptor,
-                                    location,
-                                    syntax == null
-                                        ? ImmutableDictionary<string, string>.Empty
-                                        : ImmutableDictionary<string, string>.Empty.Add(nameof(Text), syntax)));
-                        }
-
-                        if (HasWrongRegexSyntax(segment, out location, out syntax))
-                        {
-                            context.ReportDiagnostic(
-                                Diagnostic.Create(
-                                    ASP006ParameterRegex.Descriptor,
-                                    location,
-                                    syntax == null
-                                        ? ImmutableDictionary<string, string>.Empty
-                                        : ImmutableDictionary<string, string>.Empty.Add(nameof(Text), syntax)));
-                        }
-
-                        if (HasInvalidName(segment, out location, out var name))
-                        {
-                            context.ReportDiagnostic(
-                                Diagnostic.Create(
-                                    ASP008ValidRouteParameterName.Descriptor,
-                                    location,
-                                    name == null
-                                        ? ImmutableDictionary<string, string>.Empty
-                                        : ImmutableDictionary<string, string>.Empty.Add(nameof(Text), name)));
-                        }
-
-                        if (IsUpperCase(segment, out var lowercase))
-                        {
-                            context.ReportDiagnostic(
-                                Diagnostic.Create(
-                                    ASP009LowercaseUrl.Descriptor,
-                                    segment.Span.GetLocation(),
-                                    lowercase == null
-                                        ? ImmutableDictionary<string, string>.Empty
-                                        : ImmutableDictionary<string, string>.Empty.Add(nameof(Text), lowercase)));
-                        }
+                        context.ReportDiagnostic(
+                            Diagnostic.Create(
+                                ASP009LowercaseUrl.Descriptor,
+                                segment.Span.GetLocation(),
+                                lowercase == null
+                                    ? ImmutableDictionary<string, string>.Empty
+                                    : ImmutableDictionary<string, string>.Empty.Add(nameof(Text), lowercase)));
                     }
                 }
             }
@@ -158,9 +160,12 @@ namespace AspNetCoreAnalyzers
                 literal.IsKind(SyntaxKind.StringLiteralExpression) &&
                 (Attribute.IsType(attribute, KnownSymbol.HttpDeleteAttribute, context.SemanticModel, context.CancellationToken) ||
                  Attribute.IsType(attribute, KnownSymbol.HttpGetAttribute, context.SemanticModel, context.CancellationToken) ||
+                 Attribute.IsType(attribute, KnownSymbol.HttpHeadAttribute, context.SemanticModel, context.CancellationToken) ||
+                 Attribute.IsType(attribute, KnownSymbol.HttpOptionsAttribute, context.SemanticModel, context.CancellationToken) ||
                  Attribute.IsType(attribute, KnownSymbol.HttpPatchAttribute, context.SemanticModel, context.CancellationToken) ||
                  Attribute.IsType(attribute, KnownSymbol.HttpPostAttribute, context.SemanticModel, context.CancellationToken) ||
-                 Attribute.IsType(attribute, KnownSymbol.HttpPutAttribute, context.SemanticModel, context.CancellationToken)) &&
+                 Attribute.IsType(attribute, KnownSymbol.HttpPutAttribute, context.SemanticModel, context.CancellationToken) ||
+                 Attribute.IsType(attribute, KnownSymbol.RouteAttribute, context.SemanticModel, context.CancellationToken)) &&
                 UrlTemplate.TryParse(literal, out template))
             {
                 return true;

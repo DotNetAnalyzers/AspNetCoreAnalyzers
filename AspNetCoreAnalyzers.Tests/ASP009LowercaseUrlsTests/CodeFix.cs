@@ -47,5 +47,45 @@ namespace ValidCode
 }".AssertReplace("\"api/orders/{id}\"", after);
             AnalyzerAssert.CodeFix(Analyzer, Fix, ExpectedDiagnostic, code, fixedCode);
         }
+
+        [TestCase("\"api/↓Orders\"", "\"api/orders\"")]
+        public void WhenRouteAttribute(string before, string after)
+        {
+            var code = @"
+namespace ValidCode
+{
+    using Microsoft.AspNetCore.Mvc;
+
+    [Route(""api/Orders"")]
+    [ApiController]
+    public class OrdersController : Controller
+    {
+        [HttpGet(""{id}"")]
+        public IActionResult GetId(string id)
+        {
+            return this.Ok(id);
+        }
+    }
+}".AssertReplace("\"api/Orders\"", before);
+
+            var fixedCode = @"
+namespace ValidCode
+{
+    using Microsoft.AspNetCore.Mvc;
+
+    [Route(""api/orders"")]
+    [ApiController]
+    public class OrdersController : Controller
+    {
+        [HttpGet(""{id}"")]
+        public IActionResult GetId(string id)
+        {
+            return this.Ok(id);
+        }
+    }
+}".AssertReplace("\"api/orders\"", after);
+            AnalyzerAssert.CodeFix(Analyzer, Fix, ExpectedDiagnostic, code, fixedCode);
+        }
+    }
     }
 }
