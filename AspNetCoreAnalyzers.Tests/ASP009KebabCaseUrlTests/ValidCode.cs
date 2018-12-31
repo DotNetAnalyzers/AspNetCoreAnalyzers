@@ -1,4 +1,4 @@
-namespace AspNetCoreAnalyzers.Tests.ASP009LowercaseUrlsTests
+namespace AspNetCoreAnalyzers.Tests.ASP009KebabCaseUrlTests
 {
     using Gu.Roslyn.Asserts;
     using Microsoft.CodeAnalysis.Diagnostics;
@@ -10,7 +10,7 @@ namespace AspNetCoreAnalyzers.Tests.ASP009LowercaseUrlsTests
 
         [TestCase("\"{value}\"")]
         [TestCase("\"api/orders/{value}\"")]
-        [TestCase("\"api/TwoWords/{value}\"")]
+        [TestCase("\"api/two-words/{value}\"")]
         public void WithParameter(string parameter)
         {
             var code = @"

@@ -1,4 +1,4 @@
-namespace AspNetCoreAnalyzers.Tests.ASP009LowercaseUrlsTests
+namespace AspNetCoreAnalyzers.Tests.ASP009KebabCaseUrlTests
 {
     using Gu.Roslyn.Asserts;
     using Microsoft.CodeAnalysis.CodeFixes;
@@ -8,10 +8,13 @@ namespace AspNetCoreAnalyzers.Tests.ASP009LowercaseUrlsTests
     public class CodeFix
     {
         private static readonly DiagnosticAnalyzer Analyzer = new AttributeAnalyzer();
-        private static readonly ExpectedDiagnostic ExpectedDiagnostic = ExpectedDiagnostic.Create(ASP009LowercaseUrl.Descriptor);
+        private static readonly ExpectedDiagnostic ExpectedDiagnostic = ExpectedDiagnostic.Create(ASP009KebabCaseUrl.Descriptor);
         private static readonly CodeFixProvider Fix = new TemplateTextFix();
 
-        [TestCase("\"api/↓Orders/{id}\"", "\"api/orders/{id}\"")]
+        [TestCase("\"api/↓Orders/{id}\"",    "\"api/orders/{id}\"")]
+        [TestCase("\"api/↓TwoWords/{id}\"",  "\"api/two-words/{id}\"")]
+        [TestCase("\"api/↓twoWords/{id}\"",  "\"api/two-words/{id}\"")]
+        [TestCase("\"api/↓two_words/{id}\"", "\"api/two-words/{id}\"")]
         public void WhenMethodAttribute(string before, string after)
         {
             var code = @"
@@ -48,7 +51,10 @@ namespace ValidCode
             AnalyzerAssert.CodeFix(Analyzer, Fix, ExpectedDiagnostic, code, fixedCode);
         }
 
-        [TestCase("\"api/↓Orders\"", "\"api/orders\"")]
+        [TestCase("\"api/↓Orders\"",    "\"api/orders\"")]
+        [TestCase("\"api/↓TwoWords\"",  "\"api/two-words\"")]
+        [TestCase("\"api/↓twoWords\"",  "\"api/two-words\"")]
+        [TestCase("\"api/↓two_words\"", "\"api/two-words\"")]
         public void WhenRouteAttribute(string before, string after)
         {
             var code = @"
@@ -56,7 +62,7 @@ namespace ValidCode
 {
     using Microsoft.AspNetCore.Mvc;
 
-    [Route(""api/Orders"")]
+    [Route(""api/↓TwoWords"")]
     [ApiController]
     public class OrdersController : Controller
     {
@@ -66,7 +72,7 @@ namespace ValidCode
             return this.Ok(id);
         }
     }
-}".AssertReplace("\"api/Orders\"", before);
+}".AssertReplace("\"api/↓TwoWords\"", before);
 
             var fixedCode = @"
 namespace ValidCode

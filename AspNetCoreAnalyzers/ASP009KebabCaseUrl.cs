@@ -2,18 +2,18 @@ namespace AspNetCoreAnalyzers
 {
     using Microsoft.CodeAnalysis;
 
-    internal static class ASP009LowercaseUrl
+    internal static class ASP009KebabCaseUrl
     {
         public const string DiagnosticId = "ASP009";
 
         internal static readonly DiagnosticDescriptor Descriptor = new DiagnosticDescriptor(
             id: DiagnosticId,
-            title: "Use lowercase urls.",
-            messageFormat: "Use lowercase urls.",
+            title: "Use kebab-cased urls.",
+            messageFormat: "Use kebab-cased urls.",
             category: AnalyzerCategory.Routing,
             defaultSeverity: DiagnosticSeverity.Warning,
             isEnabledByDefault: true,
-            description: "Use lowercase urls.",
+            description: "Use kebab-cased urls.",
             helpLinkUri: HelpLink.ForId(DiagnosticId));
     }
 }

@@ -45,7 +45,7 @@ Roslyn analyzers for ASP.NET.Core.
   </tr>
   <tr>
     <td><a href="https://github.com/DotNetAnalyzers/AspNetCoreAnalyzers/tree/master/documentation/ASP009.md">ASP009</a></td>
-    <td>Use lowercase urls.</td>
+    <td>Use kebab-cased urls.</td>
   </tr>
 <table>
 <!-- end generated table -->

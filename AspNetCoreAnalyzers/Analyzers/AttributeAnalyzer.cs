@@ -23,7 +23,7 @@ namespace AspNetCoreAnalyzers
             ASP006ParameterRegex.Descriptor,
             ASP007MissingParameter.Descriptor,
             ASP008ValidRouteParameterName.Descriptor,
-            ASP009LowercaseUrl.Descriptor);
+            ASP009KebabCaseUrl.Descriptor);
 
         public override void Initialize(AnalysisContext context)
         {
@@ -134,19 +134,17 @@ namespace AspNetCoreAnalyzers
                                 ASP008ValidRouteParameterName.Descriptor,
                                 location,
                                 name == null
-                                    ? ImmutableDictionary<string, string>.Empty
-                                    : ImmutableDictionary<string, string>.Empty.Add(nameof(Text), name)));
+                                ? ImmutableDictionary<string, string>.Empty
+                                : ImmutableDictionary<string, string>.Empty.Add(nameof(Text), name)));
                     }
 
-                    if (IsUpperCase(segment, out var lowercase))
+                    if (ShouldKebabCase(segment, out var kebabCase))
                     {
                         context.ReportDiagnostic(
                             Diagnostic.Create(
-                                ASP009LowercaseUrl.Descriptor,
+                                ASP009KebabCaseUrl.Descriptor,
                                 segment.Span.GetLocation(),
-                                lowercase == null
-                                    ? ImmutableDictionary<string, string>.Empty
-                                    : ImmutableDictionary<string, string>.Empty.Add(nameof(Text), lowercase)));
+                                ImmutableDictionary<string, string>.Empty.Add(nameof(Text), kebabCase)));
                     }
                 }
             }
@@ -518,8 +516,7 @@ namespace AspNetCoreAnalyzers
                     parameter.Name.EndsWith(" ", StringComparison.OrdinalIgnoreCase))
                 {
                     location = parameter.Name.GetLocation();
-                    correctName = parameter.Name.ToString()
-                                           .Trim();
+                    correctName = parameter.Name.ToString().Trim();
                     return true;
                 }
 
@@ -540,7 +537,7 @@ namespace AspNetCoreAnalyzers
             return false;
         }
 
-        private static bool IsUpperCase(PathSegment segment, out string lowercase)
+        private static bool IsUppercase(PathSegment segment, out string lowercase)
         {
             if (segment.Parameter == null &&
                 segment.Span.Length > 0 &&
@@ -561,6 +558,57 @@ namespace AspNetCoreAnalyzers
 
             lowercase = null;
             return false;
+        }
+
+        private static bool ShouldKebabCase(PathSegment segment, out string kebabCase)
+        {
+            if (segment.Parameter == null &&
+                IsHumpOrSnakeCased(segment.Span))
+            {
+                var builder = StringBuilderPool.Borrow();
+                for (var i = 0; i < segment.Span.Length; i++)
+                {
+                    var c = segment.Span[i];
+                    if (char.IsUpper(c))
+                    {
+                        if (i > 0)
+                        {
+                            _ = builder.Append("-");
+                        }
+
+                        _ = builder.Append(char.ToLower(c));
+                    }
+                    else if (c == '_')
+                    {
+                        _ = builder.Append("-");
+                    }
+                    else
+                    {
+                        _ = builder.Append(c);
+                    }
+                }
+
+                kebabCase = builder.Return();
+                return true;
+            }
+
+            kebabCase = null;
+            return false;
+
+            bool IsHumpOrSnakeCased(Span span)
+            {
+                for (var i = 0; i < segment.Span.Length; i++)
+                {
+                    var c = segment.Span[i];
+                    if (char.IsUpper(c) ||
+                        c == '_')
+                    {
+                        return true;
+                    }
+                }
+
+                return false;
+            }
         }
     }
 }
