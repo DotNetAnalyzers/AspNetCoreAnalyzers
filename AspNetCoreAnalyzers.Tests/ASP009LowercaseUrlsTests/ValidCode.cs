@@ -1,4 +1,4 @@
-namespace AspNetCoreAnalyzers.Tests.ASP009LowerCaseUrlsTests
+namespace AspNetCoreAnalyzers.Tests.ASP009LowercaseUrlsTests
 {
     using Gu.Roslyn.Asserts;
     using Microsoft.CodeAnalysis.Diagnostics;

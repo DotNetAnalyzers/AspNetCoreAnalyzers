@@ -23,7 +23,7 @@ namespace AspNetCoreAnalyzers
             ASP006ParameterRegex.Descriptor,
             ASP007MissingParameter.Descriptor,
             ASP008ValidRouteParameterName.Descriptor,
-            ASP009LowerCaseUrl.Descriptor);
+            ASP009LowercaseUrl.Descriptor);
 
         public override void Initialize(AnalysisContext context)
         {
@@ -142,7 +142,7 @@ namespace AspNetCoreAnalyzers
                     {
                         context.ReportDiagnostic(
                             Diagnostic.Create(
-                                ASP009LowerCaseUrl.Descriptor,
+                                ASP009LowercaseUrl.Descriptor,
                                 segment.Span.GetLocation(),
                                 lowercase == null
                                     ? ImmutableDictionary<string, string>.Empty
