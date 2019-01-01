@@ -81,10 +81,22 @@ namespace AspNetCoreAnalyzers
             return new Span(this.Literal, this.TextSpan.Start + index, this.TextSpan.Start + index + length);
         }
 
+        internal bool TryIndexOf(char value, out int index)
+        {
+            index = this.IndexOf(value, 0);
+            return index >= 0;
+        }
+
         internal bool TryIndexOf(char value, int startIndex, out int index)
         {
             index = this.IndexOf(value, startIndex);
             return index >= startIndex;
+        }
+
+        internal bool TryLastIndexOf(char value, out int index)
+        {
+            index = this.LastIndexOf(value);
+            return index >= 0;
         }
 
         internal int IndexOf(char value, int startIndex = 0)
