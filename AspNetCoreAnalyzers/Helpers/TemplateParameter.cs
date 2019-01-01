@@ -43,7 +43,7 @@ namespace AspNetCoreAnalyzers
                 if (span.TryIndexOf(':', start, out var i))
                 {
                     var name = span.Slice(start, i);
-                    if (span.IndexOf(':', i + 1) > i)
+                    if (span.TryIndexOf(':', i + 1, out _))
                     {
                         var builder = ImmutableArray.CreateBuilder<RouteConstraint>();
                         while (RouteConstraint.TryRead(span, i, out var constraint))
