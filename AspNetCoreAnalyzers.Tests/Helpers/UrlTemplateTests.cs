@@ -30,9 +30,11 @@ namespace AspBox
             var literal = syntaxTree.FindLiteralExpression(text);
             Assert.AreEqual(true, UrlTemplate.TryParse(literal, out var template));
             CollectionAssert.AreEqual(expected, template.Path.Select(x => x.Span.ToString()));
+            Assert.IsTrue(template.Path.All(x => x.Parameter == null));
         }
 
         [TestCase("{id}",                 new[] { "{id}" })]
+        [TestCase("{id=1}",               new[] { "{id=1}" })]
         [TestCase("{id}/info",            new[] { "{id}", "info" })]
         [TestCase("{id?}/info",           new[] { "{id?}", "info" })]
         [TestCase("{id:int}/info",        new[] { "{id:int}", "info" })]
@@ -64,7 +66,7 @@ namespace AspBox
             var segment = template.Path.Single(x => x.Parameter.HasValue);
 
             Assert.AreEqual(expected.Single(x => x.StartsWith("{", StringComparison.Ordinal)), segment.Span.ToString());
-            Assert.AreEqual("id", segment.Parameter?.Name.ToString());
+            Assert.AreEqual("id",                                                              segment.Parameter?.Name.ToString());
         }
 
         [TestCase("\"orders/{id}\"",                   new[] { "orders", "{id}" },                   new string[0])]

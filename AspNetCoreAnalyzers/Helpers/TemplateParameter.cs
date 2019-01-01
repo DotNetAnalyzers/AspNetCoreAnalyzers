@@ -51,8 +51,7 @@ namespace AspNetCoreAnalyzers
                 return true;
             }
 
-            if (span.IndexOf(':') is int i &&
-                i > start)
+            if (span.TryIndexOf(':', start, out var i))
             {
                 var name = span.Slice(start, i);
                 if (span.IndexOf(':', i + 1) > i)
@@ -69,6 +68,13 @@ namespace AspNetCoreAnalyzers
                 }
 
                 result = new TemplateParameter(name, ImmutableArray.Create(new RouteConstraint(span.Slice(i + 1, end))));
+                return true;
+            }
+
+            if (span.TryIndexOf('=', start, out i))
+            {
+                var name = span.Slice(start, i);
+                result = new TemplateParameter(name, ImmutableArray<RouteConstraint>.Empty);
                 return true;
             }
 
