@@ -9,6 +9,7 @@ namespace AspNetCoreAnalyzers.Tests.ASP003ParameterSymbolTypeTests
         private static readonly DiagnosticAnalyzer Analyzer = new AttributeAnalyzer();
 
         [TestCase("\"{id}\"",                           "int id")]
+        [TestCase("\"{id=1}\"",                         "int id")]
         [TestCase("\"{id}\"",                           "string id")]
         [TestCase("\"{id?}\"",                          "string id")]
         [TestCase("@\"{id}\"",                          "int id")]
