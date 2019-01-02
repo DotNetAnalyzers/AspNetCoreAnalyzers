@@ -62,9 +62,17 @@ namespace AspNetCoreAnalyzers
 
                 if (span.TryIndexOf('=', start, out i))
                 {
-                    var name = span.Slice(start, i);
-                    result = new TemplateParameter(name, ImmutableArray<RouteConstraint>.Empty);
+                    result = new TemplateParameter(span.Slice(start, i), ImmutableArray<RouteConstraint>.Empty);
                     return true;
+                }
+
+                if (span[start] == '*')
+                {
+                    start++;
+                    if (span[start] == '*')
+                    {
+                        start++;
+                    }
                 }
 
                 result = new TemplateParameter(span.Slice(start, end), ImmutableArray<RouteConstraint>.Empty);

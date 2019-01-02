@@ -13,6 +13,8 @@ namespace AspNetCoreAnalyzers.Tests.ASP001ParameterNameTests
         [TestCase("@\"{value}\"")]
         [TestCase("\"{value}\"")]
         [TestCase("\"{value?}\"")]
+        [TestCase("\"{*value}\"")]
+        [TestCase("\"{**value}\"")]
         [TestCase("\"{value=abc}\"")]
         [TestCase("@\"{value?}\"")]
         [TestCase("\"api/orders/{value}\"")]

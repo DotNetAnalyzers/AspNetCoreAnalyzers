@@ -9,8 +9,12 @@ namespace AspNetCoreAnalyzers.Tests.ASP002RouteParameterNameTests
         private static readonly DiagnosticAnalyzer Analyzer = new AttributeAnalyzer();
 
         [TestCase("\"api/{text}\"")]
+        [TestCase("\"api/{text?}\"")]
+        [TestCase("\"api/{*text}\"")]
+        [TestCase("\"api/{**text}\"")]
         [TestCase("@\"api/{text}\"")]
         [TestCase("\"api/{text:alpha}\"")]
+        [TestCase("\"api/{text=abc}\"")]
         public void When(string after)
         {
             var code = @"

@@ -34,6 +34,8 @@ namespace AspBox
         }
 
         [TestCase("{id}",                 new[] { "{id}" })]
+        [TestCase("{*id}",                new[] { "{*id}" })]
+        [TestCase("{**id}",               new[] { "{**id}" })]
         [TestCase("{id=1}",               new[] { "{id=1}" })]
         [TestCase("{id}/info",            new[] { "{id}", "info" })]
         [TestCase("{id?}/info",           new[] { "{id?}", "info" })]
