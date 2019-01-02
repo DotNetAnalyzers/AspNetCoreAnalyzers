@@ -358,6 +358,20 @@ namespace AspNetCoreAnalyzers
         {
             if (segment.Parameter is TemplateParameter parameter)
             {
+                if (parameter.Name.EndsWith("}", StringComparison.Ordinal))
+                {
+                    location = parameter.Name.GetLocation();
+                    correctSyntax = parameter.Name.ToString().TrimEnd('}');
+                    return true;
+                }
+
+                if (parameter.Name.StartsWith("{", StringComparison.Ordinal))
+                {
+                    location = parameter.Name.GetLocation();
+                    correctSyntax = parameter.Name.ToString().TrimStart('{');
+                    return true;
+                }
+
                 foreach (var constraint in parameter.Constraints)
                 {
                     var text = constraint.Span;
