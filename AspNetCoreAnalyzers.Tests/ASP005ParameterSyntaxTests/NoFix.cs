@@ -3,14 +3,16 @@ namespace AspNetCoreAnalyzers.Tests.ASP005ParameterSyntaxTests
     using System.Globalization;
     using Gu.Roslyn.Asserts;
     using Microsoft.CodeAnalysis;
+    using Microsoft.CodeAnalysis.CodeFixes;
     using Microsoft.CodeAnalysis.Diagnostics;
     using Microsoft.CodeAnalysis.Text;
     using NUnit.Framework;
 
-    public class Diagnostics
+    public class NoFix
     {
         private static readonly DiagnosticAnalyzer Analyzer = new AttributeAnalyzer();
         private static readonly ExpectedDiagnostic ExpectedDiagnostic = ExpectedDiagnostic.Create(ASP005ParameterSyntax.Descriptor);
+        private static readonly CodeFixProvider Fix = new TemplateTextFix();
 
         [TestCase("\"api/orders/{id:↓wrong}\"")]
         [TestCase("@\"api/orders/{id:↓wrong}\"")]
@@ -39,7 +41,7 @@ namespace AspBox
     }
 }".AssertReplace("\"api/orders/↓{id:wrong}\"", before);
 
-            AnalyzerAssert.Diagnostics(Analyzer, ExpectedDiagnostic, code);
+            AnalyzerAssert.NoFix(Analyzer, Fix, ExpectedDiagnostic, code);
         }
 
         [TestCase("\"api/orders/{id:minlength(↓wrong))}\"")]
@@ -66,11 +68,11 @@ namespace AspBox
     }
 }".AssertReplace("\"api/orders/↓{id:wrong}\"", before);
 
-            AnalyzerAssert.Diagnostics(Analyzer, ExpectedDiagnostic, code);
+            AnalyzerAssert.NoFix(Analyzer, Fix, ExpectedDiagnostic, code);
         }
 
         [TestCase("\"api/orders/{id:regex(\\\\d):minlength(wrong)}\"", 54, 59)]
-        [TestCase("@\"api/orders/{id:regex(\\d):minlength(wrong)}\"", 54, 59)]
+        [TestCase("@\"api/orders/{id:regex(\\d):minlength(wrong)}\"",  54, 59)]
         public void WhenStringExplicitSpan(string before, int start, int end)
         {
             var code = @"
