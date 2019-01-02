@@ -11,8 +11,8 @@ namespace AspNetCoreAnalyzers.Tests.ASP001ParameterNameTests
         private static readonly ExpectedDiagnostic ExpectedDiagnostic = ExpectedDiagnostic.Create(ASP001ParameterSymbolName.Descriptor);
         private static readonly CodeFixProvider Fix = new ParameterNameFix();
 
-        [TestCase("@\"{value}\"")]
         [TestCase("\"{value}\"")]
+        [TestCase("@\"{value}\"")]
         [TestCase("\"{value?}\"")]
         [TestCase("\"{*value}\"")]
         [TestCase("\"{**value}\"")]

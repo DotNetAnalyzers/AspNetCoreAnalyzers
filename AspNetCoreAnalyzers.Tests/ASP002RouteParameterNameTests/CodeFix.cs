@@ -12,6 +12,7 @@ namespace AspNetCoreAnalyzers.Tests.ASP002RouteParameterNameTests
         private static readonly CodeFixProvider Fix = new TemplateTextFix();
 
         [TestCase("\"api/{↓value}\"",       "\"api/{text}\"")]
+        [TestCase("\"api/{↓text*}\"",       "\"api/{text}\"")]
         [TestCase("@\"api/{↓value}\"",      "@\"api/{text}\"")]
         [TestCase("\"api/{↓value:alpha}\"", "\"api/{text:alpha}\"")]
         public void When(string before, string after)

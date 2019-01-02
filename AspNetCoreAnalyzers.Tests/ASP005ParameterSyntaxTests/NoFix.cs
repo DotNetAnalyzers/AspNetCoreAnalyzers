@@ -14,6 +14,7 @@ namespace AspNetCoreAnalyzers.Tests.ASP005ParameterSyntaxTests
         private static readonly ExpectedDiagnostic ExpectedDiagnostic = ExpectedDiagnostic.Create(ASP005ParameterSyntax.Descriptor);
         private static readonly CodeFixProvider Fix = new TemplateTextFix();
 
+        [TestCase("\"{id:↓wrong}\"")]
         [TestCase("\"api/orders/{id:↓wrong}\"")]
         [TestCase("@\"api/orders/{id:↓wrong}\"")]
         [TestCase("\"api/orders/{id:min1)}\"")]
