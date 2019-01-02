@@ -8,12 +8,12 @@ namespace AspNetCoreAnalyzers
 
         internal static readonly DiagnosticDescriptor Descriptor = new DiagnosticDescriptor(
             id: DiagnosticId,
-            title: "Route parameter type does not match the method parameter name.",
-            messageFormat: "Route parameter type does not match the method parameter name.",
+            title: "Route parameter name does not match the method parameter name.",
+            messageFormat: "Route parameter name does not match the method parameter name.",
             category: AnalyzerCategory.Routing,
             defaultSeverity: DiagnosticSeverity.Warning,
             isEnabledByDefault: true,
-            description: "Route parameter type does not match the method parameter name.",
+            description: "Route parameter name does not match the method parameter name.",
             helpLinkUri: HelpLink.ForId(DiagnosticId));
     }
 }
