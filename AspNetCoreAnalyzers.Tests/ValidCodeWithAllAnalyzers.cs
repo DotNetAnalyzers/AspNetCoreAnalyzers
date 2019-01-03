@@ -57,7 +57,7 @@ namespace AspNetCoreAnalyzers.Tests
         [TestCaseSource(nameof(AllAnalyzers))]
         public void AnalyzersSolution(DiagnosticAnalyzer analyzer)
         {
-            AnalyzerAssert.Valid(analyzer, AnalyzersProjectSolution);
+            AnalyzerAssert.NoAnalyzerDiagnostics(analyzer, AnalyzersProjectSolution);
         }
     }
 }

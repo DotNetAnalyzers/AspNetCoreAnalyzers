@@ -37,19 +37,18 @@ namespace AspNetCoreAnalyzers
             {
                 if (text[pos] == '{')
                 {
-                    if (Text.TrySkipPast(text, ref pos, "}/"))
+                    if (text.TryIndexOf("}/", pos, out var end))
                     {
-                        segment = new PathSegment(literal, start, pos - 1);
+                        segment = new PathSegment(literal, start, end + 1);
                         return true;
                     }
 
                     segment = new PathSegment(literal, start, text.Length);
                     return true;
                 }
-
-                if (Text.TrySkipPast(text, ref pos, "/"))
+                else if (text.TryIndexOf("/", pos, out var end))
                 {
-                    segment = new PathSegment(literal, start, pos - 1);
+                    segment = new PathSegment(literal, start, end);
                     return true;
                 }
 
