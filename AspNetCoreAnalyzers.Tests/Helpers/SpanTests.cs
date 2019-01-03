@@ -75,5 +75,71 @@ namespace AspBox.Controllers
             var span = new Span(new StringLiteral(literal), 0, 3);
             Assert.AreEqual(expected, span.EndsWith(value, StringComparison.Ordinal));
         }
+
+        [TestCase("\"abc\"", "abc",  0)]
+        [TestCase("\"abc\"", "bc",   1)]
+        [TestCase("\"abc\"", "c",    2)]
+        [TestCase("\"abc\"", "ab",   0)]
+        [TestCase("\"abc\"", "e",    -1)]
+        [TestCase("\"abc\"", "dabc", -1)]
+        public void IndexOf(string text, string value, int expected)
+        {
+            var syntaxTree = CSharpSyntaxTree.ParseText(@"
+namespace AspBox.Controllers
+{
+    using Microsoft.AspNetCore.Mvc;
+
+    [Route(""abc"")]
+    class C
+    {
+        
+    }
+}".AssertReplace("\"abc\"", text));
+            var literal = syntaxTree.FindLiteralExpression(text);
+            var span = new Span(new StringLiteral(literal), 0, 3);
+            Assert.AreEqual(expected, span.IndexOf(value));
+            if (expected >= 0)
+            {
+                Assert.AreEqual(true,     span.TryIndexOf(value, 0, out var index));
+                Assert.AreEqual(expected, index);
+            }
+            else
+            {
+                Assert.AreEqual(false, span.TryIndexOf(value, 0, out _));
+            }
+        }
+
+        [TestCase("\"123abc\"", "abc",  0)]
+        [TestCase("\"123abc\"", "bc",   1)]
+        [TestCase("\"123abc\"", "c",    2)]
+        [TestCase("\"123abc\"", "ab",   0)]
+        [TestCase("\"123abc\"", "e",    -4)]
+        [TestCase("\"123abc\"", "dabc", -4)]
+        public void IndexOfWhenOffset(string text, string value, int expected)
+        {
+            var syntaxTree = CSharpSyntaxTree.ParseText(@"
+namespace AspBox.Controllers
+{
+    using Microsoft.AspNetCore.Mvc;
+
+    [Route(""123abc"")]
+    class C
+    {
+        
+    }
+}".AssertReplace("\"123abc\"", text));
+            var literal = syntaxTree.FindLiteralExpression(text);
+            var span = new Span(new StringLiteral(literal), 3, 3);
+            Assert.AreEqual(expected, span.IndexOf(value));
+            if (expected >= 0)
+            {
+                Assert.AreEqual(true,     span.TryIndexOf(value, 0, out var index));
+                Assert.AreEqual(expected, index);
+            }
+            else
+            {
+                Assert.AreEqual(false, span.TryIndexOf(value, 0, out _));
+            }
+        }
     }
 }

@@ -124,6 +124,7 @@ namespace AspBox
         [TestCase("\"orders/{id:regex(a/b)}\"",                              new[] { "orders", "{id:regex(a/b)}" },                        new[] { "regex(a/b)" })]
         [TestCase("\"orders/{id:regex(a{{0,1}})}\"",                         new[] { "orders", "{id:regex(a{{0,1}})}" },                   new[] { "regex(a{{0,1}})" })]
         [TestCase("\"orders/{id:minlength(1):regex(a{{0,1}})}\"",            new[] { "orders", "{id:minlength(1):regex(a{{0,1}})}" },      new[] { "minlength(1)", "regex(a{{0,1}})" })]
+        [TestCase("\"orders/{id:regex(a{{0,1}}):minlength(1)}\"",            new[] { "orders", "{id:regex(a{{0,1}}):minlength(1)}" },      new[] { "regex(a{{0,1}})", "minlength(1)" })]
         public void TryParseWhenStringParameter(string text, string[] segments, string[] constraints)
         {
             var syntaxTree = CSharpSyntaxTree.ParseText(@"

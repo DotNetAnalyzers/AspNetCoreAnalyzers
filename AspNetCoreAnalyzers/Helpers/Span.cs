@@ -95,6 +95,12 @@ namespace AspNetCoreAnalyzers
             return index >= startIndex;
         }
 
+        internal bool TryIndexOf(string value, int startIndex, out int index)
+        {
+            index = this.IndexOf(value, startIndex);
+            return index >= startIndex;
+        }
+
         internal bool TryLastIndexOf(char value, out int index)
         {
             index = this.LastIndexOf(value);
@@ -113,6 +119,11 @@ namespace AspNetCoreAnalyzers
             }
 
             return -1;
+        }
+
+        internal int IndexOf(string value, int startIndex = 0)
+        {
+            return this.Literal.ValueText.IndexOf(value, this.TextSpan.Start + startIndex, StringComparison.Ordinal) - this.TextSpan.Start;
         }
 
         internal int LastIndexOf(char value)

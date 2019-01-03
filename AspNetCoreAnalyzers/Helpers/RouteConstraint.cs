@@ -37,9 +37,9 @@ namespace AspNetCoreAnalyzers
             {
                 switch (span[i])
                 {
-                    case '(' when Text.TrySkipPast(span, ref i, "):") ||
-                                  Text.TrySkipPast(span, ref i, ")}"):
-                        constraint = new RouteConstraint(span.Slice(pos, i - 1));
+                    case '(' when span.TryIndexOf("):", i, out var end) ||
+                                  span.TryIndexOf(")}", i, out end):
+                        constraint = new RouteConstraint(span.Slice(pos, end + 1));
                         return true;
                     case '}':
                     case ':':

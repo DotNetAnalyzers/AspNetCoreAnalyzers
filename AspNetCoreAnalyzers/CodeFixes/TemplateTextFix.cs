@@ -33,7 +33,7 @@ namespace AspNetCoreAnalyzers
             foreach (var diagnostic in context.Diagnostics)
             {
                 if (syntaxRoot.TryFindNodeOrAncestor<LiteralExpressionSyntax>(diagnostic, out _) &&
-                    diagnostic.Properties.TryGetValue(nameof(Text), out var text))
+                    diagnostic.Properties.TryGetValue(nameof(UrlTemplate), out var text))
                 {
                     context.RegisterCodeFix(
                         CodeAction.Create(

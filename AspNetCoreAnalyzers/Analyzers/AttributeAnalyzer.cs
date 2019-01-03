@@ -60,7 +60,7 @@ namespace AspNetCoreAnalyzers
                                     ASP002RouteParameterName.Descriptor,
                                     templateParameter.Name.GetLocation(),
                                     ImmutableDictionary<string, string>.Empty.Add(
-                                        nameof(Text),
+                                        nameof(UrlTemplate),
                                         withMethodParameter.Symbol.Name)));
                         }
                         else if (pairs.Count(x => x.Route == null) > 1 &&
@@ -98,7 +98,7 @@ namespace AspNetCoreAnalyzers
                                         constraintLocation,
                                         text == null
                                             ? ImmutableDictionary<string, string>.Empty
-                                            : ImmutableDictionary<string, string>.Empty.Add(nameof(Text), text)));
+                                            : ImmutableDictionary<string, string>.Empty.Add(nameof(UrlTemplate), text)));
                             }
                         }
                     }
@@ -114,7 +114,7 @@ namespace AspNetCoreAnalyzers
                                 location,
                                 syntax == null
                                     ? ImmutableDictionary<string, string>.Empty
-                                    : ImmutableDictionary<string, string>.Empty.Add(nameof(Text), syntax)));
+                                    : ImmutableDictionary<string, string>.Empty.Add(nameof(UrlTemplate), syntax)));
                     }
 
                     if (HasWrongRegexSyntax(segment, out location, out syntax))
@@ -125,7 +125,7 @@ namespace AspNetCoreAnalyzers
                                 location,
                                 syntax == null
                                     ? ImmutableDictionary<string, string>.Empty
-                                    : ImmutableDictionary<string, string>.Empty.Add(nameof(Text), syntax)));
+                                    : ImmutableDictionary<string, string>.Empty.Add(nameof(UrlTemplate), syntax)));
                     }
 
                     if (HasInvalidName(segment, out location, out var name))
@@ -136,7 +136,7 @@ namespace AspNetCoreAnalyzers
                                 location,
                                 name == null
                                 ? ImmutableDictionary<string, string>.Empty
-                                : ImmutableDictionary<string, string>.Empty.Add(nameof(Text), name)));
+                                : ImmutableDictionary<string, string>.Empty.Add(nameof(UrlTemplate), name)));
                     }
 
                     if (ShouldKebabCase(segment, out var kebabCase))
@@ -145,7 +145,7 @@ namespace AspNetCoreAnalyzers
                             Diagnostic.Create(
                                 ASP009KebabCaseUrl.Descriptor,
                                 segment.Span.GetLocation(),
-                                ImmutableDictionary<string, string>.Empty.Add(nameof(Text), kebabCase)));
+                                ImmutableDictionary<string, string>.Empty.Add(nameof(UrlTemplate), kebabCase)));
                     }
 
                     if (ContainsReservedCharacter(segment, out location))
