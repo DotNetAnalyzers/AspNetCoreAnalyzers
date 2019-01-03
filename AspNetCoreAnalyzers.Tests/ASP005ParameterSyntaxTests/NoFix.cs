@@ -14,11 +14,17 @@ namespace AspNetCoreAnalyzers.Tests.ASP005ParameterSyntaxTests
         private static readonly ExpectedDiagnostic ExpectedDiagnostic = ExpectedDiagnostic.Create(ASP005ParameterSyntax.Descriptor);
         private static readonly CodeFixProvider Fix = new TemplateTextFix();
 
+        [TestCase("\"{↓id*}\"")]
+        [TestCase("\"{↓id/}\"")]
+        [TestCase("\"{↓i/d}\"")]
+        [TestCase("\"{↓/i/d/}\"")]
         [TestCase("\"{id:↓wrong}\"")]
         [TestCase("\"api/orders/{id:↓wrong}\"")]
         [TestCase("@\"api/orders/{id:↓wrong}\"")]
-        [TestCase("\"api/orders/{id:min1)}\"")]
-        [TestCase("\"api/orders/{id:max1)}\"")]
+        [TestCase("\"api/orders/{id:↓min1)}\"")]
+        [TestCase("\"api/orders/{↓/i/d/:min1)}\"")]
+        [TestCase("\"api/orders/{↓/i/d/:min(1)}\"")]
+        [TestCase("\"api/orders/{id:↓max1)}\"")]
         [TestCase("\"api/orders/{id:min(↓wrong))}\"")]
         [TestCase("\"api/orders/{id:max(↓wrong))}\"")]
         [TestCase("\"api/orders/{id:↓:long)}\"")]

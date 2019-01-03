@@ -156,6 +156,12 @@ namespace AspBox
         [TestCase("{id*}",          new[] { "{id*}" },             "id*")]
         [TestCase("{i*d*}",         new[] { "{i*d*}" },            "i*d*")]
         [TestCase("orders/{id*}",   new[] { "orders", "{id*}" },   "id*")]
+        [TestCase("{id/}",          new[] { "{id/}" },             "id/")]
+        [TestCase("{i/d}",          new[] { "{i/d}" },             "i/d")]
+        [TestCase("{i/d/}",         new[] { "{i/d/}" },            "i/d/")]
+        [TestCase("{/i/d/}",        new[] { "{/i/d/}" },           "/i/d/")]
+        [TestCase("orders/{id/}",   new[] { "orders", "{id/}" },   "id/")]
+        [TestCase("orders/{/i/d/}", new[] { "orders", "{/i/d/}" }, "/i/d/")]
         public void TryParseWhenSyntaxErrorParameter(string text, string[] segments, string name)
         {
             var syntaxTree = CSharpSyntaxTree.ParseText(@"

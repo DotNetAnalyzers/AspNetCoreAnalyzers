@@ -35,40 +35,26 @@ namespace AspNetCoreAnalyzers
             var pos = start;
             if (TrySkipStart())
             {
-                while (pos < text.Length)
+                if (text[pos] == '{')
                 {
-                    if (text[pos] == '/')
+                    if (Text.TrySkipPast(text, ref pos, "}/"))
                     {
-                        segment = new PathSegment(literal, start, pos);
+                        segment = new PathSegment(literal, start, pos - 1);
                         return true;
                     }
 
-                    if (text[pos] == '(')
-                    {
-                        pos++;
-                        while (Text.TrySkipPast(text, ref pos, ")"))
-                        {
-                            Text.SkipWhiteSpace(text, ref pos);
-                            switch (text[pos])
-                            {
-                                case ':':
-                                    break;
-                                case '}':
-                                    pos++;
-                                    segment = new PathSegment(literal, start, pos);
-                                    return true;
-                            }
-                        }
-                    }
-
-                    pos++;
-                }
-
-                if (pos == text.Length)
-                {
-                    segment = new PathSegment(literal, start, pos);
+                    segment = new PathSegment(literal, start, text.Length);
                     return true;
                 }
+
+                if (Text.TrySkipPast(text, ref pos, "/"))
+                {
+                    segment = new PathSegment(literal, start, pos - 1);
+                    return true;
+                }
+
+                segment = new PathSegment(literal, start, text.Length);
+                return true;
             }
 
             segment = default(PathSegment);
@@ -95,7 +81,6 @@ namespace AspNetCoreAnalyzers
                         start++;
                     }
 
-                    pos++;
                     return true;
                 }
 
