@@ -11,19 +11,19 @@ namespace AspNetCoreAnalyzers.Tests.ASP005ParameterSyntaxTests
         private static readonly ExpectedDiagnostic ExpectedDiagnostic = ExpectedDiagnostic.Create(ASP005ParameterSyntax.Descriptor);
         private static readonly CodeFixProvider Fix = new TemplateTextFix();
 
-        [TestCase("↓id}",                      "{id}")]
-        [TestCase("↓{id",                      "{id}")]
-        [TestCase("{↓id}}",                    "{id}")]
-        [TestCase("{↓{id}",                    "{id}")]
-        [TestCase("api/orders/↓id}",           "api/orders/{id}")]
-        [TestCase("api/orders/↓{id",           "api/orders/{id}")]
-        [TestCase("api/orders/{↓id}}",         "api/orders/{id}")]
-        [TestCase("api/orders/{↓{id}",         "api/orders/{id}")]
-        [TestCase("api/orders/↓id:long}",      "api/orders/{id:long}")]
-        [TestCase("api/orders/↓{id:long",      "api/orders/{id:long}")]
-        [TestCase("api/orders/{id:min(1}",     "api/orders/{id:min(1)}")]
-        [TestCase("api/orders/{id:max(1}",     "api/orders/{id:max(1)}")]
-        [TestCase("api/orders/{id:range(1,2}", "api/orders/{id:range(1,2)}")]
+        [TestCase("\"↓id}\"",                       "\"{id}\"")]
+        [TestCase("\"↓{id\"",                       "\"{id}\"")]
+        [TestCase("\"{↓id}}\"",                     "\"{id}\"")]
+        [TestCase("\"{↓{id}\"",                     "\"{id}\"")]
+        [TestCase("\"api/orders/↓id}\"",            "\"api/orders/{id}\"")]
+        [TestCase("\"api/orders/↓{id\"",            "\"api/orders/{id}\"")]
+        [TestCase("\"api/orders/{↓id}}\"",          "\"api/orders/{id}\"")]
+        [TestCase("\"api/orders/{↓{id}\"",          "\"api/orders/{id}\"")]
+        [TestCase("\"api/orders/↓id:long}\"",       "\"api/orders/{id:long}\"")]
+        [TestCase("\"api/orders/↓{id:long\"",       "\"api/orders/{id:long}\"")]
+        [TestCase("\"api/orders/{id:min(1}\"",      "\"api/orders/{id:min(1)}\"")]
+        [TestCase("\"api/orders/{id:max(1}\"",      "\"api/orders/{id:max(1)}\"")]
+        [TestCase("\"api/orders/{id:range(1,2}\"",  "\"api/orders/{id:range(1,2)}\"")]
         public void WhenLong(string before, string after)
         {
             var code = @"
@@ -40,7 +40,7 @@ namespace AspBox
             return this.Ok(id);
         }
     }
-}".AssertReplace("api/orders/{id:long}", before);
+}".AssertReplace("\"api/orders/{id:long}\"", before);
 
             var fixedCode = @"
 namespace AspBox
@@ -56,7 +56,7 @@ namespace AspBox
             return this.Ok(id);
         }
     }
-}".AssertReplace("api/orders/{id:long}", after);
+}".AssertReplace("\"api/orders/{id:long}\"", after);
             AnalyzerAssert.CodeFix(Analyzer, Fix, ExpectedDiagnostic, code, fixedCode);
         }
 
