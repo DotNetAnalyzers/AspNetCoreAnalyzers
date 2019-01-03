@@ -9,6 +9,8 @@ namespace AspNetCoreAnalyzers.Tests.Helpers
     public class UrlTemplateTests
     {
         [TestCase("foo",     new[] { "foo" })]
+        [TestCase("/foo",     new[] { "foo" })]
+        [TestCase("~/foo",     new[] { "foo" })]
         [TestCase("foo/bar", new[] { "foo", "bar" })]
         public void TryParse(string text, string[] expected)
         {

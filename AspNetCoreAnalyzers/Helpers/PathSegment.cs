@@ -33,23 +33,8 @@ namespace AspNetCoreAnalyzers
             // https://tools.ietf.org/html/rfc3986
             var text = literal.ValueText;
             var pos = start;
-            if (pos < text.Length - 1)
+            if (TrySkipStart())
             {
-                if (pos == 0)
-                {
-                    pos++;
-                }
-                else if (text[pos] == '/')
-                {
-                    pos++;
-                    start++;
-                }
-                else
-                {
-                    segment = default(PathSegment);
-                    return false;
-                }
-
                 while (pos < text.Length)
                 {
                     if (text[pos] == '/')
@@ -88,6 +73,41 @@ namespace AspNetCoreAnalyzers
 
             segment = default(PathSegment);
             return false;
+
+            bool TrySkipStart()
+            {
+                if (pos >= text.Length)
+                {
+                    return false;
+                }
+
+                if (pos == 0)
+                {
+                    if (text.StartsWith("~/", StringComparison.Ordinal))
+                    {
+                        pos += 2;
+                        start = 2;
+                    }
+                    else if (text.StartsWith("~", StringComparison.Ordinal) ||
+                             text.StartsWith("/", StringComparison.Ordinal))
+                    {
+                        pos++;
+                        start++;
+                    }
+
+                    pos++;
+                    return true;
+                }
+
+                if (text[pos] == '/')
+                {
+                    pos++;
+                    start++;
+                    return true;
+                }
+
+                return false;
+            }
         }
 
         public bool Equals(PathSegment other)
