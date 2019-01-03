@@ -372,6 +372,18 @@ namespace AspNetCoreAnalyzers
                     return true;
                 }
 
+                if (parameter.Name.Length == 0 ||
+                    parameter.Name.Contains('*') ||
+                    parameter.Name.Contains('{') ||
+                    parameter.Name.Contains('}') ||
+                    parameter.Name.Contains('/') ||
+                    parameter.Name.Contains('?'))
+                {
+                    location = parameter.Name.GetLocation();
+                    correctSyntax = null;
+                    return true;
+                }
+
                 foreach (var constraint in parameter.Constraints)
                 {
                     var text = constraint.Span;

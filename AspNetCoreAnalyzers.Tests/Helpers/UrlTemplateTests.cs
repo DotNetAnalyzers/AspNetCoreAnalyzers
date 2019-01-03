@@ -150,10 +150,41 @@ namespace AspBox
             CollectionAssert.AreEqual(constraints, parameter.Constraints.Select(x => x.Span.ToString()));
         }
 
+        [TestCase("{?id}",          new[] { "{?id}" },             "?id")]
+        [TestCase("{id*}",          new[] { "{id*}" },             "id*")]
+        [TestCase("{i*d*}",         new[] { "{i*d*}" },            "i*d*")]
+        [TestCase("orders/{id*}",   new[] { "orders", "{id*}" },   "id*")]
+        public void TryParseWhenSyntaxErrorParameter(string text, string[] segments, string name)
+        {
+            var syntaxTree = CSharpSyntaxTree.ParseText(@"
+namespace AspBox
+{
+    using System.Threading.Tasks;
+    using Microsoft.AspNetCore.Mvc;
+
+    [ApiController]
+    public class OrdersController : Controller
+    {
+        [HttpGet(""{id}"")]
+        public async Task<IActionResult> GetOrder([FromRoute]int id)
+        {
+        }
+    }
+}".AssertReplace("{id}", text));
+            var literal = syntaxTree.FindLiteralExpression(text);
+            Assert.AreEqual(true, UrlTemplate.TryParse(literal, out var template));
+            CollectionAssert.AreEqual(segments, template.Path.Select(x => x.Span.ToString()));
+
+            // ReSharper disable once PossibleInvalidOperationException
+            var parameter = template.Path.Single(x => x.Parameter.HasValue)
+                                    .Parameter.Value;
+            Assert.AreEqual(name, parameter.Name.ToString());
+        }
+
         [TestCase("orders/{id:}",      new[] { "orders", "{id:}" },      new[] { "" })]
         [TestCase("orders/{id:min(1}", new[] { "orders", "{id:min(1}" }, new[] { "min(1" })]
         [TestCase("orders/{id:min1)}", new[] { "orders", "{id:min1)}" }, new[] { "min1)" })]
-        public void TryParseWhenSyntaxError(string text, string[] segments, string[] constraints)
+        public void TryParseWhenSyntaxErrorConstraint(string text, string[] segments, string[] constraints)
         {
             var syntaxTree = CSharpSyntaxTree.ParseText(@"
 namespace AspBox

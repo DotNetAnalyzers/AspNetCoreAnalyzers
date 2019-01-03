@@ -81,6 +81,8 @@ namespace AspNetCoreAnalyzers
             return new Span(this.Literal, this.TextSpan.Start + index, this.TextSpan.Start + index + length);
         }
 
+        internal bool Contains(char c) => this.TryIndexOf(c, out _);
+
         internal bool TryIndexOf(char value, out int index)
         {
             index = this.IndexOf(value, 0);
