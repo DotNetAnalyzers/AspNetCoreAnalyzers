@@ -3,17 +3,17 @@ namespace AspNetCoreAnalyzers
     using System;
     using System.Collections.Immutable;
     using System.Composition;
-    using System.Threading;
     using System.Threading.Tasks;
+    using Gu.Roslyn.AnalyzerExtensions;
     using Gu.Roslyn.CodeFixExtensions;
     using Microsoft.CodeAnalysis;
-    using Microsoft.CodeAnalysis.CodeActions;
     using Microsoft.CodeAnalysis.CodeFixes;
+    using Microsoft.CodeAnalysis.CSharp;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
 
     [ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(TemplateTextFix))]
     [Shared]
-    public class TemplateTextFix : CodeFixProvider
+    public class TemplateTextFix : DocumentEditorCodeFixProvider
     {
         public override ImmutableArray<string> FixableDiagnosticIds { get; } = ImmutableArray.Create(
             ASP002RouteParameterName.DiagnosticId,
@@ -23,30 +23,42 @@ namespace AspNetCoreAnalyzers
             ASP008ValidRouteParameterName.DiagnosticId,
             ASP009KebabCaseUrl.DiagnosticId);
 
-        public override FixAllProvider GetFixAllProvider() => null;
-
-        public override async Task RegisterCodeFixesAsync(CodeFixContext context)
+        protected override async Task RegisterCodeFixesAsync(DocumentEditorCodeFixContext context)
         {
             var syntaxRoot = await context.Document.GetSyntaxRootAsync(context.CancellationToken)
                                           .ConfigureAwait(false);
 
             foreach (var diagnostic in context.Diagnostics)
             {
-                if (syntaxRoot.TryFindNodeOrAncestor<LiteralExpressionSyntax>(diagnostic, out _) &&
+                if (syntaxRoot.TryFindNodeOrAncestor<LiteralExpressionSyntax>(diagnostic, out var literal) &&
                     diagnostic.Properties.TryGetValue(nameof(UrlTemplate), out var text))
                 {
                     context.RegisterCodeFix(
-                        CodeAction.Create(
-                            GetTitle(diagnostic),
-                            _ => Fix(_),
-                            equivalenceKey: null),
+                        GetTitle(diagnostic),
+                        (editor, _) => editor.ReplaceToken(
+                            literal.Token,
+                            WithValueText()),
+                        nameof(TemplateTextFix),
                         diagnostic);
 
-                    async Task<Document> Fix(CancellationToken cancellationToken)
+                    SyntaxToken WithValueText()
                     {
-                        var sourceText = await context.Document.GetTextAsync(cancellationToken)
-                                                      .ConfigureAwait(false);
-                        return context.Document.WithText(sourceText.Replace(diagnostic.Location.SourceSpan, text));
+                        var token = literal.Token;
+                        return SyntaxFactory.Token(
+                            token.LeadingTrivia,
+                            token.Kind(),
+                            ReplaceSpan(token.Text, literal.SpanStart),
+                            ReplaceSpan(token.ValueText, literal.SpanStart + +token.Text.IndexOf('"') + 1),
+                            token.TrailingTrivia);
+
+                        string ReplaceSpan(string oldText, int offset)
+                        {
+                            return StringBuilderPool.Borrow()
+                                                    .Append(oldText, 0, diagnostic.Location.SourceSpan.Start - offset)
+                                                    .Append(text)
+                                                    .Append(oldText, diagnostic.Location.SourceSpan.End - offset)
+                                                    .Return();
+                        }
                     }
                 }
             }
