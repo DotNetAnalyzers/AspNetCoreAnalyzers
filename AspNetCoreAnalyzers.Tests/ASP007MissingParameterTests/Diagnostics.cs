@@ -21,13 +21,14 @@ namespace AspBox
     [ApiController]
     public class OrdersController : Controller
     {
-        [HttpGet(""api/orders/{id}"")]
-        public async Task<IActionResult> GetOrder↓()
+        [HttpGet(""api/orders/{↓id}"")]
+        public async Task<IActionResult> GetOrder()
         {
         }
     }
 }";
-            AnalyzerAssert.Diagnostics(Analyzer, ExpectedDiagnostic, code);
+            var message = "The route template has parameter id that does not have a corresponding parameter in the method.";
+            AnalyzerAssert.Diagnostics(Analyzer, ExpectedDiagnostic.WithMessage(message), code);
         }
 
         [Test]
@@ -69,8 +70,8 @@ namespace AspBox
             this.db = db;
         }
 
-        [HttpGet(""api/orders/{orderId}/items/{itemId}"")]
-        public async Task<IActionResult> GetOrder↓(int orderId)
+        [HttpGet(""api/orders/{orderId}/items/{↓itemId}"")]
+        public async Task<IActionResult> GetOrder(int orderId)
         {
             var match = await this.db.Orders.FirstOrDefaultAsync(x => x.Id == orderId);
             if (match == null)
@@ -82,7 +83,8 @@ namespace AspBox
         }
     }
 }";
-            AnalyzerAssert.Diagnostics(Analyzer, ExpectedDiagnostic, order, db, code);
+            var message = "The route template has parameter itemId that does not have a corresponding parameter in the method.";
+            AnalyzerAssert.Diagnostics(Analyzer, ExpectedDiagnostic.WithMessage(message), order, db, code);
         }
 
         [Test]
@@ -124,8 +126,8 @@ namespace AspBox
             this.db = db;
         }
 
-        [HttpGet(""api/orders/{orderId}/items/{itemId}"")]
-        public async Task<IActionResult> GetOrder↓(int itemId)
+        [HttpGet(""api/orders/{↓orderId}/items/{itemId}"")]
+        public async Task<IActionResult> GetOrder(int itemId)
         {
             var match = await this.db.Orders.FirstOrDefaultAsync(x => x.Id == itemId);
             if (match == null)

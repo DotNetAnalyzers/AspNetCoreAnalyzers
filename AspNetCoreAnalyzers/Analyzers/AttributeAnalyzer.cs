@@ -72,17 +72,18 @@ namespace AspNetCoreAnalyzers
                                     methodDeclaration.ParameterList.GetLocation()));
                         }
 
-                        if (pairs.TryFirst(x => x.Symbol == null, out _) &&
-                            !pairs.TryFirst(x => x.Route == null, out _))
-                        {
-                            context.ReportDiagnostic(
-                                Diagnostic.Create(
-                                    ASP007MissingParameter.Descriptor,
-                                    methodDeclaration.ParameterList.GetLocation()));
-                        }
-
                         foreach (var pair in pairs)
                         {
+                            if (pair.Route is TemplateParameter parameter &&
+                               pair.Symbol == null)
+                            {
+                                context.ReportDiagnostic(
+                                    Diagnostic.Create(
+                                        ASP007MissingParameter.Descriptor,
+                                        parameter.Name.GetLocation(),
+                                        parameter.Name.ToString()));
+                            }
+
                             if (HasWrongType(pair, out var typeName, out var constraintLocation, out var text) &&
                                 methodDeclaration.TryFindParameter(pair.Symbol?.Name, out parameterSyntax))
                             {
@@ -638,10 +639,10 @@ namespace AspNetCoreAnalyzers
                         //case ':':
                         //case '/':
                         case '?':
-                        //case '#':
-                        //case '[':
-                        //case ']':
-                        //case '@':
+                            //case '#':
+                            //case '[':
+                            //case ']':
+                            //case '@':
                             location = segment.Span.GetLocation(i, 1);
                             return true;
                     }
