@@ -75,7 +75,7 @@ namespace AspNetCoreAnalyzers
                         foreach (var pair in pairs)
                         {
                             if (pair.Route is TemplateParameter parameter &&
-                               pair.Symbol == null)
+                                pair.Symbol == null)
                             {
                                 context.ReportDiagnostic(
                                     Diagnostic.Create(
@@ -636,13 +636,7 @@ namespace AspNetCoreAnalyzers
                 {
                     switch (segment.Span[i])
                     {
-                        //case ':':
-                        //case '/':
                         case '?':
-                            //case '#':
-                            //case '[':
-                            //case ']':
-                            //case '@':
                             location = segment.Span.GetLocation(i, 1);
                             return true;
                     }

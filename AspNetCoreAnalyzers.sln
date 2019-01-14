@@ -9,6 +9,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".paket", ".paket", "{D9F2B8
 		.gitattributes = .gitattributes
 		.gitignore = .gitignore
 		appveyor.yml = appveyor.yml
+		azure-devops.yml = azure-devops.yml
 		LICENSE = LICENSE
 		paket.dependencies = paket.dependencies
 		paket.lock = paket.lock
