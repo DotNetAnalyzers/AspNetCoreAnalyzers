@@ -10,6 +10,7 @@ namespace AspNetCoreAnalyzers.Tests.ASP010UrlSyntaxTests
         private static readonly ExpectedDiagnostic ExpectedDiagnostic = ExpectedDiagnostic.Create(ASP010UrlSyntax.Descriptor);
 
         [TestCase("\"api/a↓?b/{id}\"")]
+        [TestCase("\"api/↓/b/{id}\"")]
         public void WhenMethodAttribute(string before)
         {
             var code = @"
@@ -32,6 +33,7 @@ namespace AspBox
         }
 
         [TestCase("\"api/a↓?b\"")]
+        [TestCase("\"api/↓/b\"")]
         public void WhenRouteAttribute(string before)
         {
             var code = @"

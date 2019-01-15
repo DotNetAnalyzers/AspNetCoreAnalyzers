@@ -107,26 +107,26 @@ namespace AspNetCoreAnalyzers
 
                 foreach (var segment in template.Path)
                 {
-                    if (HasWrongSyntax(segment, out var location, out var syntax))
+                    if (HasWrongSyntax(segment, out var location, out var correctSyntax))
                     {
                         context.ReportDiagnostic(
                             Diagnostic.Create(
                                 ASP005ParameterSyntax.Descriptor,
                                 location,
-                                syntax == null
+                                correctSyntax == null
                                     ? ImmutableDictionary<string, string>.Empty
-                                    : ImmutableDictionary<string, string>.Empty.Add(nameof(UrlTemplate), syntax)));
+                                    : ImmutableDictionary<string, string>.Empty.Add(nameof(UrlTemplate), correctSyntax)));
                     }
 
-                    if (HasWrongRegexSyntax(segment, out location, out syntax))
+                    if (HasWrongRegexSyntax(segment, out location, out correctSyntax))
                     {
                         context.ReportDiagnostic(
                             Diagnostic.Create(
                                 ASP006ParameterRegex.Descriptor,
                                 location,
-                                syntax == null
+                                correctSyntax == null
                                     ? ImmutableDictionary<string, string>.Empty
-                                    : ImmutableDictionary<string, string>.Empty.Add(nameof(UrlTemplate), syntax)));
+                                    : ImmutableDictionary<string, string>.Empty.Add(nameof(UrlTemplate), correctSyntax)));
                     }
 
                     if (HasInvalidName(segment, out location, out var name))
@@ -149,7 +149,7 @@ namespace AspNetCoreAnalyzers
                                 ImmutableDictionary<string, string>.Empty.Add(nameof(UrlTemplate), kebabCase)));
                     }
 
-                    if (ContainsReservedCharacter(segment, out location))
+                    if (HasSyntaxError(segment, out location))
                     {
                         context.ReportDiagnostic(
                             Diagnostic.Create(
@@ -628,7 +628,7 @@ namespace AspNetCoreAnalyzers
         /// <summary>
         /// https://tools.ietf.org/html/rfc3986#section-2.2.
         /// </summary>
-        private static bool ContainsReservedCharacter(PathSegment segment, out Location location)
+        private static bool HasSyntaxError(PathSegment segment, out Location location)
         {
             if (segment.Parameter == null)
             {
@@ -641,6 +641,12 @@ namespace AspNetCoreAnalyzers
                             return true;
                     }
                 }
+            }
+
+            if (segment.Span.Length == 0)
+            {
+                location = segment.Span.GetLocation();
+                return true;
             }
 
             location = null;
