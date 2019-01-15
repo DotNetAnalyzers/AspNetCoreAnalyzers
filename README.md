@@ -51,6 +51,10 @@ Roslyn analyzers for ASP.NET.Core.
     <td><a href="https://github.com/DotNetAnalyzers/AspNetCoreAnalyzers/tree/master/documentation/ASP010.md">ASP010</a></td>
     <td>Unexpected character in url.</td>
   </tr>
+  <tr>
+    <td><a href="https://github.com/DotNetAnalyzers/AspNetCoreAnalyzers/tree/master/documentation/ASP011.md">ASP011</a></td>
+    <td>Route parameter appears more than once.</td>
+  </tr>
 <table>
 <!-- end generated table -->
 

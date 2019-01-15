@@ -24,7 +24,8 @@ namespace AspNetCoreAnalyzers
             ASP007MissingParameter.Descriptor,
             ASP008ValidRouteParameterName.Descriptor,
             ASP009KebabCaseUrl.Descriptor,
-            ASP010UrlSyntax.Descriptor);
+            ASP010UrlSyntax.Descriptor,
+            ASP011MultipleOccurencesRouteParameter.Descriptor);
 
         public override void Initialize(AnalysisContext context)
         {
@@ -156,6 +157,14 @@ namespace AspNetCoreAnalyzers
                                 ASP010UrlSyntax.Descriptor,
                                 location,
                                 segment.Span.ToString(location)));
+                    }
+
+                    if (IsMultipleOccurring(segment, template.Path, out location))
+                    {
+                        context.ReportDiagnostic(
+                            Diagnostic.Create(
+                                ASP011MultipleOccurencesRouteParameter.Descriptor,
+                                location));
                     }
                 }
             }
@@ -651,6 +660,41 @@ namespace AspNetCoreAnalyzers
 
             location = null;
             return false;
+        }
+
+        private static bool IsMultipleOccurring(PathSegment segment, ImmutableArray<PathSegment> path, out Location location)
+        {
+            if (segment.Parameter is TemplateParameter parameter &&
+                path.TryFirst(
+                    x => x.Parameter is TemplateParameter other &&
+                    other != parameter &&
+                    IsSameText(parameter.Name, other.Name),
+                    out _))
+            {
+                location = parameter.Name.GetLocation();
+                return true;
+            }
+
+            location = null;
+            return false;
+
+            bool IsSameText(Span x, Span y)
+            {
+                if (x.Length == y.Length)
+                {
+                    for (var i = 0; i < x.Length; i++)
+                    {
+                        if (x[i] != y[i])
+                        {
+                            return false;
+                        }
+                    }
+
+                    return true;
+                }
+
+                return false;
+            }
         }
     }
 }
