@@ -20,13 +20,13 @@ namespace AspBox
     [ApiController]
     public class OrdersController : Controller
     {
-        [HttpGet(""api/{id}/{id}"")]
+        [HttpGet(""api/{↓id}/{↓id}"")]
         public IActionResult GetId(string id)
         {
             return this.Ok(id);
         }
     }
-}".AssertReplace("\"api/{id}/{id}\"", template);
+}".AssertReplace("\"api/{↓id}/{↓id}\"", template);
 
             AnalyzerAssert.Diagnostics(Analyzer, ExpectedDiagnostic, code);
         }
