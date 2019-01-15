@@ -159,7 +159,7 @@ namespace AspNetCoreAnalyzers
                                 segment.Span.ToString(location)));
                     }
 
-                    if (IsMultipleOccurring(segment, template.Path, out location))
+                    if (IsMultipleOccurring(segment, template, out location))
                     {
                         context.ReportDiagnostic(
                             Diagnostic.Create(
@@ -662,14 +662,10 @@ namespace AspNetCoreAnalyzers
             return false;
         }
 
-        private static bool IsMultipleOccurring(PathSegment segment, ImmutableArray<PathSegment> path, out Location location)
+        private static bool IsMultipleOccurring(PathSegment segment, UrlTemplate template, out Location location)
         {
             if (segment.Parameter is TemplateParameter parameter &&
-                path.TryFirst(
-                    x => x.Parameter is TemplateParameter other &&
-                    other != parameter &&
-                    IsSameText(parameter.Name, other.Name),
-                    out _))
+                Contains(template.Path))
             {
                 location = parameter.Name.GetLocation();
                 return true;
@@ -677,6 +673,15 @@ namespace AspNetCoreAnalyzers
 
             location = null;
             return false;
+
+            bool Contains(ImmutableArray<PathSegment> candidates)
+            {
+                return candidates.TryFirst(
+                       x => x.Parameter is TemplateParameter other &&
+                       other != parameter &&
+                       IsSameText(parameter.Name, other.Name),
+                       out _);
+            }
 
             bool IsSameText(Span x, Span y)
             {

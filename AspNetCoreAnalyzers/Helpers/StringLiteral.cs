@@ -9,18 +9,22 @@ namespace AspNetCoreAnalyzers
     [DebuggerDisplay("{this.Text}")]
     public struct StringLiteral : IEquatable<StringLiteral>
     {
-        private readonly LiteralExpressionSyntax literalExpression;
-
         public StringLiteral(LiteralExpressionSyntax literalExpression)
         {
-            this.literalExpression = literalExpression;
+            this.LiteralExpression = literalExpression;
         }
+
+        public LiteralExpressionSyntax LiteralExpression { get; }
+
+        public string Text => this.LiteralExpression.Token.Text;
+
+        public string ValueText => this.LiteralExpression.Token.ValueText;
 
         public bool IsVerbatim
         {
             get
             {
-                foreach (var c in this.literalExpression.Token.Text)
+                foreach (var c in this.LiteralExpression.Token.Text)
                 {
                     switch (c)
                     {
@@ -35,10 +39,6 @@ namespace AspNetCoreAnalyzers
             }
         }
 
-        public string Text => this.literalExpression.Token.Text;
-
-        public string ValueText => this.literalExpression.Token.ValueText;
-
         public static bool operator ==(StringLiteral left, StringLiteral right)
         {
             return left.Equals(right);
@@ -51,7 +51,7 @@ namespace AspNetCoreAnalyzers
 
         public Location GetLocation(TextSpan textSpan)
         {
-            var text = this.literalExpression.Token.Text;
+            var text = this.LiteralExpression.Token.Text;
             var start = 0;
             var verbatim = false;
             while (start < 3)
@@ -71,14 +71,14 @@ namespace AspNetCoreAnalyzers
             }
 
             return Location.Create(
-                this.literalExpression.SyntaxTree,
+                this.LiteralExpression.SyntaxTree,
                 verbatim
                     ? new TextSpan(
-                        this.literalExpression.SpanStart + start + textSpan.Start,
+                        this.LiteralExpression.SpanStart + start + textSpan.Start,
                         textSpan.Length)
                     : TextSpan.FromBounds(
-                        this.literalExpression.SpanStart + GetIndex(textSpan.Start),
-                        this.literalExpression.SpanStart + GetIndex(textSpan.End)));
+                        this.LiteralExpression.SpanStart + GetIndex(textSpan.Start),
+                        this.LiteralExpression.SpanStart + GetIndex(textSpan.End)));
 
             int GetIndex(int pos)
             {
@@ -100,7 +100,7 @@ namespace AspNetCoreAnalyzers
 
         public bool Equals(StringLiteral other)
         {
-            return this.literalExpression.Equals(other.literalExpression);
+            return this.LiteralExpression.Equals(other.LiteralExpression);
         }
 
         public override bool Equals(object obj)
@@ -111,11 +111,11 @@ namespace AspNetCoreAnalyzers
 
         public override int GetHashCode()
         {
-            return this.literalExpression.GetHashCode();
+            return this.LiteralExpression.GetHashCode();
         }
 
         public string ToString(Location location) => location.SourceSpan.Length == 0
             ? string.Empty
-            : this.Text.Substring(location.SourceSpan.Start - this.literalExpression.SpanStart, location.SourceSpan.Length);
+            : this.Text.Substring(location.SourceSpan.Start - this.LiteralExpression.SpanStart, location.SourceSpan.Length);
     }
 }
