@@ -25,7 +25,7 @@ group Test
   nuget NUnit
   nuget NUnit3TestAdapter
   nuget Microsoft.NET.Test.Sdk
-  nuget Microsoft.AspNetCore.All
+  nuget Microsoft.AspNetCore.All 2.2.0
 
 group Build
   source https://nuget.org/api/v2

@@ -824,7 +824,7 @@ NUGET
       Microsoft.Extensions.Logging.Console (>= 2.2) - restriction: >= netstandard2.0
       Microsoft.Extensions.Logging.Debug (>= 2.2) - restriction: >= netstandard2.0
       Microsoft.Extensions.Logging.EventSource (>= 2.2) - restriction: >= netstandard2.0
-    Microsoft.AspNetCore.All (2.2.1)
+    Microsoft.AspNetCore.All (2.2)
       Microsoft.AspNet.WebApi.Client (>= 5.2.6) - restriction: >= netcoreapp2.2
       Microsoft.AspNetCore (>= 2.2) - restriction: >= netcoreapp2.2
       Microsoft.AspNetCore.Antiforgery (>= 2.2) - restriction: >= netcoreapp2.2
@@ -857,7 +857,7 @@ NUGET
       Microsoft.AspNetCore.DataProtection.Extensions (>= 2.2) - restriction: >= netcoreapp2.2
       Microsoft.AspNetCore.Diagnostics (>= 2.2) - restriction: >= netcoreapp2.2
       Microsoft.AspNetCore.Diagnostics.Abstractions (>= 2.2) - restriction: >= netcoreapp2.2
-      Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore (>= 2.2.1) - restriction: >= netcoreapp2.2
+      Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore (>= 2.2) - restriction: >= netcoreapp2.2
       Microsoft.AspNetCore.Diagnostics.HealthChecks (>= 2.2) - restriction: >= netcoreapp2.2
       Microsoft.AspNetCore.HostFiltering (>= 2.2) - restriction: >= netcoreapp2.2
       Microsoft.AspNetCore.Hosting (>= 2.2) - restriction: >= netcoreapp2.2
@@ -908,14 +908,14 @@ NUGET
       Microsoft.AspNetCore.Routing (>= 2.2) - restriction: >= netcoreapp2.2
       Microsoft.AspNetCore.Routing.Abstractions (>= 2.2) - restriction: >= netcoreapp2.2
       Microsoft.AspNetCore.Server.HttpSys (>= 2.2) - restriction: >= netcoreapp2.2
-      Microsoft.AspNetCore.Server.IIS (>= 2.2.1) - restriction: >= netcoreapp2.2
-      Microsoft.AspNetCore.Server.IISIntegration (>= 2.2.1) - restriction: >= netcoreapp2.2
+      Microsoft.AspNetCore.Server.IIS (>= 2.2) - restriction: >= netcoreapp2.2
+      Microsoft.AspNetCore.Server.IISIntegration (>= 2.2) - restriction: >= netcoreapp2.2
       Microsoft.AspNetCore.Server.Kestrel (>= 2.2) - restriction: >= netcoreapp2.2
       Microsoft.AspNetCore.Server.Kestrel.Core (>= 2.2) - restriction: >= netcoreapp2.2
       Microsoft.AspNetCore.Server.Kestrel.Https (>= 2.2) - restriction: >= netcoreapp2.2
       Microsoft.AspNetCore.Server.Kestrel.Transport.Abstractions (>= 2.2) - restriction: >= netcoreapp2.2
       Microsoft.AspNetCore.Server.Kestrel.Transport.Libuv (>= 2.2) - restriction: >= netcoreapp2.2
-      Microsoft.AspNetCore.Server.Kestrel.Transport.Sockets (>= 2.2.1) - restriction: >= netcoreapp2.2
+      Microsoft.AspNetCore.Server.Kestrel.Transport.Sockets (>= 2.2) - restriction: >= netcoreapp2.2
       Microsoft.AspNetCore.Session (>= 2.2) - restriction: >= netcoreapp2.2
       Microsoft.AspNetCore.SignalR (>= 1.1) - restriction: >= netcoreapp2.2
       Microsoft.AspNetCore.SignalR.Common (>= 1.1) - restriction: >= netcoreapp2.2
@@ -925,21 +925,21 @@ NUGET
       Microsoft.AspNetCore.SpaServices (>= 2.2) - restriction: >= netcoreapp2.2
       Microsoft.AspNetCore.SpaServices.Extensions (>= 2.2) - restriction: >= netcoreapp2.2
       Microsoft.AspNetCore.StaticFiles (>= 2.2) - restriction: >= netcoreapp2.2
-      Microsoft.AspNetCore.WebSockets (>= 2.2.1) - restriction: >= netcoreapp2.2
+      Microsoft.AspNetCore.WebSockets (>= 2.2) - restriction: >= netcoreapp2.2
       Microsoft.AspNetCore.WebUtilities (>= 2.2) - restriction: >= netcoreapp2.2
       Microsoft.CodeAnalysis.Razor (>= 2.2) - restriction: >= netcoreapp2.2
-      Microsoft.Data.Sqlite (>= 2.2.1) - restriction: >= netcoreapp2.2
-      Microsoft.Data.Sqlite.Core (>= 2.2.1) - restriction: >= netcoreapp2.2
-      Microsoft.EntityFrameworkCore (>= 2.2.1) - restriction: >= netcoreapp2.2
-      Microsoft.EntityFrameworkCore.Abstractions (>= 2.2.1) - restriction: >= netcoreapp2.2
-      Microsoft.EntityFrameworkCore.Analyzers (>= 2.2.1) - restriction: >= netcoreapp2.2
-      Microsoft.EntityFrameworkCore.Design (>= 2.2.1) - restriction: >= netcoreapp2.2
-      Microsoft.EntityFrameworkCore.InMemory (>= 2.2.1) - restriction: >= netcoreapp2.2
-      Microsoft.EntityFrameworkCore.Relational (>= 2.2.1) - restriction: >= netcoreapp2.2
-      Microsoft.EntityFrameworkCore.Sqlite (>= 2.2.1) - restriction: >= netcoreapp2.2
-      Microsoft.EntityFrameworkCore.Sqlite.Core (>= 2.2.1) - restriction: >= netcoreapp2.2
-      Microsoft.EntityFrameworkCore.SqlServer (>= 2.2.1) - restriction: >= netcoreapp2.2
-      Microsoft.EntityFrameworkCore.Tools (>= 2.2.1) - restriction: >= netcoreapp2.2
+      Microsoft.Data.Sqlite (>= 2.2) - restriction: >= netcoreapp2.2
+      Microsoft.Data.Sqlite.Core (>= 2.2) - restriction: >= netcoreapp2.2
+      Microsoft.EntityFrameworkCore (>= 2.2) - restriction: >= netcoreapp2.2
+      Microsoft.EntityFrameworkCore.Abstractions (>= 2.2) - restriction: >= netcoreapp2.2
+      Microsoft.EntityFrameworkCore.Analyzers (>= 2.2) - restriction: >= netcoreapp2.2
+      Microsoft.EntityFrameworkCore.Design (>= 2.2) - restriction: >= netcoreapp2.2
+      Microsoft.EntityFrameworkCore.InMemory (>= 2.2) - restriction: >= netcoreapp2.2
+      Microsoft.EntityFrameworkCore.Relational (>= 2.2) - restriction: >= netcoreapp2.2
+      Microsoft.EntityFrameworkCore.Sqlite (>= 2.2) - restriction: >= netcoreapp2.2
+      Microsoft.EntityFrameworkCore.Sqlite.Core (>= 2.2) - restriction: >= netcoreapp2.2
+      Microsoft.EntityFrameworkCore.SqlServer (>= 2.2) - restriction: >= netcoreapp2.2
+      Microsoft.EntityFrameworkCore.Tools (>= 2.2) - restriction: >= netcoreapp2.2
       Microsoft.Extensions.Caching.Abstractions (>= 2.2) - restriction: >= netcoreapp2.2
       Microsoft.Extensions.Caching.Memory (>= 2.2) - restriction: >= netcoreapp2.2
       Microsoft.Extensions.Caching.Redis (>= 2.2) - restriction: >= netcoreapp2.2

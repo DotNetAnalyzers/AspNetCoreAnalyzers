@@ -182,8 +182,8 @@ namespace AspBox
             this.db = db;
         }
 
-        [HttpGet(""api/orders/{id}"")]
-        public async Task<IActionResult> GetOrder↓([FromHeader]int headerValue)
+        [HttpGet(""api/orders/{↓id}"")]
+        public async Task<IActionResult> GetOrder([FromHeader]int headerValue)
         {
             var match = await this.db.Orders.FirstOrDefaultAsync(x => x.Id == headerValue);
             if (match == null)
