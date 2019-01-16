@@ -53,5 +53,28 @@ namespace AspBox
 
             AnalyzerAssert.Diagnostics(Analyzer, ExpectedDiagnostic, code);
         }
+
+        [Test]
+        public void Issue39()
+        {
+            var code = @"
+namespace AspBox
+{
+    using Microsoft.AspNetCore.Mvc;
+
+    [Route(""api/values/{id}"")]
+    [ApiController]
+    public class ValuesController : ControllerBase
+    {
+        [HttpGet(""api/values/{id}"")]
+        public ActionResult<string> Get(string id)
+        {
+            return this.Ok(id);
+        }
+    }
+}";
+
+            AnalyzerAssert.Diagnostics(Analyzer, ExpectedDiagnostic, code);
+        }
     }
 }
