@@ -23,7 +23,7 @@ namespace AspNetCoreAnalyzers.Tests.ASP001ParameterNameTests
         [TestCase("\"api/orders/{value:alpha}\"")]
         [TestCase("\"api/orders/{value:regex(a-(0|1))}\"")]
         [TestCase("\"api/orders/{value:regex(^\\\\d{{3}}-\\\\d{{2}}-\\\\d{4}$)}\"")]
-        public void When(string template)
+        public void WhenHttpGet(string template)
         {
             var code = @"
 namespace AspBox
@@ -56,6 +56,45 @@ namespace AspBox
         }
     }
 }".AssertReplace("\"api/orders/{value}\"", template);
+            AnalyzerAssert.CodeFix(Analyzer, Fix, ExpectedDiagnostic, code, fixedCode);
+        }
+
+        [Test]
+        public void WhenRouteAndHttpGetOnMethod()
+        {
+            var code = @"
+namespace AspBox
+{
+    using Microsoft.AspNetCore.Mvc;
+
+    [ApiController]
+    public class OrdersController : Controller
+    {
+        [Route(""api/values/{value}"")]
+        [HttpGet]
+        public IActionResult GetId(string ↓wrong)
+        {
+            return this.Ok(wrong);
+        }
+    }
+}";
+
+            var fixedCode = @"
+namespace AspBox
+{
+    using Microsoft.AspNetCore.Mvc;
+
+    [ApiController]
+    public class OrdersController : Controller
+    {
+        [Route(""api/values/{value}"")]
+        [HttpGet]
+        public IActionResult GetId(string value)
+        {
+            return this.Ok(value);
+        }
+    }
+}";
             AnalyzerAssert.CodeFix(Analyzer, Fix, ExpectedDiagnostic, code, fixedCode);
         }
 
