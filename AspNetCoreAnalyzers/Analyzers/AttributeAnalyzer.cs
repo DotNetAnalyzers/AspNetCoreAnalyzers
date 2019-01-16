@@ -672,15 +672,26 @@ namespace AspNetCoreAnalyzers
                     return true;
                 }
 
-                if (segment.Span.Literal.LiteralExpression.TryFirstAncestor(out MethodDeclarationSyntax methodDeclatration) &&
-                    methodDeclatration.Parent is ClassDeclarationSyntax classDeclaration)
+                if (segment.Span.Literal.LiteralExpression.Parent is AttributeArgumentSyntax argument &&
+                    argument.Parent is AttributeArgumentListSyntax argumentList &&
+                    argumentList.Parent is AttributeSyntax attribute &&
+                    attribute.Parent is AttributeListSyntax attributeList)
                 {
-                    foreach (var attributeList in classDeclaration.AttributeLists)
+                    if (attributeList.Parent is MethodDeclarationSyntax parentMethod &&
+                       parentMethod.Parent is ClassDeclarationSyntax classDeclaration &&
+                       TryGetOtherTemplate(classDeclaration.AttributeLists, out var otherTemplate) &&
+                       ContainsName(otherTemplate.Path))
                     {
-                        foreach (var attribute in attributeList.Attributes)
+                        location = parameter.Name.GetLocation();
+                        return true;
+                    }
+
+                    if (attributeList.Parent is ClassDeclarationSyntax parentClass)
+                    {
+                        foreach (var member in parentClass.Members)
                         {
-                            if (Attribute.IsType(attribute, KnownSymbol.RouteAttribute, context.SemanticModel, context.CancellationToken) &&
-                                TryGetTemplate(attribute, context, out var otherTemplate) &&
+                            if (member is MethodDeclarationSyntax methodDeclaration &&
+                                TryGetOtherTemplate(methodDeclaration.AttributeLists, out otherTemplate) &&
                                 ContainsName(otherTemplate.Path))
                             {
                                 location = parameter.Name.GetLocation();
@@ -701,6 +712,23 @@ namespace AspNetCoreAnalyzers
                        other != parameter &&
                        IsSameText(parameter.Name, other.Name),
                        out _);
+            }
+
+            bool TryGetOtherTemplate(SyntaxList<AttributeListSyntax> declaration, out UrlTemplate result)
+            {
+                foreach (var attributeList in declaration)
+                {
+                    foreach (var attribute in attributeList.Attributes)
+                    {
+                        if (TryGetTemplate(attribute, context, out result))
+                        {
+                            return true;
+                        }
+                    }
+                }
+
+                result = default(UrlTemplate);
+                return false;
             }
 
             bool IsSameText(Span x, Span y)
