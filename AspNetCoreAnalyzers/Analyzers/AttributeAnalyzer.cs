@@ -159,7 +159,7 @@ namespace AspNetCoreAnalyzers
                                 segment.Span.ToString(location)));
                     }
 
-                    if (IsMultipleOccurring(segment, template, out location))
+                    if (IsMultipleOccurringParameter(segment, template, context, out location))
                     {
                         context.ReportDiagnostic(
                             Diagnostic.Create(
@@ -662,19 +662,39 @@ namespace AspNetCoreAnalyzers
             return false;
         }
 
-        private static bool IsMultipleOccurring(PathSegment segment, UrlTemplate template, out Location location)
+        private static bool IsMultipleOccurringParameter(PathSegment segment, UrlTemplate template, SyntaxNodeAnalysisContext context, out Location location)
         {
-            if (segment.Parameter is TemplateParameter parameter &&
-                Contains(template.Path))
+            if (segment.Parameter is TemplateParameter parameter)
             {
-                location = parameter.Name.GetLocation();
-                return true;
+                if (ContainsName(template.Path))
+                {
+                    location = parameter.Name.GetLocation();
+                    return true;
+                }
+
+                if (segment.Span.Literal.LiteralExpression.TryFirstAncestor(out MethodDeclarationSyntax methodDeclatration) &&
+                    methodDeclatration.Parent is ClassDeclarationSyntax classDeclaration)
+                {
+                    foreach (var attributeList in classDeclaration.AttributeLists)
+                    {
+                        foreach (var attribute in attributeList.Attributes)
+                        {
+                            if (Attribute.IsType(attribute, KnownSymbol.RouteAttribute, context.SemanticModel, context.CancellationToken) &&
+                                TryGetTemplate(attribute, context, out var otherTemplate) &&
+                                ContainsName(otherTemplate.Path))
+                            {
+                                location = parameter.Name.GetLocation();
+                                return true;
+                            }
+                        }
+                    }
+                }
             }
 
             location = null;
             return false;
 
-            bool Contains(ImmutableArray<PathSegment> candidates)
+            bool ContainsName(ImmutableArray<PathSegment> candidates)
             {
                 return candidates.TryFirst(
                        x => x.Parameter is TemplateParameter other &&

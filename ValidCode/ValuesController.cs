@@ -15,7 +15,7 @@ namespace ValidCode
             return new string[] { "value1", "value2" };
         }
 
-        [HttpGet("{id}")]
+        [HttpGet]
         public ActionResult<string> Get(int id)
         {
             return $"'{id}'";
@@ -27,13 +27,13 @@ namespace ValidCode
         }
 
         // PUT api/values/5
-        [HttpPut("{id}")]
+        [HttpPut]
         public void Put(int id, [FromBody] string value)
         {
         }
 
         // DELETE api/values/5
-        [HttpDelete("{id}")]
+        [HttpDelete]
         public void Delete(int id)
         {
         }

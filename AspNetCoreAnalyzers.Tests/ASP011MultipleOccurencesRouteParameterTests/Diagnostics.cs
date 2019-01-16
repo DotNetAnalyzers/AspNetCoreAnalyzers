@@ -30,5 +30,28 @@ namespace AspBox
 
             AnalyzerAssert.Diagnostics(Analyzer, ExpectedDiagnostic, code);
         }
+
+        [Test]
+        public void WhenSeparateAttributes()
+        {
+            var code = @"
+namespace AspBox
+{
+    using Microsoft.AspNetCore.Mvc;
+
+    [Route(""api/values/{id}"")]
+    [ApiController]
+    public class OrdersController : Controller
+    {
+        [HttpGet(""items/{↓id}"")]
+        public IActionResult GetId(string id)
+        {
+            return this.Ok(id);
+        }
+    }
+}";
+
+            AnalyzerAssert.Diagnostics(Analyzer, ExpectedDiagnostic, code);
+        }
     }
 }
