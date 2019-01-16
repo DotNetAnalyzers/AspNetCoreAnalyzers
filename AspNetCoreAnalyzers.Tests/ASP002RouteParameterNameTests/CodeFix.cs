@@ -52,6 +52,45 @@ namespace AspBox
             AnalyzerAssert.CodeFix(Analyzer, Fix, ExpectedDiagnostic, code, fixedCode);
         }
 
+        [Test]
+        public void WhenRouteAndHttpGetOnMethod()
+        {
+            var code = @"
+namespace AspBox
+{
+    using Microsoft.AspNetCore.Mvc;
+
+    [ApiController]
+    public class OrdersController : Controller
+    {
+        [Route(""api/values/{↓wrong}"")]
+        [HttpGet]
+        public IActionResult GetId(string value)
+        {
+            return this.Ok(value);
+        }
+    }
+}";
+
+            var fixedCode = @"
+namespace AspBox
+{
+    using Microsoft.AspNetCore.Mvc;
+
+    [ApiController]
+    public class OrdersController : Controller
+    {
+        [Route(""api/values/{value}"")]
+        [HttpGet]
+        public IActionResult GetId(string value)
+        {
+            return this.Ok(value);
+        }
+    }
+}";
+            AnalyzerAssert.CodeFix(Analyzer, Fix, ExpectedDiagnostic, code, fixedCode);
+        }
+
         [TestCase("\"api/{text1}/{↓value}\"",                                                        "\"api/{text1}/{text2}\"")]
         [TestCase("\"api/{↓value}/{text2}\"",                                                        "\"api/{text1}/{text2}\"")]
         [TestCase("\"api/{text1:regex(\\\\d+)}/{↓value}\"",                                          "\"api/{text1:regex(\\\\d+)}/{text2}\"")]
