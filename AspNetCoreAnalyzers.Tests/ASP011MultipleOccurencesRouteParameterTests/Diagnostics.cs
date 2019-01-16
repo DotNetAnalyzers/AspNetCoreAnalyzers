@@ -32,7 +32,7 @@ namespace AspBox
         }
 
         [Test]
-        public void WhenSeparateAttributes()
+        public void WhenRouteOnClassAndHttpGetOnMethod()
         {
             var code = @"
 namespace AspBox

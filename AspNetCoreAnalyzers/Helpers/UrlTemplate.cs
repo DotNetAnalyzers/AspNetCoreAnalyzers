@@ -10,7 +10,7 @@ namespace AspNetCoreAnalyzers
     /// <summary>
     /// https://tools.ietf.org/html/rfc1738.
     /// </summary>
-    [DebuggerDisplay("{this.Literal.ToString()}")]
+    [DebuggerDisplay("{this.Literal.LiteralExpression.ToString()}")]
     public struct UrlTemplate : IEquatable<UrlTemplate>
     {
         private UrlTemplate(StringLiteral literal, ImmutableArray<PathSegment> path)
