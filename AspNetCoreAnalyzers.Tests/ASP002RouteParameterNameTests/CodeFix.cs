@@ -15,14 +15,12 @@ namespace AspNetCoreAnalyzers.Tests.ASP002RouteParameterNameTests
         [TestCase("\"api/{↓text*}\"",       "\"api/{text}\"")]
         [TestCase("@\"api/{↓value}\"",      "@\"api/{text}\"")]
         [TestCase("\"api/{↓value:alpha}\"", "\"api/{text:alpha}\"")]
-        public void When(string before, string after)
+        public void WhenHttpGet(string before, string after)
         {
             var code = @"
 namespace AspBox
 {
-    using System.Threading.Tasks;
     using Microsoft.AspNetCore.Mvc;
-    using Microsoft.EntityFrameworkCore;
 
     [ApiController]
     public class OrdersController : Controller
@@ -38,9 +36,7 @@ namespace AspBox
             var fixedCode = @"
 namespace AspBox
 {
-    using System.Threading.Tasks;
     using Microsoft.AspNetCore.Mvc;
-    using Microsoft.EntityFrameworkCore;
 
     [ApiController]
     public class OrdersController : Controller
@@ -67,9 +63,7 @@ namespace AspBox
             var code = @"
 namespace AspBox
 {
-    using System.Threading.Tasks;
     using Microsoft.AspNetCore.Mvc;
-    using Microsoft.EntityFrameworkCore;
 
     [ApiController]
     public class OrdersController : Controller
@@ -85,9 +79,7 @@ namespace AspBox
             var fixedCode = @"
 namespace AspBox
 {
-    using System.Threading.Tasks;
     using Microsoft.AspNetCore.Mvc;
-    using Microsoft.EntityFrameworkCore;
 
     [ApiController]
     public class OrdersController : Controller
