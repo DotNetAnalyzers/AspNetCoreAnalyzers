@@ -217,44 +217,26 @@ namespace AspNetCoreAnalyzers
             if (segment.Parameter is TemplateParameter templateParameter &&
                 templateParameter.Constraints is ImmutableArray<RouteConstraint> constraints)
             {
-                if (context.ContainingSymbol is IMethodSymbol method &&
-                    method.Parameters.TrySingle(x => templateParameter.Name.Equals(x.Name, StringComparison.Ordinal), out var parameterSymbol))
+                if (context.ContainingSymbol is IMethodSymbol containingMethod &&
+                    TryFindParameter(templateParameter, containingMethod, out var parameterSymbol))
                 {
-                    foreach (var constraint in constraints)
+                    return HasWrongType(parameterSymbol, out correctType, out constraintLocation, out parameter, out correctConstraint);
+                }
+
+                if (context.ContainingSymbol is INamedTypeSymbol &&
+                    context.Node.TryFirstAncestor(out ClassDeclarationSyntax classDeclaration) &&
+                    !classDeclaration.Modifiers.Any(SyntaxKind.PartialKeyword))
+                {
+                    foreach (var member in classDeclaration.Members)
                     {
-                        // https://docs.microsoft.com/en-us/aspnet/core/fundamentals/routing?view=aspnetcore-2.2#route-constraint-reference
-                        if (TryGetType(constraint.Span, out var type) &&
-                            parameterSymbol.TrySingleDeclaration(context.CancellationToken, out parameter))
+                        if (member is MethodDeclarationSyntax methodDeclaration &&
+                            HasHttpVerbAttribute(methodDeclaration, context) &&
+                            TryFindParameter(templateParameter, methodDeclaration, out var candidateParameter) &&
+                            context.SemanticModel.TryGetSymbol(candidateParameter, context.CancellationToken, out parameterSymbol) &&
+                            HasWrongType(parameterSymbol, out correctType, out constraintLocation, out parameter, out correctConstraint))
                         {
-                            correctType = parameterSymbol.Type == type ? null : type.Alias ?? type.FullName;
-                            constraintLocation = constraint.Span.GetLocation();
-                            correctConstraint = GetCorrectConstraintType(parameterSymbol, constraint);
-
-                            return correctType != null;
-                        }
-
-                        if (constraint.Span.Equals("?", StringComparison.Ordinal) &&
-                            parameterSymbol.Type.IsValueType &&
-                            parameterSymbol.Type.OriginalDefinition.SpecialType != SpecialType.System_Nullable_T &&
-                            parameterSymbol.TrySingleDeclaration(context.CancellationToken, out parameter))
-                        {
-                            correctType = parameterSymbol.Type.ToDisplayString(SymbolDisplayFormat.MinimallyQualifiedFormat) + "?";
-                            constraintLocation = constraint.Span.GetLocation();
-                            correctConstraint = string.Empty;
                             return true;
                         }
-                    }
-
-                    if (!constraints.TryFirst(x => x.Span.Equals("?", StringComparison.Ordinal), out _) &&
-                        parameterSymbol.Type.OriginalDefinition.SpecialType == SpecialType.System_Nullable_T &&
-                        parameterSymbol.Type is INamedTypeSymbol namedType &&
-                        namedType.TypeArguments.TrySingle(out var typeArg) &&
-                        parameterSymbol.TrySingleDeclaration(context.CancellationToken, out parameter))
-                    {
-                        correctType = typeArg.ToString();
-                        constraintLocation = templateParameter.Name.GetLocation();
-                        correctConstraint = $"{templateParameter.Name}?";
-                        return true;
                     }
                 }
             }
@@ -347,6 +329,51 @@ namespace AspNetCoreAnalyzers
                 }
 
                 return null;
+            }
+
+            bool HasWrongType(IParameterSymbol parameterSymbol, out string innerCorrectType, out Location innerConstraintLocation, out ParameterSyntax innerParameter, out string innerCorrectConstraint)
+            {
+                foreach (var constraint in constraints)
+                {
+                    // https://docs.microsoft.com/en-us/aspnet/core/fundamentals/routing?view=aspnetcore-2.2#route-constraint-reference
+                    if (TryGetType(constraint.Span, out var type) &&
+                        parameterSymbol.TrySingleDeclaration(context.CancellationToken, out innerParameter))
+                    {
+                        innerCorrectType = parameterSymbol.Type == type ? null : type.Alias ?? type.FullName;
+                        innerConstraintLocation = constraint.Span.GetLocation();
+                        innerCorrectConstraint = GetCorrectConstraintType(parameterSymbol, constraint);
+                        return innerCorrectType != null;
+                    }
+
+                    if (constraint.Span.Equals("?", StringComparison.Ordinal) &&
+                        parameterSymbol.Type.IsValueType &&
+                        parameterSymbol.Type.OriginalDefinition.SpecialType != SpecialType.System_Nullable_T &&
+                        parameterSymbol.TrySingleDeclaration(context.CancellationToken, out innerParameter))
+                    {
+                        innerCorrectType = parameterSymbol.Type.ToDisplayString(SymbolDisplayFormat.MinimallyQualifiedFormat) + "?";
+                        innerConstraintLocation = constraint.Span.GetLocation();
+                        innerCorrectConstraint = string.Empty;
+                        return true;
+                    }
+                }
+
+                if (!constraints.TryFirst(x => x.Span.Equals("?", StringComparison.Ordinal), out _) &&
+                    parameterSymbol.Type.OriginalDefinition.SpecialType == SpecialType.System_Nullable_T &&
+                    parameterSymbol.Type is INamedTypeSymbol namedType &&
+                    namedType.TypeArguments.TrySingle(out var typeArg) &&
+                    parameterSymbol.TrySingleDeclaration(context.CancellationToken, out innerParameter))
+                {
+                    innerCorrectType = typeArg.ToString();
+                    innerConstraintLocation = templateParameter.Name.GetLocation();
+                    innerCorrectConstraint = $"{templateParameter.Name}?";
+                    return true;
+                }
+
+                innerCorrectType = null;
+                innerConstraintLocation = null;
+                innerParameter = null;
+                innerCorrectConstraint = null;
+                return false;
             }
         }
 
@@ -544,8 +571,8 @@ namespace AspNetCoreAnalyzers
         {
             if (segment.Parameter is TemplateParameter templateParameter)
             {
-                if (context.ContainingSymbol is IMethodSymbol method &&
-                    !HasParameterSymbol(method))
+                if (context.ContainingSymbol is IMethodSymbol containingMethod &&
+                    !TryFindParameter(templateParameter, containingMethod, out _))
                 {
                     location = templateParameter.Name.GetLocation();
                     name = templateParameter.Name.ToString();
@@ -584,7 +611,7 @@ namespace AspNetCoreAnalyzers
                     {
                         if (member is MethodDeclarationSyntax candidate &&
                             HasHttpVerbAttribute(candidate, context) &&
-                            !HasParameter(candidate))
+                            !TryFindParameter(templateParameter, candidate, out _))
                         {
                             location = templateParameter.Name.GetLocation();
                             name = templateParameter.Name.ToString();
@@ -597,35 +624,6 @@ namespace AspNetCoreAnalyzers
             location = null;
             name = null;
             return false;
-
-            bool HasParameterSymbol(IMethodSymbol candidate)
-            {
-                foreach (var parameter in candidate.Parameters)
-                {
-                    if (templateParameter.Name.Equals(parameter.Name, StringComparison.Ordinal))
-                    {
-                        return true;
-                    }
-                }
-
-                return false;
-            }
-
-            bool HasParameter(MethodDeclarationSyntax candidate)
-            {
-                if (candidate.ParameterList is ParameterListSyntax parameterList)
-                {
-                    foreach (var parameter in parameterList.Parameters)
-                    {
-                        if (templateParameter.Name.Equals(parameter.Identifier.Text, StringComparison.Ordinal))
-                        {
-                            return true;
-                        }
-                    }
-                }
-
-                return false;
-            }
         }
 
         private static bool HasInvalidName(PathSegment segment, out Location location, out string correctName)
@@ -804,6 +802,39 @@ namespace AspNetCoreAnalyzers
                 result = default(UrlTemplate);
                 return false;
             }
+        }
+
+        private static bool TryFindParameter(TemplateParameter templateParameter, IMethodSymbol method, out IParameterSymbol result)
+        {
+            foreach (var candidate in method.Parameters)
+            {
+                if (templateParameter.Name.Equals(candidate.Name, StringComparison.Ordinal))
+                {
+                    result = candidate;
+                    return true;
+                }
+            }
+
+            result = null;
+            return false;
+        }
+
+        private static bool TryFindParameter(TemplateParameter templateParameter, MethodDeclarationSyntax methodDeclaration, out ParameterSyntax result)
+        {
+            if (methodDeclaration.ParameterList is ParameterListSyntax parameterList)
+            {
+                foreach (var candidate in parameterList.Parameters)
+                {
+                    if (templateParameter.Name.Equals(candidate.Identifier.Text, StringComparison.Ordinal))
+                    {
+                        result = candidate;
+                        return true;
+                    }
+                }
+            }
+
+            result = null;
+            return false;
         }
 
         private static bool HasHttpVerbAttribute(MethodDeclarationSyntax methodDeclaration, SyntaxNodeAnalysisContext context)

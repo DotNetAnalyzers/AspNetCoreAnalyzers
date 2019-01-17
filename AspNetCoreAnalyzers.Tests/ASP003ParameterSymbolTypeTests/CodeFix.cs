@@ -44,7 +44,7 @@ namespace AspBox
     public class OrdersController : Controller
     {
         [HttpGet(""api/orders/{id}"")]
-        public IActionResult GetId(↓byte id)
+        public IActionResult Get(↓byte id)
         {
             return this.Ok(id);
         }
@@ -60,13 +60,64 @@ namespace AspBox
     public class OrdersController : Controller
     {
         [HttpGet(""api/orders/{id}"")]
-        public IActionResult GetId(byte id)
+        public IActionResult Get(byte id)
         {
             return this.Ok(id);
         }
     }
 }".AssertReplace("\"api/orders/{id}\"", template)
   .AssertReplace("byte id", parameter);
+            AnalyzerAssert.CodeFix(Analyzer, Fix, ExpectedDiagnostic, code, fixedCode);
+        }
+
+        [Test]
+        public void WhenHttpGetAndRouteOnClass()
+        {
+            var code = @"
+namespace AspBox
+{
+    using Microsoft.AspNetCore.Mvc;
+
+    [Route(""api/orders/{id:int}"")]
+    [Route(""api/orders"")]
+    [ApiController]
+    public class OrdersController : Controller
+    {
+        [HttpGet]
+        public IActionResult Get(↓byte id)
+        {
+            return this.Ok(id);
+        }
+
+        [HttpPut]
+        public void Put(int id, [FromBody] string value)
+        {
+        }
+    }
+}";
+
+            var fixedCode = @"
+namespace AspBox
+{
+    using Microsoft.AspNetCore.Mvc;
+
+    [Route(""api/orders/{id:int}"")]
+    [Route(""api/orders"")]
+    [ApiController]
+    public class OrdersController : Controller
+    {
+        [HttpGet]
+        public IActionResult Get(int id)
+        {
+            return this.Ok(id);
+        }
+
+        [HttpPut]
+        public void Put(int id, [FromBody] string value)
+        {
+        }
+    }
+}";
             AnalyzerAssert.CodeFix(Analyzer, Fix, ExpectedDiagnostic, code, fixedCode);
         }
 
