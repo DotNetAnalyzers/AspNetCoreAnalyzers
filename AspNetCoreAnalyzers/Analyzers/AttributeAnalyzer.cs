@@ -72,27 +72,6 @@ namespace AspNetCoreAnalyzers
                                     ASP001ParameterSymbolName.Descriptor,
                                     methodDeclaration.ParameterList.GetLocation()));
                         }
-
-                        foreach (var pair in pairs)
-                        {
-                            if (HasWrongType(pair, out var typeName, out var constraintLocation, out var text) &&
-                                methodDeclaration.TryFindParameter(pair.Symbol?.Name, out parameterSyntax))
-                            {
-                                context.ReportDiagnostic(
-                                    Diagnostic.Create(
-                                        ASP003ParameterSymbolType.Descriptor,
-                                        parameterSyntax.Type.GetLocation(),
-                                        ImmutableDictionary<string, string>.Empty.Add(nameof(TypeSyntax), typeName)));
-
-                                context.ReportDiagnostic(
-                                    Diagnostic.Create(
-                                        ASP004RouteParameterType.Descriptor,
-                                        constraintLocation,
-                                        text == null
-                                            ? ImmutableDictionary<string, string>.Empty
-                                            : ImmutableDictionary<string, string>.Empty.Add(nameof(UrlTemplate), text)));
-                            }
-                        }
                     }
                 }
 
@@ -100,26 +79,43 @@ namespace AspNetCoreAnalyzers
                 {
                     foreach (var segment in template.Path)
                     {
-                        if (HasWrongSyntax(segment, out var location, out var correctSyntax))
+                        if (HasWrongType(segment, context, out var typeName, out var constraintLocation, out var parameterSyntax, out var urlTemplate))
+                        {
+                            context.ReportDiagnostic(
+                                Diagnostic.Create(
+                                    ASP003ParameterSymbolType.Descriptor,
+                                    parameterSyntax.Type.GetLocation(),
+                                    ImmutableDictionary<string, string>.Empty.Add(nameof(TypeSyntax), typeName)));
+
+                            context.ReportDiagnostic(
+                                Diagnostic.Create(
+                                    ASP004RouteParameterType.Descriptor,
+                                    constraintLocation,
+                                    urlTemplate == null
+                                        ? ImmutableDictionary<string, string>.Empty
+                                        : ImmutableDictionary<string, string>.Empty.Add(nameof(UrlTemplate), urlTemplate)));
+                        }
+
+                        if (HasWrongSyntax(segment, out var location, out urlTemplate))
                         {
                             context.ReportDiagnostic(
                                 Diagnostic.Create(
                                     ASP005ParameterSyntax.Descriptor,
                                     location,
-                                    correctSyntax == null
+                                    urlTemplate == null
                                         ? ImmutableDictionary<string, string>.Empty
-                                        : ImmutableDictionary<string, string>.Empty.Add(nameof(UrlTemplate), correctSyntax)));
+                                        : ImmutableDictionary<string, string>.Empty.Add(nameof(UrlTemplate), urlTemplate)));
                         }
 
-                        if (HasWrongRegexSyntax(segment, out location, out correctSyntax))
+                        if (HasWrongRegexSyntax(segment, out location, out urlTemplate))
                         {
                             context.ReportDiagnostic(
                                 Diagnostic.Create(
                                     ASP006ParameterRegex.Descriptor,
                                     location,
-                                    correctSyntax == null
+                                    urlTemplate == null
                                         ? ImmutableDictionary<string, string>.Empty
-                                        : ImmutableDictionary<string, string>.Empty.Add(nameof(UrlTemplate), correctSyntax)));
+                                        : ImmutableDictionary<string, string>.Empty.Add(nameof(UrlTemplate), urlTemplate)));
                         }
 
                         if (HasMissingMethodParameter(segment, context, out location, out var name))
@@ -216,49 +212,57 @@ namespace AspNetCoreAnalyzers
             }
         }
 
-        private static bool HasWrongType(ParameterPair pair, out string correctType, out Location constraintLocation, out string correctConstraint)
+        private static bool HasWrongType(PathSegment segment, SyntaxNodeAnalysisContext context, out string correctType, out Location constraintLocation, out ParameterSyntax parameter, out string correctConstraint)
         {
-            if (pair.Route is TemplateParameter templateParameter &&
-                templateParameter.Constraints is ImmutableArray<RouteConstraint> constraints &&
-                pair.Symbol is IParameterSymbol parameterSymbol)
+            if (segment.Parameter is TemplateParameter templateParameter &&
+                templateParameter.Constraints is ImmutableArray<RouteConstraint> constraints)
             {
-                foreach (var constraint in constraints)
+                if (context.ContainingSymbol is IMethodSymbol method &&
+                    method.Parameters.TrySingle(x => templateParameter.Name.Equals(x.Name, StringComparison.Ordinal), out var parameterSymbol))
                 {
-                    // https://docs.microsoft.com/en-us/aspnet/core/fundamentals/routing?view=aspnetcore-2.2#route-constraint-reference
-                    if (TryGetType(constraint.Span, out var type))
+                    foreach (var constraint in constraints)
                     {
-                        correctType = parameterSymbol.Type == type ? null : type.Alias ?? type.FullName;
-                        constraintLocation = constraint.Span.GetLocation();
-                        correctConstraint = GetCorrectConstraintType(constraint);
-                        return correctType != null;
+                        // https://docs.microsoft.com/en-us/aspnet/core/fundamentals/routing?view=aspnetcore-2.2#route-constraint-reference
+                        if (TryGetType(constraint.Span, out var type) &&
+                            parameterSymbol.TrySingleDeclaration(context.CancellationToken, out parameter))
+                        {
+                            correctType = parameterSymbol.Type == type ? null : type.Alias ?? type.FullName;
+                            constraintLocation = constraint.Span.GetLocation();
+                            correctConstraint = GetCorrectConstraintType(parameterSymbol, constraint);
+
+                            return correctType != null;
+                        }
+
+                        if (constraint.Span.Equals("?", StringComparison.Ordinal) &&
+                            parameterSymbol.Type.IsValueType &&
+                            parameterSymbol.Type.OriginalDefinition.SpecialType != SpecialType.System_Nullable_T &&
+                            parameterSymbol.TrySingleDeclaration(context.CancellationToken, out parameter))
+                        {
+                            correctType = parameterSymbol.Type.ToDisplayString(SymbolDisplayFormat.MinimallyQualifiedFormat) + "?";
+                            constraintLocation = constraint.Span.GetLocation();
+                            correctConstraint = string.Empty;
+                            return true;
+                        }
                     }
 
-                    if (constraint.Span.Equals("?", StringComparison.Ordinal) &&
-                        parameterSymbol.Type.IsValueType &&
-                        parameterSymbol.Type.OriginalDefinition.SpecialType != SpecialType.System_Nullable_T)
+                    if (!constraints.TryFirst(x => x.Span.Equals("?", StringComparison.Ordinal), out _) &&
+                        parameterSymbol.Type.OriginalDefinition.SpecialType == SpecialType.System_Nullable_T &&
+                        parameterSymbol.Type is INamedTypeSymbol namedType &&
+                        namedType.TypeArguments.TrySingle(out var typeArg) &&
+                        parameterSymbol.TrySingleDeclaration(context.CancellationToken, out parameter))
                     {
-                        correctType = parameterSymbol.Type.ToDisplayString(SymbolDisplayFormat.MinimallyQualifiedFormat) + "?";
-                        constraintLocation = constraint.Span.GetLocation();
-                        correctConstraint = string.Empty;
+                        correctType = typeArg.ToString();
+                        constraintLocation = templateParameter.Name.GetLocation();
+                        correctConstraint = $"{templateParameter.Name}?";
                         return true;
                     }
-                }
-
-                if (!constraints.TryFirst(x => x.Span.Equals("?", StringComparison.Ordinal), out _) &&
-                    parameterSymbol.Type.OriginalDefinition.SpecialType == SpecialType.System_Nullable_T &&
-                    parameterSymbol.Type is INamedTypeSymbol namedType &&
-                    namedType.TypeArguments.TrySingle(out var typeArg))
-                {
-                    correctType = typeArg.ToString();
-                    constraintLocation = templateParameter.Name.GetLocation();
-                    correctConstraint = $"{templateParameter.Name}?";
-                    return true;
                 }
             }
 
             correctType = null;
             constraintLocation = null;
             correctConstraint = null;
+            parameter = null;
             return false;
 
             bool TryGetType(Span constraint, out QualifiedType type)
@@ -328,7 +332,7 @@ namespace AspNetCoreAnalyzers
                 return false;
             }
 
-            string GetCorrectConstraintType(RouteConstraint constraint)
+            string GetCorrectConstraintType(IParameterSymbol parameterSymbol, RouteConstraint constraint)
             {
                 if (constraint.Span.Equals("bool", StringComparison.Ordinal) ||
                     constraint.Span.Equals("decimal", StringComparison.Ordinal) ||
@@ -339,8 +343,7 @@ namespace AspNetCoreAnalyzers
                     constraint.Span.Equals("datetime", StringComparison.Ordinal) ||
                     constraint.Span.Equals("guid", StringComparison.Ordinal))
                 {
-                    return parameterSymbol.Type.ToDisplayString(SymbolDisplayFormat.MinimallyQualifiedFormat)
-                                          .ToLower();
+                    return parameterSymbol.Type.ToDisplayString(SymbolDisplayFormat.MinimallyQualifiedFormat).ToLower();
                 }
 
                 return null;
@@ -549,7 +552,7 @@ namespace AspNetCoreAnalyzers
                     return true;
                 }
 
-                if (context.ContainingSymbol is INamedTypeSymbol type &&
+                if (context.ContainingSymbol is INamedTypeSymbol &&
                     context.Node.TryFirstAncestor(out ClassDeclarationSyntax classDeclaration) &&
                     !classDeclaration.Modifiers.Any(SyntaxKind.PartialKeyword))
                 {
