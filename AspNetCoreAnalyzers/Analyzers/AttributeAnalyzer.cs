@@ -9,7 +9,6 @@ namespace AspNetCoreAnalyzers
     using Microsoft.CodeAnalysis.CSharp;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
     using Microsoft.CodeAnalysis.Diagnostics;
-    using Attribute = Gu.Roslyn.AnalyzerExtensions.Attribute;
 
     [DiagnosticAnalyzer(LanguageNames.CSharp)]
     public class AttributeAnalyzer : DiagnosticAnalyzer
@@ -36,12 +35,12 @@ namespace AspNetCoreAnalyzers
         {
             if (!context.IsExcludedFromAnalysis() &&
                 context.Node is AttributeSyntax attribute &&
-                TryGetTemplate(attribute, context, out var template))
+                UrlAttribute.TryCreate(attribute, context, out var urlAttribute))
             {
                 if (context.ContainingSymbol is IMethodSymbol method &&
                     attribute.TryFirstAncestor(out MethodDeclarationSyntax methodDeclaration))
                 {
-                    using (var pairs = GetPairs(template, method))
+                    using (var pairs = GetPairs(urlAttribute, method))
                     {
                         if (pairs.TrySingle(x => x.Route == null, out var withMethodParameter) &&
                             methodDeclaration.TryFindParameter(withMethodParameter.Symbol.Name, out var parameterSyntax) &&
@@ -106,112 +105,96 @@ namespace AspNetCoreAnalyzers
                     }
                 }
 
-                foreach (var segment in template.Path)
+                if (urlAttribute.UrlTemplate is UrlTemplate template)
                 {
-                    if (HasWrongSyntax(segment, out var location, out var correctSyntax))
+                    foreach (var segment in template.Path)
                     {
-                        context.ReportDiagnostic(
-                            Diagnostic.Create(
-                                ASP005ParameterSyntax.Descriptor,
-                                location,
-                                correctSyntax == null
+                        if (HasWrongSyntax(segment, out var location, out var correctSyntax))
+                        {
+                            context.ReportDiagnostic(
+                                Diagnostic.Create(
+                                    ASP005ParameterSyntax.Descriptor,
+                                    location,
+                                    correctSyntax == null
+                                        ? ImmutableDictionary<string, string>.Empty
+                                        : ImmutableDictionary<string, string>.Empty.Add(nameof(UrlTemplate), correctSyntax)));
+                        }
+
+                        if (HasWrongRegexSyntax(segment, out location, out correctSyntax))
+                        {
+                            context.ReportDiagnostic(
+                                Diagnostic.Create(
+                                    ASP006ParameterRegex.Descriptor,
+                                    location,
+                                    correctSyntax == null
+                                        ? ImmutableDictionary<string, string>.Empty
+                                        : ImmutableDictionary<string, string>.Empty.Add(nameof(UrlTemplate), correctSyntax)));
+                        }
+
+                        if (HasInvalidName(segment, out location, out var name))
+                        {
+                            context.ReportDiagnostic(
+                                Diagnostic.Create(
+                                    ASP008ValidRouteParameterName.Descriptor,
+                                    location,
+                                    name == null
                                     ? ImmutableDictionary<string, string>.Empty
-                                    : ImmutableDictionary<string, string>.Empty.Add(nameof(UrlTemplate), correctSyntax)));
-                    }
+                                    : ImmutableDictionary<string, string>.Empty.Add(nameof(UrlTemplate), name)));
+                        }
 
-                    if (HasWrongRegexSyntax(segment, out location, out correctSyntax))
-                    {
-                        context.ReportDiagnostic(
-                            Diagnostic.Create(
-                                ASP006ParameterRegex.Descriptor,
-                                location,
-                                correctSyntax == null
-                                    ? ImmutableDictionary<string, string>.Empty
-                                    : ImmutableDictionary<string, string>.Empty.Add(nameof(UrlTemplate), correctSyntax)));
-                    }
+                        if (ShouldKebabCase(segment, out var kebabCase))
+                        {
+                            context.ReportDiagnostic(
+                                Diagnostic.Create(
+                                    ASP009KebabCaseUrl.Descriptor,
+                                    segment.Span.GetLocation(),
+                                    ImmutableDictionary<string, string>.Empty.Add(nameof(UrlTemplate), kebabCase)));
+                        }
 
-                    if (HasInvalidName(segment, out location, out var name))
-                    {
-                        context.ReportDiagnostic(
-                            Diagnostic.Create(
-                                ASP008ValidRouteParameterName.Descriptor,
-                                location,
-                                name == null
-                                ? ImmutableDictionary<string, string>.Empty
-                                : ImmutableDictionary<string, string>.Empty.Add(nameof(UrlTemplate), name)));
-                    }
+                        if (HasSyntaxError(segment, out location))
+                        {
+                            context.ReportDiagnostic(
+                                Diagnostic.Create(
+                                    ASP010UrlSyntax.Descriptor,
+                                    location,
+                                    segment.Span.ToString(location)));
+                        }
 
-                    if (ShouldKebabCase(segment, out var kebabCase))
-                    {
-                        context.ReportDiagnostic(
-                            Diagnostic.Create(
-                                ASP009KebabCaseUrl.Descriptor,
-                                segment.Span.GetLocation(),
-                                ImmutableDictionary<string, string>.Empty.Add(nameof(UrlTemplate), kebabCase)));
-                    }
-
-                    if (HasSyntaxError(segment, out location))
-                    {
-                        context.ReportDiagnostic(
-                            Diagnostic.Create(
-                                ASP010UrlSyntax.Descriptor,
-                                location,
-                                segment.Span.ToString(location)));
-                    }
-
-                    if (IsMultipleOccurringParameter(segment, template, context, out location))
-                    {
-                        context.ReportDiagnostic(
-                            Diagnostic.Create(
-                                ASP011MultipleOccurencesRouteParameter.Descriptor,
-                                location));
+                        if (IsMultipleOccurringParameter(segment, urlAttribute, context, out location))
+                        {
+                            context.ReportDiagnostic(
+                                Diagnostic.Create(
+                                    ASP011MultipleOccurencesRouteParameter.Descriptor,
+                                    location));
+                        }
                     }
                 }
             }
         }
 
-        private static bool TryGetTemplate(AttributeSyntax attribute, SyntaxNodeAnalysisContext context, out UrlTemplate template)
-        {
-            if (attribute.ArgumentList is AttributeArgumentListSyntax argumentList &&
-                argumentList.Arguments.TrySingle(out var argument) &&
-                argument.Expression is LiteralExpressionSyntax literal &&
-                literal.IsKind(SyntaxKind.StringLiteralExpression) &&
-                (Attribute.IsType(attribute, KnownSymbol.HttpDeleteAttribute, context.SemanticModel, context.CancellationToken) ||
-                 Attribute.IsType(attribute, KnownSymbol.HttpGetAttribute, context.SemanticModel, context.CancellationToken) ||
-                 Attribute.IsType(attribute, KnownSymbol.HttpHeadAttribute, context.SemanticModel, context.CancellationToken) ||
-                 Attribute.IsType(attribute, KnownSymbol.HttpOptionsAttribute, context.SemanticModel, context.CancellationToken) ||
-                 Attribute.IsType(attribute, KnownSymbol.HttpPatchAttribute, context.SemanticModel, context.CancellationToken) ||
-                 Attribute.IsType(attribute, KnownSymbol.HttpPostAttribute, context.SemanticModel, context.CancellationToken) ||
-                 Attribute.IsType(attribute, KnownSymbol.HttpPutAttribute, context.SemanticModel, context.CancellationToken) ||
-                 Attribute.IsType(attribute, KnownSymbol.RouteAttribute, context.SemanticModel, context.CancellationToken)) &&
-                UrlTemplate.TryParse(literal, out template))
-            {
-                return true;
-            }
-
-            template = default(UrlTemplate);
-            return false;
-        }
-
-        private static PooledList<ParameterPair> GetPairs(UrlTemplate template, IMethodSymbol method)
+        private static PooledList<ParameterPair> GetPairs(UrlAttribute attribute, IMethodSymbol method)
         {
             var list = PooledList<ParameterPair>.Borrow();
-            foreach (var parameter in method.Parameters)
-            {
-                if (IsFromRoute(parameter))
-                {
-                    list.Add(template.Path.TrySingle(x => x.Parameter?.Name.Equals(parameter.Name, StringComparison.Ordinal) == true, out var templateParameter)
-                                 ? new ParameterPair(templateParameter.Parameter, parameter)
-                                 : new ParameterPair(null, parameter));
-                }
-            }
 
-            foreach (var component in template.Path)
+            if (attribute.UrlTemplate is UrlTemplate template)
             {
-                if (component.Parameter is TemplateParameter templateParameter &&
-                    list.All(x => x.Route != templateParameter))
+                foreach (var parameter in method.Parameters)
                 {
-                    list.Add(new ParameterPair(templateParameter, null));
+                    if (IsFromRoute(parameter))
+                    {
+                        list.Add(template.Path.TrySingle(x => x.Parameter?.Name.Equals(parameter.Name, StringComparison.Ordinal) == true, out var templateParameter)
+                                     ? new ParameterPair(templateParameter.Parameter, parameter)
+                                     : new ParameterPair(null,                        parameter));
+                    }
+                }
+
+                foreach (var component in template.Path)
+                {
+                    if (component.Parameter is TemplateParameter templateParameter &&
+                        list.All(x => x.Route != templateParameter))
+                    {
+                        list.Add(new ParameterPair(templateParameter, null));
+                    }
                 }
             }
 
@@ -662,9 +645,10 @@ namespace AspNetCoreAnalyzers
             return false;
         }
 
-        private static bool IsMultipleOccurringParameter(PathSegment segment, UrlTemplate template, SyntaxNodeAnalysisContext context, out Location location)
+        private static bool IsMultipleOccurringParameter(PathSegment segment, UrlAttribute urlAttribute, SyntaxNodeAnalysisContext context, out Location location)
         {
-            if (segment.Parameter is TemplateParameter parameter)
+            if (segment.Parameter is TemplateParameter parameter &&
+                urlAttribute.UrlTemplate is UrlTemplate template)
             {
                 if (ContainsName(template.Path))
                 {
@@ -672,10 +656,7 @@ namespace AspNetCoreAnalyzers
                     return true;
                 }
 
-                if (segment.Span.Literal.LiteralExpression.Parent is AttributeArgumentSyntax argument &&
-                    argument.Parent is AttributeArgumentListSyntax argumentList &&
-                    argumentList.Parent is AttributeSyntax attribute &&
-                    attribute.Parent is AttributeListSyntax attributeList)
+                if (urlAttribute.Attribute.Parent is AttributeListSyntax attributeList)
                 {
                     if (attributeList.Parent is MethodDeclarationSyntax parentMethod &&
                        parentMethod.Parent is ClassDeclarationSyntax classDeclaration &&
@@ -720,8 +701,10 @@ namespace AspNetCoreAnalyzers
                 {
                     foreach (var attribute in attributeList.Attributes)
                     {
-                        if (TryGetTemplate(attribute, context, out result))
+                        if (UrlAttribute.TryCreate(attribute, context, out var candidate) &&
+                            candidate.UrlTemplate is UrlTemplate temp)
                         {
+                            result = temp;
                             return true;
                         }
                     }
