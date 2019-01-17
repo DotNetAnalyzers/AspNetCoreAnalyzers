@@ -3,10 +3,10 @@ namespace ValidCode
     using Microsoft.AspNetCore.Mvc;
     using System.Collections.Generic;
 
-    [Route("/api/[controller]({id})")]
+    [Route("/api/[controller]/{id}")]
     [Route("/api/[controller]")]
     [ApiController]
-    public class ValuesController : ControllerBase
+    public class WithBracketControllerController : ControllerBase
     {
         // GET api/values
         [HttpGet]
