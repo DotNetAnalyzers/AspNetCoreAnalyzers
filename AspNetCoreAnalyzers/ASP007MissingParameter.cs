@@ -9,7 +9,7 @@ namespace AspNetCoreAnalyzers
         internal static readonly DiagnosticDescriptor Descriptor = new DiagnosticDescriptor(
             id: DiagnosticId,
             title: "The method has no corresponding parameter.",
-            messageFormat: "The route template has parameter {0} that does not have a corresponding parameter in the method.",
+            messageFormat: "The route template has parameter {0} that does not have a corresponding method parameter.",
             category: AnalyzerCategory.Routing,
             defaultSeverity: DiagnosticSeverity.Warning,
             isEnabledByDefault: true,

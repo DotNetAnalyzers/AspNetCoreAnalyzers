@@ -74,16 +74,6 @@ namespace AspNetCoreAnalyzers
 
                         foreach (var pair in pairs)
                         {
-                            if (pair.Route is TemplateParameter parameter &&
-                                pair.Symbol == null)
-                            {
-                                context.ReportDiagnostic(
-                                    Diagnostic.Create(
-                                        ASP007MissingParameter.Descriptor,
-                                        parameter.Name.GetLocation(),
-                                        parameter.Name.ToString()));
-                            }
-
                             if (HasWrongType(pair, out var typeName, out var constraintLocation, out var text) &&
                                 methodDeclaration.TryFindParameter(pair.Symbol?.Name, out parameterSyntax))
                             {
@@ -131,7 +121,16 @@ namespace AspNetCoreAnalyzers
                                         : ImmutableDictionary<string, string>.Empty.Add(nameof(UrlTemplate), correctSyntax)));
                         }
 
-                        if (HasInvalidName(segment, out location, out var name))
+                        if (HasMissingMethodParameter(segment, context, out location, out var name))
+                        {
+                            context.ReportDiagnostic(
+                                Diagnostic.Create(
+                                    ASP007MissingParameter.Descriptor,
+                                    location,
+                                    name));
+                        }
+
+                        if (HasInvalidName(segment, out location, out name))
                         {
                             context.ReportDiagnostic(
                                 Diagnostic.Create(
@@ -184,7 +183,7 @@ namespace AspNetCoreAnalyzers
                     {
                         list.Add(template.Path.TrySingle(x => x.Parameter?.Name.Equals(parameter.Name, StringComparison.Ordinal) == true, out var templateParameter)
                                      ? new ParameterPair(templateParameter.Parameter, parameter)
-                                     : new ParameterPair(null,                        parameter));
+                                     : new ParameterPair(null, parameter));
                     }
                 }
 
@@ -535,6 +534,37 @@ namespace AspNetCoreAnalyzers
             location = null;
             correctSyntax = null;
             return false;
+        }
+
+        private static bool HasMissingMethodParameter(PathSegment segment, SyntaxNodeAnalysisContext context, out Location location, out string name)
+        {
+            if (segment.Parameter is TemplateParameter templateParameter)
+            {
+                if (context.ContainingSymbol is IMethodSymbol method &&
+                    !HasParameter(method))
+                {
+                    location = templateParameter.Name.GetLocation();
+                    name = templateParameter.Name.ToString();
+                    return true;
+                }
+            }
+
+            location = null;
+            name = null;
+            return false;
+
+            bool HasParameter(IMethodSymbol candidate)
+            {
+                foreach (var parameter in candidate.Parameters)
+                {
+                    if (templateParameter.Name.Equals(parameter.Name, StringComparison.Ordinal))
+                    {
+                        return true;
+                    }
+                }
+
+                return false;
+            }
         }
 
         private static bool HasInvalidName(PathSegment segment, out Location location, out string correctName)
