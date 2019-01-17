@@ -197,5 +197,28 @@ namespace AspBox
 }".AssertReplace("[FromHeader]", attribute);
             AnalyzerAssert.Diagnostics(Analyzer, ExpectedDiagnostic, order, db, code);
         }
+
+        [Test]
+        public void WhenRouteOnClass()
+        {
+            var code = @"
+namespace AspBox
+{
+    using Microsoft.AspNetCore.Mvc;
+
+    [Route(""api/values/{↓id}"")]
+    [ApiController]
+    public class OrdersController : Controller
+    {
+        [HttpGet]
+        public IActionResult GetValue()
+        {
+            return this.Ok();
+        }
+    }
+}";
+
+            AnalyzerAssert.Diagnostics(Analyzer, ExpectedDiagnostic, code);
+        }
     }
 }

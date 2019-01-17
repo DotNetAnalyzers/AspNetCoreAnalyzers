@@ -1,17 +1,19 @@
 namespace AspNetCoreAnalyzers.Tests.ASP007MissingParameterTests
 {
     using Gu.Roslyn.Asserts;
+    using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.Diagnostics;
     using NUnit.Framework;
 
     public class ValidCode
     {
         private static readonly DiagnosticAnalyzer Analyzer = new AttributeAnalyzer();
+        private static readonly DiagnosticDescriptor Descriptor = ASP007MissingParameter.Descriptor;
 
         [TestCase("\"api/{text}\"")]
         [TestCase("@\"api/{text}\"")]
         [TestCase("\"api/{text:alpha}\"")]
-        public void When(string after)
+        public void WhenHttpGet(string after)
         {
             var code = @"
 namespace AspBox
@@ -32,6 +34,30 @@ namespace AspBox
 }".AssertReplace("\"api/{text}\"", after);
 
             AnalyzerAssert.Valid(Analyzer, code);
+        }
+
+        [Test]
+        public void WhenHttpGetAndTwoRoutesOnClass()
+        {
+            var code = @"
+namespace AspBox
+{
+    using Microsoft.AspNetCore.Mvc;
+
+    [Route(""api/values"")]
+    [Route(""api/values/{id}"")]
+    [ApiController]
+    public class OrdersController : Controller
+    {
+        [HttpGet]
+        public IActionResult GetValue()
+        {
+            return this.Ok();
+        }
+    }
+}";
+
+            AnalyzerAssert.Valid(Analyzer, Descriptor, code);
         }
 
         [TestCase("\"api/orders/\" + \"{wrong}\"")]
