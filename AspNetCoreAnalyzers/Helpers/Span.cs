@@ -162,5 +162,23 @@ namespace AspNetCoreAnalyzers
 
             return false;
         }
+
+        internal bool TextEquals(Span other)
+        {
+            if (this.Length == other.Length)
+            {
+                for (var i = 0; i < this.Length; i++)
+                {
+                    if (this[i] != other[i])
+                    {
+                        return false;
+                    }
+                }
+
+                return true;
+            }
+
+            return false;
+        }
     }
 }

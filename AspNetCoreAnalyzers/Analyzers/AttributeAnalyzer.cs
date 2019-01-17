@@ -9,6 +9,7 @@ namespace AspNetCoreAnalyzers
     using Microsoft.CodeAnalysis.CSharp;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
     using Microsoft.CodeAnalysis.Diagnostics;
+    using Attribute = Gu.Roslyn.AnalyzerExtensions.Attribute;
 
     [DiagnosticAnalyzer(LanguageNames.CSharp)]
     public class AttributeAnalyzer : DiagnosticAnalyzer
@@ -541,11 +542,52 @@ namespace AspNetCoreAnalyzers
             if (segment.Parameter is TemplateParameter templateParameter)
             {
                 if (context.ContainingSymbol is IMethodSymbol method &&
-                    !HasParameter(method))
+                    !HasParameterSymbol(method))
                 {
                     location = templateParameter.Name.GetLocation();
                     name = templateParameter.Name.ToString();
                     return true;
+                }
+
+                if (context.ContainingSymbol is INamedTypeSymbol type &&
+                    context.Node.TryFirstAncestor(out ClassDeclarationSyntax classDeclaration) &&
+                    !classDeclaration.Modifiers.Any(SyntaxKind.PartialKeyword))
+                {
+                    foreach (var attributeList in classDeclaration.AttributeLists)
+                    {
+                        foreach (var attribute in attributeList.Attributes)
+                        {
+                            if (UrlAttribute.TryCreate(attribute, context, out var urlAttribute))
+                            {
+                                if (urlAttribute.UrlTemplate == null)
+                                {
+                                    location = null;
+                                    name = null;
+                                    return false;
+                                }
+
+                                if (urlAttribute.UrlTemplate is UrlTemplate template &&
+                                    !template.Path.Any(x => x.Parameter?.Name.TextEquals(templateParameter.Name) == true))
+                                {
+                                    location = null;
+                                    name = null;
+                                    return false;
+                                }
+                            }
+                        }
+                    }
+
+                    foreach (var member in classDeclaration.Members)
+                    {
+                        if (member is MethodDeclarationSyntax candidate &&
+                            HasHttpVerbAttribute(candidate, context) &&
+                            !HasParameter(candidate))
+                        {
+                            location = templateParameter.Name.GetLocation();
+                            name = templateParameter.Name.ToString();
+                            return true;
+                        }
+                    }
                 }
             }
 
@@ -553,13 +595,29 @@ namespace AspNetCoreAnalyzers
             name = null;
             return false;
 
-            bool HasParameter(IMethodSymbol candidate)
+            bool HasParameterSymbol(IMethodSymbol candidate)
             {
                 foreach (var parameter in candidate.Parameters)
                 {
                     if (templateParameter.Name.Equals(parameter.Name, StringComparison.Ordinal))
                     {
                         return true;
+                    }
+                }
+
+                return false;
+            }
+
+            bool HasParameter(MethodDeclarationSyntax candidate)
+            {
+                if (candidate.ParameterList is ParameterListSyntax parameterList)
+                {
+                    foreach (var parameter in parameterList.Parameters)
+                    {
+                        if (templateParameter.Name.Equals(parameter.Identifier.Text, StringComparison.Ordinal))
+                        {
+                            return true;
+                        }
                     }
                 }
 
@@ -721,7 +779,7 @@ namespace AspNetCoreAnalyzers
                 return candidates.TryFirst(
                        x => x.Parameter is TemplateParameter other &&
                        other != parameter &&
-                       IsSameText(parameter.Name, other.Name),
+                       parameter.Name.TextEquals(other.Name),
                        out _);
             }
 
@@ -743,24 +801,28 @@ namespace AspNetCoreAnalyzers
                 result = default(UrlTemplate);
                 return false;
             }
+        }
 
-            bool IsSameText(Span x, Span y)
+        private static bool HasHttpVerbAttribute(MethodDeclarationSyntax methodDeclaration, SyntaxNodeAnalysisContext context)
+        {
+            foreach (var attributeList in methodDeclaration.AttributeLists)
             {
-                if (x.Length == y.Length)
+                foreach (var attribute in attributeList.Attributes)
                 {
-                    for (var i = 0; i < x.Length; i++)
+                    if (Attribute.IsType(attribute, KnownSymbol.HttpDeleteAttribute, context.SemanticModel, context.CancellationToken) ||
+                        Attribute.IsType(attribute, KnownSymbol.HttpGetAttribute, context.SemanticModel, context.CancellationToken) ||
+                        Attribute.IsType(attribute, KnownSymbol.HttpHeadAttribute, context.SemanticModel, context.CancellationToken) ||
+                        Attribute.IsType(attribute, KnownSymbol.HttpOptionsAttribute, context.SemanticModel, context.CancellationToken) ||
+                        Attribute.IsType(attribute, KnownSymbol.HttpPatchAttribute, context.SemanticModel, context.CancellationToken) ||
+                        Attribute.IsType(attribute, KnownSymbol.HttpPostAttribute, context.SemanticModel, context.CancellationToken) ||
+                        Attribute.IsType(attribute, KnownSymbol.HttpPutAttribute, context.SemanticModel, context.CancellationToken))
                     {
-                        if (x[i] != y[i])
-                        {
-                            return false;
-                        }
+                        return true;
                     }
-
-                    return true;
                 }
-
-                return false;
             }
+
+            return false;
         }
     }
 }

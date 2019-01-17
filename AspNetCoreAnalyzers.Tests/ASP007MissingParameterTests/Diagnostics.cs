@@ -27,7 +27,7 @@ namespace AspBox
         }
     }
 }";
-            var message = "The route template has parameter id that does not have a corresponding parameter in the method.";
+            var message = "The route template has parameter id that does not have a corresponding method parameter.";
             AnalyzerAssert.Diagnostics(Analyzer, ExpectedDiagnostic.WithMessage(message), code);
         }
 
@@ -83,7 +83,7 @@ namespace AspBox
         }
     }
 }";
-            var message = "The route template has parameter itemId that does not have a corresponding parameter in the method.";
+            var message = "The route template has parameter itemId that does not have a corresponding method parameter.";
             AnalyzerAssert.Diagnostics(Analyzer, ExpectedDiagnostic.WithMessage(message), order, db, code);
         }
 
@@ -196,6 +196,53 @@ namespace AspBox
     }
 }".AssertReplace("[FromHeader]", attribute);
             AnalyzerAssert.Diagnostics(Analyzer, ExpectedDiagnostic, order, db, code);
+        }
+
+        [Test]
+        public void WhenRouteOnClass()
+        {
+            var code = @"
+namespace AspBox
+{
+    using Microsoft.AspNetCore.Mvc;
+
+    [Route(""api/values/{↓id}"")]
+    [ApiController]
+    public class OrdersController : Controller
+    {
+        [HttpGet]
+        public IActionResult GetValue()
+        {
+            return this.Ok();
+        }
+    }
+}";
+
+            AnalyzerAssert.Diagnostics(Analyzer, ExpectedDiagnostic, code);
+        }
+
+        [Test]
+        public void WhenRoutesOnClass()
+        {
+            var code = @"
+namespace AspBox
+{
+    using Microsoft.AspNetCore.Mvc;
+
+    [Route(""api/values/{↓valueId}/items"")]
+    [Route(""api/values/{↓valueId}/items/{itemId}"")]
+    [ApiController]
+    public class OrdersController : Controller
+    {
+        [HttpGet]
+        public IActionResult GetValue()
+        {
+            return this.Ok();
+        }
+    }
+}";
+
+            AnalyzerAssert.Diagnostics(Analyzer, ExpectedDiagnostic, code);
         }
     }
 }
