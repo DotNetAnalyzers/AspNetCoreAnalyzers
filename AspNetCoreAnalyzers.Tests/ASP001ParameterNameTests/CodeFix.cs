@@ -185,73 +185,20 @@ namespace AspBox
         }
 
         [Test]
-        public void ImplicitFirstParameter()
+        public void FirstParameter()
         {
-            var orderItem = @"
-namespace AspBox
-{
-    public class OrderItem
-    {
-        public int Id { get; set; }
-    }
-}";
-            var order = @"
-namespace AspBox
-{
-    using System.Collections.Generic;
-
-    public class Order
-    {
-        public int Id { get; set; }
-
-        public IEnumerable<OrderItem> Items { get; set; }
-    }
-}";
-
-            var db = @"
-namespace AspBox
-{
-    using Microsoft.EntityFrameworkCore;
-
-    public class Db : DbContext
-    {
-        public DbSet<Order> Orders { get; set; }
-    }
-}";
             var before = @"
 namespace AspBox
 {
-    using System.Linq;
-    using System.Threading.Tasks;
     using Microsoft.AspNetCore.Mvc;
-    using Microsoft.EntityFrameworkCore;
 
     [ApiController]
     public class OrdersController : Controller
     {
-        private readonly Db db;
-
-        public OrdersController(Db db)
-        {
-            this.db = db;
-        }
-
         [HttpGet(""api/orders/{orderId}/items/{itemId}"")]
-        public async Task<IActionResult> GetOrder(int ↓wrong, int itemId)
+        public IActionResult GetOrder(int ↓wrong, int itemId)
         {
-            var order = await this.db.Orders.FirstOrDefaultAsync(x => x.Id == wrong);
-            if (order == null)
-            {
-                return this.NotFound();
-            }
-
-            var match = order.Items.FirstOrDefault(x => x.Id == itemId);
-            if (match == null)
-            {
-                return this.NotFound();
-            }
-
-            return this.Ok(match);
+            return this.Ok(wrong * itemId);
         }
     }
 }";
@@ -259,111 +206,36 @@ namespace AspBox
             var after = @"
 namespace AspBox
 {
-    using System.Linq;
-    using System.Threading.Tasks;
     using Microsoft.AspNetCore.Mvc;
-    using Microsoft.EntityFrameworkCore;
 
     [ApiController]
     public class OrdersController : Controller
     {
-        private readonly Db db;
-
-        public OrdersController(Db db)
-        {
-            this.db = db;
-        }
-
         [HttpGet(""api/orders/{orderId}/items/{itemId}"")]
-        public async Task<IActionResult> GetOrder(int orderId, int itemId)
+        public IActionResult GetOrder(int orderId, int itemId)
         {
-            var order = await this.db.Orders.FirstOrDefaultAsync(x => x.Id == orderId);
-            if (order == null)
-            {
-                return this.NotFound();
-            }
-
-            var match = order.Items.FirstOrDefault(x => x.Id == itemId);
-            if (match == null)
-            {
-                return this.NotFound();
-            }
-
-            return this.Ok(match);
+            return this.Ok(orderId * itemId);
         }
     }
 }";
-            AnalyzerAssert.CodeFix(Analyzer, Fix, ExpectedDiagnostic, new[] { orderItem, order, db, before }, after);
+            AnalyzerAssert.CodeFix(Analyzer, Fix, ExpectedDiagnostic, before, after);
         }
 
         [Test]
-        public void ImplicitLastParameter()
+        public void LastParameter()
         {
-            var orderItem = @"
-namespace AspBox
-{
-    public class OrderItem
-    {
-        public int Id { get; set; }
-    }
-}";
-            var order = @"
-namespace AspBox
-{
-    using System.Collections.Generic;
-
-    public class Order
-    {
-        public int Id { get; set; }
-
-        public IEnumerable<OrderItem> Items { get; set; }
-    }
-}";
-
-            var db = @"
-namespace AspBox
-{
-    using Microsoft.EntityFrameworkCore;
-
-    public class Db : DbContext
-    {
-        public DbSet<Order> Orders { get; set; }
-    }
-}";
             var before = @"
 namespace AspBox
 {
-    using System.Linq;
-    using System.Threading.Tasks;
     using Microsoft.AspNetCore.Mvc;
-    using Microsoft.EntityFrameworkCore;
 
     [ApiController]
     public class OrdersController : Controller
     {
-        private readonly Db db;
-
-        public OrdersController(Db db)
-        {
-            this.db = db;
-        }
-
         [HttpGet(""api/orders/{orderId}/items/{itemId}"")]
-        public async Task<IActionResult> GetOrder(int orderId, int ↓wrong)
+        public IActionResult GetOrder(int orderId, int ↓wrong)
         {
-            var order = await this.db.Orders.FirstOrDefaultAsync(x => x.Id == orderId);
-            if (order == null)
-            {
-                return this.NotFound();
-            }
-
-            var match = order.Items.FirstOrDefault(x => x.Id == wrong);
-            if (match == null)
-            {
-                return this.NotFound();
-            }
-
-            return this.Ok(match);
+            return this.Ok(orderId * wrong);
         }
     }
 }";
@@ -371,92 +243,36 @@ namespace AspBox
             var after = @"
 namespace AspBox
 {
-    using System.Linq;
-    using System.Threading.Tasks;
     using Microsoft.AspNetCore.Mvc;
-    using Microsoft.EntityFrameworkCore;
 
     [ApiController]
     public class OrdersController : Controller
     {
-        private readonly Db db;
-
-        public OrdersController(Db db)
-        {
-            this.db = db;
-        }
-
         [HttpGet(""api/orders/{orderId}/items/{itemId}"")]
-        public async Task<IActionResult> GetOrder(int orderId, int itemId)
+        public IActionResult GetOrder(int orderId, int itemId)
         {
-            var order = await this.db.Orders.FirstOrDefaultAsync(x => x.Id == orderId);
-            if (order == null)
-            {
-                return this.NotFound();
-            }
-
-            var match = order.Items.FirstOrDefault(x => x.Id == itemId);
-            if (match == null)
-            {
-                return this.NotFound();
-            }
-
-            return this.Ok(match);
+            return this.Ok(orderId * itemId);
         }
     }
 }";
-            AnalyzerAssert.CodeFix(Analyzer, Fix, ExpectedDiagnostic, new[] { orderItem, order, db, before }, after);
+            AnalyzerAssert.CodeFix(Analyzer, Fix, ExpectedDiagnostic, before, after);
         }
 
         [Test]
-        public void ExplicitAttributeSingleParameter()
+        public void ExplicitFromRouteAttributeSingleParameter()
         {
-            var order = @"
-namespace AspBox
-{
-    public class Order
-    {
-        public int Id { get; set; }
-    }
-}";
-
-            var db = @"
-namespace AspBox
-{
-    using Microsoft.EntityFrameworkCore;
-
-    public class Db : DbContext
-    {
-        public DbSet<Order> Orders { get; set; }
-    }
-}";
             var before = @"
 namespace AspBox
 {
-    using System.Threading.Tasks;
     using Microsoft.AspNetCore.Mvc;
-    using Microsoft.EntityFrameworkCore;
 
     [ApiController]
     public class OrdersController : Controller
     {
-        private readonly Db db;
-
-        public OrdersController(Db db)
+        [HttpGet(""api/orders/{value}"")]
+        public IActionResult GetId(string ↓wrong)
         {
-            this.db = db;
-        }
-
-        [HttpGet(""api/orders/{id}"")]
-        public async Task<IActionResult> GetOrder([FromRoute]int ↓wrong)
-        {
-            var match = await this.db.Orders.FirstOrDefaultAsync(x => x.Id == wrong);
-            if (match == null)
-            {
-                return this.NotFound();
-            }
-
-            return this.Ok(match);
+            return this.Ok(wrong);
         }
     }
 }";
@@ -464,34 +280,19 @@ namespace AspBox
             var after = @"
 namespace AspBox
 {
-    using System.Threading.Tasks;
     using Microsoft.AspNetCore.Mvc;
-    using Microsoft.EntityFrameworkCore;
 
     [ApiController]
     public class OrdersController : Controller
     {
-        private readonly Db db;
-
-        public OrdersController(Db db)
+        [HttpGet(""api/orders/{value}"")]
+        public IActionResult GetId(string value)
         {
-            this.db = db;
-        }
-
-        [HttpGet(""api/orders/{id}"")]
-        public async Task<IActionResult> GetOrder([FromRoute]int id)
-        {
-            var match = await this.db.Orders.FirstOrDefaultAsync(x => x.Id == id);
-            if (match == null)
-            {
-                return this.NotFound();
-            }
-
-            return this.Ok(match);
+            return this.Ok(value);
         }
     }
 }";
-            AnalyzerAssert.CodeFix(Analyzer, Fix, ExpectedDiagnostic, new[] { order, db, before }, after);
+            AnalyzerAssert.CodeFix(Analyzer, Fix, ExpectedDiagnostic, before, after);
         }
     }
 }
