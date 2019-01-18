@@ -96,18 +96,18 @@ namespace AspNetCoreAnalyzers
                                         : ImmutableDictionary<string, string>.Empty.Add(nameof(UrlTemplate), constraint.NewText)));
                         }
 
-                        if (HasWrongSyntax(segment, out var location, out var urlTemplate))
+                        if (HasWrongSyntax(segment, out var span))
                         {
                             context.ReportDiagnostic(
                                 Diagnostic.Create(
                                     ASP005ParameterSyntax.Descriptor,
-                                    location,
-                                    urlTemplate == null
+                                    span.Node.GetLocation(),
+                                    span.NewText == null
                                         ? ImmutableDictionary<string, string>.Empty
-                                        : ImmutableDictionary<string, string>.Empty.Add(nameof(UrlTemplate), urlTemplate)));
+                                        : ImmutableDictionary<string, string>.Empty.Add(nameof(UrlTemplate), span.NewText)));
                         }
 
-                        if (HasWrongRegexSyntax(segment, out location, out urlTemplate))
+                        if (HasWrongRegexSyntax(segment, out var location, out var urlTemplate))
                         {
                             context.ReportDiagnostic(
                                 Diagnostic.Create(
@@ -384,21 +384,23 @@ namespace AspNetCoreAnalyzers
             }
         }
 
-        private static bool HasWrongSyntax(PathSegment segment, out Location location, out string correctSyntax)
+        private static bool HasWrongSyntax(PathSegment segment, out Replacement<Span> replacement)
         {
             if (segment.Parameter is TemplateParameter parameter)
             {
                 if (parameter.Name.EndsWith("}", StringComparison.Ordinal))
                 {
-                    location = parameter.Name.GetLocation();
-                    correctSyntax = parameter.Name.ToString().TrimEnd('}');
+                    replacement = new Replacement<Span>(
+                        parameter.Name,
+                        parameter.Name.ToString().TrimEnd('}'));
                     return true;
                 }
 
                 if (parameter.Name.StartsWith("{", StringComparison.Ordinal))
                 {
-                    location = parameter.Name.GetLocation();
-                    correctSyntax = parameter.Name.ToString().TrimStart('{');
+                    replacement = new Replacement<Span>(
+                        parameter.Name,
+                        parameter.Name.ToString().TrimStart('{'));
                     return true;
                 }
 
@@ -409,8 +411,7 @@ namespace AspNetCoreAnalyzers
                     parameter.Name.Contains('/') ||
                     parameter.Name.Contains('?'))
                 {
-                    location = parameter.Name.GetLocation();
-                    correctSyntax = null;
+                    replacement = new Replacement<Span>(parameter.Name, null);
                     return true;
                 }
 
@@ -427,18 +428,17 @@ namespace AspNetCoreAnalyzers
                     {
                         if (!text.EndsWith(")", StringComparison.Ordinal))
                         {
-                            location = constraint.Span.GetLocation();
-                            correctSyntax = text + ")";
+                            replacement = new Replacement<Span>(constraint.Span, text + ")");
                             return true;
                         }
                     }
 
-                    if (HasWrongIntArgumentSyntax(constraint, "min", out location) ||
-                        HasWrongIntArgumentSyntax(constraint, "max", out location) ||
-                        HasWrongIntArgumentSyntax(constraint, "minlength", out location) ||
-                        HasWrongIntArgumentSyntax(constraint, "maxlength", out location))
+                    if (HasWrongIntArgumentSyntax(constraint, "min", out var span) ||
+                        HasWrongIntArgumentSyntax(constraint, "max", out span) ||
+                        HasWrongIntArgumentSyntax(constraint, "minlength", out span) ||
+                        HasWrongIntArgumentSyntax(constraint, "maxlength", out span))
                     {
-                        correctSyntax = null;
+                        replacement = new Replacement<Span>(span, null);
                         return true;
                     }
 
@@ -461,8 +461,7 @@ namespace AspNetCoreAnalyzers
                         !text.StartsWith("regex(", StringComparison.OrdinalIgnoreCase) &&
                         !text.StartsWith("range(", StringComparison.OrdinalIgnoreCase))
                     {
-                        location = constraint.Span.GetLocation();
-                        correctSyntax = null;
+                        replacement = new Replacement<Span>(constraint.Span, null);
                         return true;
                     }
                 }
@@ -473,25 +472,22 @@ namespace AspNetCoreAnalyzers
                 if (text.StartsWith("{", StringComparison.Ordinal) &&
                     !text.EndsWith("}", StringComparison.Ordinal))
                 {
-                    location = segment.Span.GetLocation();
-                    correctSyntax = text + "}";
+                    replacement = new Replacement<Span>(segment.Span, text + "}");
                     return true;
                 }
 
                 if (!text.StartsWith("{", StringComparison.Ordinal) &&
                     text.EndsWith("}", StringComparison.Ordinal))
                 {
-                    location = segment.Span.GetLocation();
-                    correctSyntax = "{" + text;
+                    replacement = new Replacement<Span>(segment.Span, "{" + text);
                     return true;
                 }
             }
 
-            location = null;
-            correctSyntax = null;
+            replacement = default(Replacement<Span>);
             return false;
 
-            bool HasWrongIntArgumentSyntax(RouteConstraint constraint, string methodName, out Location result)
+            bool HasWrongIntArgumentSyntax(RouteConstraint constraint, string methodName, out Span result)
             {
                 var text = constraint.Span;
                 if (text.Length > methodName.Length + 2 &&
@@ -503,13 +499,13 @@ namespace AspNetCoreAnalyzers
                     {
                         if (!char.IsDigit(text[i]))
                         {
-                            result = constraint.Span.GetLocation(methodName.Length + 1, text.Length - methodName.Length - 2);
+                            result = constraint.Span.Substring(methodName.Length + 1, text.Length - methodName.Length - 2);
                             return true;
                         }
                     }
                 }
 
-                result = null;
+                result = default(Span);
                 return false;
             }
         }
