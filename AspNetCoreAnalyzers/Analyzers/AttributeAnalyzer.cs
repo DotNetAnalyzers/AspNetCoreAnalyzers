@@ -79,13 +79,13 @@ namespace AspNetCoreAnalyzers
                 {
                     foreach (var segment in template.Path)
                     {
-                        if (HasWrongType(segment, context, out var parameter, out var constraint))
+                        if (HasWrongType(segment, context, out var type, out var constraint))
                         {
                             context.ReportDiagnostic(
                                 Diagnostic.Create(
                                     ASP003ParameterSymbolType.Descriptor,
-                                    parameter.Node.Type.GetLocation(),
-                                    ImmutableDictionary<string, string>.Empty.Add(nameof(TypeSyntax), parameter.NewText)));
+                                    type.Node.GetLocation(),
+                                    ImmutableDictionary<string, string>.Empty.Add(nameof(TypeSyntax), type.NewText)));
 
                             context.ReportDiagnostic(
                                 Diagnostic.Create(
@@ -212,7 +212,7 @@ namespace AspNetCoreAnalyzers
             }
         }
 
-        private static bool HasWrongType(PathSegment segment, SyntaxNodeAnalysisContext context, out Replacement<ParameterSyntax> parameterReplacement, out Replacement<Span> constraintReplacement)
+        private static bool HasWrongType(PathSegment segment, SyntaxNodeAnalysisContext context, out Replacement<TypeSyntax> typeReplacement, out Replacement<Span> constraintReplacement)
         {
             if (segment.Parameter is TemplateParameter templateParameter &&
                 templateParameter.Constraints is ImmutableArray<RouteConstraint> constraints)
@@ -220,7 +220,7 @@ namespace AspNetCoreAnalyzers
                 if (context.ContainingSymbol is IMethodSymbol containingMethod &&
                     TryFindParameter(templateParameter, containingMethod, out var parameterSymbol))
                 {
-                    return HasWrongType(parameterSymbol, out parameterReplacement, out constraintReplacement);
+                    return HasWrongType(parameterSymbol, out typeReplacement, out constraintReplacement);
                 }
 
                 if (context.ContainingSymbol is INamedTypeSymbol &&
@@ -233,7 +233,7 @@ namespace AspNetCoreAnalyzers
                             HasHttpVerbAttribute(methodDeclaration, context) &&
                             TryFindParameter(templateParameter, methodDeclaration, out var candidateParameter) &&
                             context.SemanticModel.TryGetSymbol(candidateParameter, context.CancellationToken, out parameterSymbol) &&
-                            HasWrongType(parameterSymbol, out parameterReplacement, out constraintReplacement))
+                            HasWrongType(parameterSymbol, out typeReplacement, out constraintReplacement))
                         {
                             return true;
                         }
@@ -241,7 +241,7 @@ namespace AspNetCoreAnalyzers
                 }
             }
 
-            parameterReplacement = default(Replacement<ParameterSyntax>);
+            typeReplacement = default(Replacement<TypeSyntax>);
             constraintReplacement = default(Replacement<Span>);
             return false;
 
@@ -329,7 +329,7 @@ namespace AspNetCoreAnalyzers
                 return null;
             }
 
-            bool HasWrongType(IParameterSymbol parameterSymbol, out Replacement<ParameterSyntax> pr, out Replacement<Span> cr)
+            bool HasWrongType(IParameterSymbol parameterSymbol, out Replacement<TypeSyntax> newType, out Replacement<Span> newConstraint)
             {
                 foreach (var constraint in constraints)
                 {
@@ -337,13 +337,13 @@ namespace AspNetCoreAnalyzers
                     if (TryGetType(constraint.Span, out var type) &&
                         parameterSymbol.TrySingleDeclaration(context.CancellationToken, out var parameter))
                     {
-                        pr = new Replacement<ParameterSyntax>(
-                            parameter,
+                        newType = new Replacement<TypeSyntax>(
+                            parameter.Type,
                             parameterSymbol.Type == type ? null : type.Alias ?? type.FullName);
-                        cr = new Replacement<Span>(
+                        newConstraint = new Replacement<Span>(
                             constraint.Span,
                             GetCorrectConstraintType(parameterSymbol, constraint));
-                        return pr.NewText != null;
+                        return newType.NewText != null;
                     }
 
                     if (constraint.Span.Equals("?", StringComparison.Ordinal) &&
@@ -351,10 +351,10 @@ namespace AspNetCoreAnalyzers
                         parameterSymbol.Type.OriginalDefinition.SpecialType != SpecialType.System_Nullable_T &&
                         parameterSymbol.TrySingleDeclaration(context.CancellationToken, out parameter))
                     {
-                        pr = new Replacement<ParameterSyntax>(
-                            parameter,
+                        newType = new Replacement<TypeSyntax>(
+                            parameter.Type,
                             parameterSymbol.Type.ToDisplayString(SymbolDisplayFormat.MinimallyQualifiedFormat) + "?");
-                        cr = new Replacement<Span>(
+                        newConstraint = new Replacement<Span>(
                             constraint.Span,
                             string.Empty);
                         return true;
@@ -368,18 +368,18 @@ namespace AspNetCoreAnalyzers
                         namedType.TypeArguments.TrySingle(out var typeArg) &&
                         parameterSymbol.TrySingleDeclaration(context.CancellationToken, out var parameter))
                     {
-                        pr = new Replacement<ParameterSyntax>(
-                            parameter,
+                        newType = new Replacement<TypeSyntax>(
+                            parameter.Type,
                             typeArg.ToString());
-                        cr = new Replacement<Span>(
+                        newConstraint = new Replacement<Span>(
                             templateParameter.Name,
                             $"{templateParameter.Name}?");
                         return true;
                     }
                 }
 
-                pr = default(Replacement<ParameterSyntax>);
-                cr = default(Replacement<Span>);
+                newType = default(Replacement<TypeSyntax>);
+                newConstraint = default(Replacement<Span>);
                 return false;
             }
         }
