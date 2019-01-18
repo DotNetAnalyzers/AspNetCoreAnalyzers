@@ -25,7 +25,8 @@ namespace AspNetCoreAnalyzers
             ASP008ValidRouteParameterName.Descriptor,
             ASP009KebabCaseUrl.Descriptor,
             ASP010UrlSyntax.Descriptor,
-            ASP011RouteParameterNameMustBeUnique.Descriptor);
+            ASP011RouteParameterNameMustBeUnique.Descriptor,
+            ASP012UseExplicitRoute.Descriptor);
 
         public override void Initialize(AnalysisContext context)
         {
@@ -132,8 +133,34 @@ namespace AspNetCoreAnalyzers
                                 ASP011RouteParameterNameMustBeUnique.Descriptor,
                                 location));
                     }
+
+                    if (ShouldUseExplicitRoute(segment, context, out spanReplacement))
+                    {
+                        context.ReportDiagnostic(
+                            Diagnostic.Create(
+                                ASP012UseExplicitRoute.Descriptor,
+                                spanReplacement.Node.GetLocation(),
+                                spanReplacement.Property(nameof(UrlTemplate))));
+                    }
                 }
             }
+        }
+
+        private static bool ShouldUseExplicitRoute(PathSegment segment, SyntaxNodeAnalysisContext context, out Replacement<Span> spanReplacement)
+        {
+            if (segment.Span.Equals("[controller]", StringComparison.OrdinalIgnoreCase) &&
+                context.ContainingSymbol is INamedTypeSymbol containingType)
+            {
+                spanReplacement = new Replacement<Span>(
+                    segment.Span,
+                    containingType.Name.EndsWith("Controller", StringComparison.Ordinal)
+                        ? KebabCase(containingType.Name.Substring(0, containingType.Name.Length - 10))
+                        : null);
+                return true;
+            }
+
+            spanReplacement = default(Replacement<Span>);
+            return false;
         }
 
         private static bool HasWrongName(PathSegment segment, UrlAttribute urlAttribute, SyntaxNodeAnalysisContext context, out Replacement<Location> nameReplacement, out Replacement<Span> spanReplacement)
@@ -640,30 +667,7 @@ namespace AspNetCoreAnalyzers
             if (segment.Parameter == null &&
                 IsHumpOrSnakeCased(segment.Span))
             {
-                var builder = StringBuilderPool.Borrow();
-                for (var i = 0; i < segment.Span.Length; i++)
-                {
-                    var c = segment.Span[i];
-                    if (char.IsUpper(c))
-                    {
-                        if (i > 0)
-                        {
-                            _ = builder.Append("-");
-                        }
-
-                        _ = builder.Append(char.ToLower(c));
-                    }
-                    else if (c == '_')
-                    {
-                        _ = builder.Append("-");
-                    }
-                    else
-                    {
-                        _ = builder.Append(c);
-                    }
-                }
-
-                kebabCase = builder.Return();
+                kebabCase = KebabCase(segment.Span.ToString());
                 return true;
             }
 
@@ -684,6 +688,34 @@ namespace AspNetCoreAnalyzers
 
                 return false;
             }
+        }
+
+        private static string KebabCase(string text)
+        {
+            var builder = StringBuilderPool.Borrow();
+            for (var i = 0; i < text.Length; i++)
+            {
+                var c = text[i];
+                if (char.IsUpper(c))
+                {
+                    if (i > 0)
+                    {
+                        _ = builder.Append("-");
+                    }
+
+                    _ = builder.Append(char.ToLower(c));
+                }
+                else if (c == '_')
+                {
+                    _ = builder.Append("-");
+                }
+                else
+                {
+                    _ = builder.Append(c);
+                }
+            }
+
+            return builder.Return();
         }
 
         /// <summary>

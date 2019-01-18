@@ -21,7 +21,8 @@ namespace AspNetCoreAnalyzers
             ASP005ParameterSyntax.DiagnosticId,
             ASP006ParameterRegex.DiagnosticId,
             ASP008ValidRouteParameterName.DiagnosticId,
-            ASP009KebabCaseUrl.DiagnosticId);
+            ASP009KebabCaseUrl.DiagnosticId,
+            ASP012UseExplicitRoute.DiagnosticId);
 
         protected override async Task RegisterCodeFixesAsync(DocumentEditorCodeFixContext context)
         {
@@ -80,6 +81,8 @@ namespace AspNetCoreAnalyzers
                     return "Fix name.";
                 case ASP009KebabCaseUrl.DiagnosticId:
                     return "To lowercase.";
+                case ASP012UseExplicitRoute.DiagnosticId:
+                    return "To explicit route.";
                 default:
                     throw new InvalidOperationException("Should never get here.");
             }

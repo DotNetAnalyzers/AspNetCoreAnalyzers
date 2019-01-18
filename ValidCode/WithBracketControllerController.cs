@@ -1,3 +1,4 @@
+#pragma warning disable ASP012 // Don't use [controller].
 namespace ValidCode
 {
     using Microsoft.AspNetCore.Mvc;
@@ -8,7 +9,6 @@ namespace ValidCode
     [ApiController]
     public class WithBracketControllerController : ControllerBase
     {
-        // GET api/values
         [HttpGet]
         public ActionResult<IEnumerable<string>> Get()
         {
@@ -26,13 +26,11 @@ namespace ValidCode
         {
         }
 
-        // PUT api/values/5
         [HttpPut]
         public void Put(int id, [FromBody] string value)
         {
         }
 
-        // DELETE api/values/5
         [HttpDelete]
         public void Delete(int id)
         {

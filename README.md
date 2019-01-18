@@ -55,6 +55,10 @@ Roslyn analyzers for ASP.NET.Core.
     <td><a href="https://github.com/DotNetAnalyzers/AspNetCoreAnalyzers/tree/master/documentation/ASP011.md">ASP011</a></td>
     <td>Route parameter appears more than once.</td>
   </tr>
+  <tr>
+    <td><a href="https://github.com/DotNetAnalyzers/AspNetCoreAnalyzers/tree/master/documentation/ASP012.md">ASP012</a></td>
+    <td>Don't use [controller].</td>
+  </tr>
 <table>
 <!-- end generated table -->
 
