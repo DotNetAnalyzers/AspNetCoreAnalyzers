@@ -79,46 +79,40 @@ namespace AspNetCoreAnalyzers
                 {
                     foreach (var segment in template.Path)
                     {
-                        if (HasWrongType(segment, context, out var type, out var constraint))
+                        if (HasWrongType(segment, context, out var typeReplacement, out var constraintReplacement))
                         {
                             context.ReportDiagnostic(
                                 Diagnostic.Create(
                                     ASP003ParameterSymbolType.Descriptor,
-                                    type.Node.GetLocation(),
-                                    ImmutableDictionary<string, string>.Empty.Add(nameof(TypeSyntax), type.NewText)));
+                                    typeReplacement.Node.GetLocation(),
+                                    typeReplacement.Property(nameof(TypeSyntax))));
 
                             context.ReportDiagnostic(
                                 Diagnostic.Create(
                                     ASP004RouteParameterType.Descriptor,
-                                    constraint.Node.GetLocation(),
-                                    constraint.NewText == null
-                                        ? ImmutableDictionary<string, string>.Empty
-                                        : ImmutableDictionary<string, string>.Empty.Add(nameof(UrlTemplate), constraint.NewText)));
+                                    constraintReplacement.Node.GetLocation(),
+                                    constraintReplacement.Property(nameof(UrlTemplate))));
                         }
 
-                        if (HasWrongSyntax(segment, out var span))
+                        if (HasWrongSyntax(segment, out var spanReplacement))
                         {
                             context.ReportDiagnostic(
                                 Diagnostic.Create(
                                     ASP005ParameterSyntax.Descriptor,
-                                    span.Node.GetLocation(),
-                                    span.NewText == null
-                                        ? ImmutableDictionary<string, string>.Empty
-                                        : ImmutableDictionary<string, string>.Empty.Add(nameof(UrlTemplate), span.NewText)));
+                                    spanReplacement.Node.GetLocation(),
+                                    spanReplacement.Property(nameof(UrlTemplate))));
                         }
 
-                        if (HasWrongRegexSyntax(segment, out var location, out var urlTemplate))
+                        if (HasWrongRegexSyntax(segment, out spanReplacement))
                         {
                             context.ReportDiagnostic(
                                 Diagnostic.Create(
                                     ASP006ParameterRegex.Descriptor,
-                                    location,
-                                    urlTemplate == null
-                                        ? ImmutableDictionary<string, string>.Empty
-                                        : ImmutableDictionary<string, string>.Empty.Add(nameof(UrlTemplate), urlTemplate)));
+                                    spanReplacement.Node.GetLocation(),
+                                    spanReplacement.Property(nameof(UrlTemplate))));
                         }
 
-                        if (HasMissingMethodParameter(segment, context, out location, out var name))
+                        if (HasMissingMethodParameter(segment, context, out var location, out var name))
                         {
                             context.ReportDiagnostic(
                                 Diagnostic.Create(
@@ -127,15 +121,13 @@ namespace AspNetCoreAnalyzers
                                     name));
                         }
 
-                        if (HasInvalidName(segment, out location, out name))
+                        if (HasInvalidName(segment, out spanReplacement))
                         {
                             context.ReportDiagnostic(
                                 Diagnostic.Create(
                                     ASP008ValidRouteParameterName.Descriptor,
-                                    location,
-                                    name == null
-                                    ? ImmutableDictionary<string, string>.Empty
-                                    : ImmutableDictionary<string, string>.Empty.Add(nameof(UrlTemplate), name)));
+                                    spanReplacement.Node.GetLocation(),
+                                    spanReplacement.Property(nameof(UrlTemplate))));
                         }
 
                         if (ShouldKebabCase(segment, out var kebabCase))
@@ -510,7 +502,7 @@ namespace AspNetCoreAnalyzers
             }
         }
 
-        private static bool HasWrongRegexSyntax(PathSegment segment, out Location location, out string correctSyntax)
+        private static bool HasWrongRegexSyntax(PathSegment segment, out Replacement<Span> replacement)
         {
             if (segment.Parameter is TemplateParameter parameter)
             {
@@ -539,8 +531,9 @@ namespace AspNetCoreAnalyzers
                                     }
                                 }
 
-                                location = constraint.Span.GetLocation(6, text.Length - 7);
-                                correctSyntax = new string(escaped.ToArray());
+                                replacement = new Replacement<Span>(
+                                    constraint.Span.Substring(6, text.Length - 7),
+                                    new string(escaped.ToArray()));
                                 return true;
                             }
 
@@ -565,8 +558,7 @@ namespace AspNetCoreAnalyzers
                 }
             }
 
-            location = null;
-            correctSyntax = null;
+            replacement = default(Replacement<Span>);
             return false;
         }
 
@@ -629,15 +621,16 @@ namespace AspNetCoreAnalyzers
             return false;
         }
 
-        private static bool HasInvalidName(PathSegment segment, out Location location, out string correctName)
+        private static bool HasInvalidName(PathSegment segment, out Replacement<Span> replacement)
         {
             if (segment.Parameter is TemplateParameter parameter)
             {
                 if (parameter.Name.StartsWith(" ", StringComparison.OrdinalIgnoreCase) ||
                     parameter.Name.EndsWith(" ", StringComparison.OrdinalIgnoreCase))
                 {
-                    location = parameter.Name.GetLocation();
-                    correctName = parameter.Name.ToString().Trim();
+                    replacement = new Replacement<Span>(
+                        parameter.Name,
+                        parameter.Name.ToString().Trim());
                     return true;
                 }
 
@@ -647,14 +640,14 @@ namespace AspNetCoreAnalyzers
                     parameter.Name.Equals("handler", StringComparison.OrdinalIgnoreCase) ||
                     parameter.Name.Equals("page", StringComparison.OrdinalIgnoreCase))
                 {
-                    location = parameter.Name.GetLocation();
-                    correctName = null;
+                    replacement = new Replacement<Span>(
+                        parameter.Name,
+                        null);
                     return true;
                 }
             }
 
-            location = null;
-            correctName = null;
+            replacement = default(Replacement<Span>);
             return false;
         }
 
@@ -872,6 +865,13 @@ namespace AspNetCoreAnalyzers
             {
                 this.Node = node;
                 this.NewText = newText;
+            }
+
+            internal ImmutableDictionary<string, string> Property(string key)
+            {
+                return this.NewText is string value
+                    ? ImmutableDictionary<string, string>.Empty.Add(key, value)
+                    : ImmutableDictionary<string, string>.Empty;
             }
         }
     }
