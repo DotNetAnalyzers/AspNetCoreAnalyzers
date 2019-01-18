@@ -9,7 +9,7 @@ namespace AspNetCoreAnalyzers.Tests.ASP001ParameterNameTests
     {
         private static readonly DiagnosticAnalyzer Analyzer = new AttributeAnalyzer();
         private static readonly ExpectedDiagnostic ExpectedDiagnostic = ExpectedDiagnostic.Create(ASP001ParameterSymbolName.Descriptor);
-        private static readonly CodeFixProvider Fix = new ParameterNameFix();
+        private static readonly CodeFixProvider Fix = new RenameParameterFix();
 
         [TestCase("\"{value}\"")]
         [TestCase("@\"{value}\"")]
