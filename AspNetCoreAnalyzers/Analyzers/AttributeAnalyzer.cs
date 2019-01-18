@@ -79,13 +79,13 @@ namespace AspNetCoreAnalyzers
                 {
                     foreach (var segment in template.Path)
                     {
-                        if (HasWrongType(segment, context, out var typeName, out var constraintLocation, out var parameterSyntax, out var urlTemplate))
+                        if (HasWrongType(segment, context, out var parameter, out var constraintLocation, out var urlTemplate))
                         {
                             context.ReportDiagnostic(
                                 Diagnostic.Create(
                                     ASP003ParameterSymbolType.Descriptor,
-                                    parameterSyntax.Type.GetLocation(),
-                                    ImmutableDictionary<string, string>.Empty.Add(nameof(TypeSyntax), typeName)));
+                                    parameter.Node.Type.GetLocation(),
+                                    ImmutableDictionary<string, string>.Empty.Add(nameof(TypeSyntax), parameter.NewText)));
 
                             context.ReportDiagnostic(
                                 Diagnostic.Create(
@@ -212,7 +212,7 @@ namespace AspNetCoreAnalyzers
             }
         }
 
-        private static bool HasWrongType(PathSegment segment, SyntaxNodeAnalysisContext context, out string correctType, out Location constraintLocation, out ParameterSyntax parameter, out string correctConstraint)
+        private static bool HasWrongType(PathSegment segment, SyntaxNodeAnalysisContext context, out Replacement<ParameterSyntax> parameterReplacement, out Location constraintLocation, out string correctConstraint)
         {
             if (segment.Parameter is TemplateParameter templateParameter &&
                 templateParameter.Constraints is ImmutableArray<RouteConstraint> constraints)
@@ -220,7 +220,7 @@ namespace AspNetCoreAnalyzers
                 if (context.ContainingSymbol is IMethodSymbol containingMethod &&
                     TryFindParameter(templateParameter, containingMethod, out var parameterSymbol))
                 {
-                    return HasWrongType(parameterSymbol, out correctType, out constraintLocation, out parameter, out correctConstraint);
+                    return HasWrongType(parameterSymbol, out parameterReplacement, out constraintLocation, out correctConstraint);
                 }
 
                 if (context.ContainingSymbol is INamedTypeSymbol &&
@@ -233,7 +233,7 @@ namespace AspNetCoreAnalyzers
                             HasHttpVerbAttribute(methodDeclaration, context) &&
                             TryFindParameter(templateParameter, methodDeclaration, out var candidateParameter) &&
                             context.SemanticModel.TryGetSymbol(candidateParameter, context.CancellationToken, out parameterSymbol) &&
-                            HasWrongType(parameterSymbol, out correctType, out constraintLocation, out parameter, out correctConstraint))
+                            HasWrongType(parameterSymbol, out parameterReplacement, out constraintLocation, out correctConstraint))
                         {
                             return true;
                         }
@@ -241,10 +241,9 @@ namespace AspNetCoreAnalyzers
                 }
             }
 
-            correctType = null;
+            parameterReplacement = default(Replacement<ParameterSyntax>);
             constraintLocation = null;
             correctConstraint = null;
-            parameter = null;
             return false;
 
             bool TryGetType(Span constraint, out QualifiedType type)
@@ -331,47 +330,54 @@ namespace AspNetCoreAnalyzers
                 return null;
             }
 
-            bool HasWrongType(IParameterSymbol parameterSymbol, out string innerCorrectType, out Location innerConstraintLocation, out ParameterSyntax innerParameter, out string innerCorrectConstraint)
+            bool HasWrongType(IParameterSymbol parameterSymbol, out Replacement<ParameterSyntax> pr, out Location innerConstraintLocation, out string innerCorrectConstraint)
             {
                 foreach (var constraint in constraints)
                 {
                     // https://docs.microsoft.com/en-us/aspnet/core/fundamentals/routing?view=aspnetcore-2.2#route-constraint-reference
                     if (TryGetType(constraint.Span, out var type) &&
-                        parameterSymbol.TrySingleDeclaration(context.CancellationToken, out innerParameter))
+                        parameterSymbol.TrySingleDeclaration(context.CancellationToken, out var parameter))
                     {
-                        innerCorrectType = parameterSymbol.Type == type ? null : type.Alias ?? type.FullName;
+                        pr = new Replacement<ParameterSyntax>(
+                            parameter,
+                            parameterSymbol.Type == type ? null : type.Alias ?? type.FullName);
                         innerConstraintLocation = constraint.Span.GetLocation();
                         innerCorrectConstraint = GetCorrectConstraintType(parameterSymbol, constraint);
-                        return innerCorrectType != null;
+                        return pr.NewText != null;
                     }
 
                     if (constraint.Span.Equals("?", StringComparison.Ordinal) &&
                         parameterSymbol.Type.IsValueType &&
                         parameterSymbol.Type.OriginalDefinition.SpecialType != SpecialType.System_Nullable_T &&
-                        parameterSymbol.TrySingleDeclaration(context.CancellationToken, out innerParameter))
+                        parameterSymbol.TrySingleDeclaration(context.CancellationToken, out parameter))
                     {
-                        innerCorrectType = parameterSymbol.Type.ToDisplayString(SymbolDisplayFormat.MinimallyQualifiedFormat) + "?";
+                        pr = new Replacement<ParameterSyntax>(
+                            parameter,
+                            parameterSymbol.Type.ToDisplayString(SymbolDisplayFormat.MinimallyQualifiedFormat) + "?");
                         innerConstraintLocation = constraint.Span.GetLocation();
                         innerCorrectConstraint = string.Empty;
                         return true;
                     }
                 }
 
-                if (!constraints.TryFirst(x => x.Span.Equals("?", StringComparison.Ordinal), out _) &&
-                    parameterSymbol.Type.OriginalDefinition.SpecialType == SpecialType.System_Nullable_T &&
-                    parameterSymbol.Type is INamedTypeSymbol namedType &&
-                    namedType.TypeArguments.TrySingle(out var typeArg) &&
-                    parameterSymbol.TrySingleDeclaration(context.CancellationToken, out innerParameter))
                 {
-                    innerCorrectType = typeArg.ToString();
-                    innerConstraintLocation = templateParameter.Name.GetLocation();
-                    innerCorrectConstraint = $"{templateParameter.Name}?";
-                    return true;
+                    if (!constraints.TryFirst(x => x.Span.Equals("?", StringComparison.Ordinal), out _) &&
+                        parameterSymbol.Type.OriginalDefinition.SpecialType == SpecialType.System_Nullable_T &&
+                        parameterSymbol.Type is INamedTypeSymbol namedType &&
+                        namedType.TypeArguments.TrySingle(out var typeArg) &&
+                        parameterSymbol.TrySingleDeclaration(context.CancellationToken, out var parameter))
+                    {
+                        pr = new Replacement<ParameterSyntax>(
+                            parameter,
+                            typeArg.ToString());
+                        innerConstraintLocation = templateParameter.Name.GetLocation();
+                        innerCorrectConstraint = $"{templateParameter.Name}?";
+                        return true;
+                    }
                 }
 
-                innerCorrectType = null;
+                pr = default(Replacement<ParameterSyntax>);
                 innerConstraintLocation = null;
-                innerParameter = null;
                 innerCorrectConstraint = null;
                 return false;
             }
@@ -857,6 +863,19 @@ namespace AspNetCoreAnalyzers
             }
 
             return false;
+        }
+
+        private struct Replacement<T>
+        {
+            internal readonly T Node;
+
+            internal readonly string NewText;
+
+            public Replacement(T node, string newText)
+            {
+                this.Node = node;
+                this.NewText = newText;
+            }
         }
     }
 }
