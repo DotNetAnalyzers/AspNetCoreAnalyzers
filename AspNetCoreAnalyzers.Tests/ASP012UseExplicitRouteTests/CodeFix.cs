@@ -11,9 +11,12 @@ namespace AspNetCoreAnalyzers.Tests.ASP012UseExplicitRouteTests
         private static readonly ExpectedDiagnostic ExpectedDiagnostic = ExpectedDiagnostic.Create(ASP012UseExplicitRoute.Descriptor);
         private static readonly CodeFixProvider Fix = new TemplateTextFix();
 
-        [TestCase("OrdersController",      "orders")]
-        [TestCase("SampleDataController ", "sample-data")]
-        public void WhenMethodAttribute(string className, string after)
+        [TestCase("OrdersController",      "[controller]",          "orders")]
+        [TestCase("OrdersController",      "api/[controller]",      "api/orders")]
+        [TestCase("OrdersController",      "api/[controller]/{id}", "api/orders/{id}")]
+        [TestCase("SampleDataController ", "api/[controller]",      "api/sample-data")]
+        [TestCase("SampleDataController ", "api/[controller]/{id}", "api/sample-data/{id}")]
+        public void WhenRouteAttribute(string className, string before, string after)
         {
             var code = @"
 namespace AspBox
@@ -25,7 +28,8 @@ namespace AspBox
     public class OrdersController : Controller
     {
     }
-}".AssertReplace("OrdersController", className);
+}".AssertReplace("OrdersController", className)
+  .AssertReplace("api/[controller]", before);
 
             var fixedCode = @"
 namespace AspBox
@@ -38,7 +42,7 @@ namespace AspBox
     {
     }
 }".AssertReplace("OrdersController", className)
-  .AssertReplace("orders", after);
+  .AssertReplace("api/orders", after);
             AnalyzerAssert.CodeFix(Analyzer, Fix, ExpectedDiagnostic, code, fixedCode);
         }
     }
