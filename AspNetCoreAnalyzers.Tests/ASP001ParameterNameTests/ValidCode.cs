@@ -288,56 +288,22 @@ namespace AspBox
         [TestCase("[FromBody]")]
         public void WhenWrongAttribute(string attribute)
         {
-            var order = @"
-namespace AspBox
-{
-    public class Order
-    {
-        public int Id { get; set; }
-    }
-}";
-
-            var db = @"
-namespace AspBox
-{
-    using Microsoft.EntityFrameworkCore;
-
-    public class Db : DbContext
-    {
-        public DbSet<Order> Orders { get; set; }
-    }
-}";
             var code = @"
 namespace AspBox
 {
-    using System.Threading.Tasks;
     using Microsoft.AspNetCore.Mvc;
-    using Microsoft.EntityFrameworkCore;
 
     [ApiController]
     public class OrdersController : Controller
     {
-        private readonly Db db;
-
-        public OrdersController(Db db)
-        {
-            this.db = db;
-        }
-
         [HttpGet(""api/orders/{id}"")]
-        public async Task<IActionResult> GetOrder([FromHeader]int headerValue)
+        public IActionResult GetOrder([FromHeader]int headerValue)
         {
-            var match = await this.db.Orders.FirstOrDefaultAsync(x => x.Id == headerValue);
-            if (match == null)
-            {
-                return this.NotFound();
-            }
-
-            return this.Ok(match);
+            return this.Ok(headerValue);
         }
     }
 }".AssertReplace("[FromHeader]", attribute);
-            AnalyzerAssert.Valid(Analyzer, Descriptor, order, db, code);
+            AnalyzerAssert.Valid(Analyzer, Descriptor, code);
         }
 
         [Test]

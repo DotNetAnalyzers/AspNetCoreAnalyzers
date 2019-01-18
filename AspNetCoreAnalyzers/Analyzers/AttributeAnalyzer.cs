@@ -36,171 +36,155 @@ namespace AspNetCoreAnalyzers
         {
             if (!context.IsExcludedFromAnalysis() &&
                 context.Node is AttributeSyntax attribute &&
-                UrlAttribute.TryCreate(attribute, context, out var urlAttribute))
+                UrlAttribute.TryCreate(attribute, context, out var urlAttribute) &&
+                urlAttribute.UrlTemplate is UrlTemplate template)
             {
-                if (context.ContainingSymbol is IMethodSymbol method &&
-                    attribute.TryFirstAncestor(out MethodDeclarationSyntax methodDeclaration))
+                foreach (var segment in template.Path)
                 {
-                    using (var pairs = GetPairs(urlAttribute, method))
+                    if (HasWrongName(segment, urlAttribute, context, out var nameReplacement, out var spanReplacement))
                     {
-                        if (pairs.TrySingle(x => x.Route == null, out var withMethodParameter) &&
-                            methodDeclaration.TryFindParameter(withMethodParameter.Symbol.Name, out var parameterSyntax) &&
-                            pairs.TrySingle(x => x.Symbol == null, out var withTemplateParameter) &&
-                            withTemplateParameter.Route is TemplateParameter templateParameter)
-                        {
-                            context.ReportDiagnostic(
-                                Diagnostic.Create(
-                                    ASP001ParameterSymbolName.Descriptor,
-                                    parameterSyntax.Identifier.GetLocation(),
-                                    ImmutableDictionary<string, string>.Empty.Add(
-                                        nameof(NameSyntax),
-                                        templateParameter.Name.ToString())));
+                        context.ReportDiagnostic(
+                            Diagnostic.Create(
+                                ASP001ParameterSymbolName.Descriptor,
+                                nameReplacement.Node,
+                                nameReplacement.Property(nameof(NameSyntax))));
 
-                            context.ReportDiagnostic(
-                                Diagnostic.Create(
-                                    ASP002RouteParameterName.Descriptor,
-                                    templateParameter.Name.GetLocation(),
-                                    ImmutableDictionary<string, string>.Empty.Add(
-                                        nameof(UrlTemplate),
-                                        withMethodParameter.Symbol.Name)));
-                        }
-                        else if (pairs.Count(x => x.Route == null) > 1 &&
-                                 pairs.Count(x => x.Symbol == null) > 1)
-                        {
-                            context.ReportDiagnostic(
-                                Diagnostic.Create(
-                                    ASP001ParameterSymbolName.Descriptor,
-                                    methodDeclaration.ParameterList.GetLocation()));
-                        }
+                        context.ReportDiagnostic(
+                            Diagnostic.Create(
+                                ASP002RouteParameterName.Descriptor,
+                                spanReplacement.Node.GetLocation(),
+                                spanReplacement.Property(nameof(UrlTemplate))));
                     }
-                }
 
-                if (urlAttribute.UrlTemplate is UrlTemplate template)
-                {
-                    foreach (var segment in template.Path)
+                    if (HasWrongType(segment, context, out var typeReplacement, out spanReplacement))
                     {
-                        if (HasWrongType(segment, context, out var typeReplacement, out var spanReplacement))
-                        {
-                            context.ReportDiagnostic(
-                                Diagnostic.Create(
-                                    ASP003ParameterSymbolType.Descriptor,
-                                    typeReplacement.Node.GetLocation(),
-                                    typeReplacement.Property(nameof(TypeSyntax))));
+                        context.ReportDiagnostic(
+                            Diagnostic.Create(
+                                ASP003ParameterSymbolType.Descriptor,
+                                typeReplacement.Node.GetLocation(),
+                                typeReplacement.Property(nameof(TypeSyntax))));
 
-                            context.ReportDiagnostic(
-                                Diagnostic.Create(
-                                    ASP004RouteParameterType.Descriptor,
-                                    spanReplacement.Node.GetLocation(),
-                                    spanReplacement.Property(nameof(UrlTemplate))));
-                        }
+                        context.ReportDiagnostic(
+                            Diagnostic.Create(
+                                ASP004RouteParameterType.Descriptor,
+                                spanReplacement.Node.GetLocation(),
+                                spanReplacement.Property(nameof(UrlTemplate))));
+                    }
 
-                        if (HasWrongSyntax(segment, out spanReplacement))
-                        {
-                            context.ReportDiagnostic(
-                                Diagnostic.Create(
-                                    ASP005ParameterSyntax.Descriptor,
-                                    spanReplacement.Node.GetLocation(),
-                                    spanReplacement.Property(nameof(UrlTemplate))));
-                        }
+                    if (HasWrongSyntax(segment, out spanReplacement))
+                    {
+                        context.ReportDiagnostic(
+                            Diagnostic.Create(
+                                ASP005ParameterSyntax.Descriptor,
+                                spanReplacement.Node.GetLocation(),
+                                spanReplacement.Property(nameof(UrlTemplate))));
+                    }
 
-                        if (HasWrongRegexSyntax(segment, out spanReplacement))
-                        {
-                            context.ReportDiagnostic(
-                                Diagnostic.Create(
-                                    ASP006ParameterRegex.Descriptor,
-                                    spanReplacement.Node.GetLocation(),
-                                    spanReplacement.Property(nameof(UrlTemplate))));
-                        }
+                    if (HasWrongRegexSyntax(segment, out spanReplacement))
+                    {
+                        context.ReportDiagnostic(
+                            Diagnostic.Create(
+                                ASP006ParameterRegex.Descriptor,
+                                spanReplacement.Node.GetLocation(),
+                                spanReplacement.Property(nameof(UrlTemplate))));
+                    }
 
-                        if (HasMissingMethodParameter(segment, context, out var location, out var name))
-                        {
-                            context.ReportDiagnostic(
-                                Diagnostic.Create(
-                                    ASP007MissingParameter.Descriptor,
-                                    location,
-                                    name));
-                        }
+                    if (HasMissingMethodParameter(segment, context, out var location, out var name))
+                    {
+                        context.ReportDiagnostic(
+                            Diagnostic.Create(
+                                ASP007MissingParameter.Descriptor,
+                                location,
+                                name));
+                    }
 
-                        if (HasInvalidName(segment, out spanReplacement))
-                        {
-                            context.ReportDiagnostic(
-                                Diagnostic.Create(
-                                    ASP008ValidRouteParameterName.Descriptor,
-                                    spanReplacement.Node.GetLocation(),
-                                    spanReplacement.Property(nameof(UrlTemplate))));
-                        }
+                    if (HasInvalidName(segment, out spanReplacement))
+                    {
+                        context.ReportDiagnostic(
+                            Diagnostic.Create(
+                                ASP008ValidRouteParameterName.Descriptor,
+                                spanReplacement.Node.GetLocation(),
+                                spanReplacement.Property(nameof(UrlTemplate))));
+                    }
 
-                        if (ShouldKebabCase(segment, out var kebabCase))
-                        {
-                            context.ReportDiagnostic(
-                                Diagnostic.Create(
-                                    ASP009KebabCaseUrl.Descriptor,
-                                    segment.Span.GetLocation(),
-                                    ImmutableDictionary<string, string>.Empty.Add(nameof(UrlTemplate), kebabCase)));
-                        }
+                    if (ShouldKebabCase(segment, out var kebabCase))
+                    {
+                        context.ReportDiagnostic(
+                            Diagnostic.Create(
+                                ASP009KebabCaseUrl.Descriptor,
+                                segment.Span.GetLocation(),
+                                ImmutableDictionary<string, string>.Empty.Add(nameof(UrlTemplate), kebabCase)));
+                    }
 
-                        if (HasSyntaxError(segment, out location))
-                        {
-                            context.ReportDiagnostic(
-                                Diagnostic.Create(
-                                    ASP010UrlSyntax.Descriptor,
-                                    location,
-                                    segment.Span.ToString(location)));
-                        }
+                    if (HasSyntaxError(segment, out location))
+                    {
+                        context.ReportDiagnostic(
+                            Diagnostic.Create(
+                                ASP010UrlSyntax.Descriptor,
+                                location,
+                                segment.Span.ToString(location)));
+                    }
 
-                        if (IsMultipleOccurringParameter(segment, urlAttribute, context, out location))
-                        {
-                            context.ReportDiagnostic(
-                                Diagnostic.Create(
-                                    ASP011MultipleOccurencesRouteParameter.Descriptor,
-                                    location));
-                        }
+                    if (IsMultipleOccurringParameter(segment, urlAttribute, context, out location))
+                    {
+                        context.ReportDiagnostic(
+                            Diagnostic.Create(
+                                ASP011MultipleOccurencesRouteParameter.Descriptor,
+                                location));
                     }
                 }
             }
         }
 
-        private static PooledList<ParameterPair> GetPairs(UrlAttribute attribute, IMethodSymbol method)
+        private static bool HasWrongName(PathSegment segment, UrlAttribute urlAttribute, SyntaxNodeAnalysisContext context, out Replacement<Location> nameReplacement, out Replacement<Span> spanReplacement)
         {
-            var list = PooledList<ParameterPair>.Borrow();
-
-            if (attribute.UrlTemplate is UrlTemplate template)
+            if (context.ContainingSymbol is IMethodSymbol method &&
+                segment.Parameter is TemplateParameter templateParameter)
             {
-                foreach (var parameter in method.Parameters)
+                if (!TryFindParameter(templateParameter, method, out _))
                 {
-                    if (IsFromRoute(parameter))
+                    if (method.Parameters.TrySingle(x => IsOrphan(x), out var symbol) &&
+                        symbol.TrySingleDeclaration(context.CancellationToken, out var parameterSyntax))
                     {
-                        list.Add(template.Path.TrySingle(x => x.Parameter?.Name.Equals(parameter.Name, StringComparison.Ordinal) == true, out var templateParameter)
-                                     ? new ParameterPair(templateParameter.Parameter, parameter)
-                                     : new ParameterPair(null, parameter));
+                        nameReplacement = new Replacement<Location>(parameterSyntax.Identifier.GetLocation(), templateParameter.Name.ToString());
+                        spanReplacement = new Replacement<Span>(templateParameter.Name, symbol.Name);
+                        return true;
                     }
-                }
 
-                foreach (var component in template.Path)
-                {
-                    if (component.Parameter is TemplateParameter templateParameter &&
-                        list.All(x => x.Route != templateParameter))
+                    // Using TryFirst instead of Count() here as a silly optimization
+                    // As it is called after TrySingle it means Count() > 1
+                    if (method.Parameters.TryFirst(x => IsOrphan(x), out _) &&
+                        method.TrySingleDeclaration(context.CancellationToken, out MethodDeclarationSyntax methodDeclaration))
                     {
-                        list.Add(new ParameterPair(templateParameter, null));
+                        nameReplacement = new Replacement<Location>(methodDeclaration.ParameterList.GetLocation(), null);
+                        spanReplacement = new Replacement<Span>(templateParameter.Name, null);
+                        return true;
                     }
                 }
             }
 
-            return list;
+            nameReplacement = default(Replacement<Location>);
+            spanReplacement = default(Replacement<Span>);
+            return false;
 
-            bool IsFromRoute(IParameterSymbol p)
+            bool IsOrphan(IParameterSymbol p)
             {
-                foreach (var attributeData in p.GetAttributes())
+                if (IsFromRoute(p) &&
+                    urlAttribute.UrlTemplate is UrlTemplate template)
                 {
-                    if (attributeData.AttributeClass == KnownSymbol.FromRouteAttribute)
+                    foreach (var candidateSegment in template.Path)
                     {
-                        continue;
+                        if (candidateSegment.Parameter is TemplateParameter candidateParameter &&
+                            candidateParameter.Name.Equals(p.Name, StringComparison.Ordinal))
+                        {
+                            return false;
+                        }
                     }
 
-                    return false;
+                    return true;
                 }
 
-                return true;
+                return false;
             }
         }
 
@@ -804,7 +788,8 @@ namespace AspNetCoreAnalyzers
         {
             foreach (var candidate in method.Parameters)
             {
-                if (templateParameter.Name.Equals(candidate.Name, StringComparison.Ordinal))
+                if (IsFromRoute(candidate) &&
+                    templateParameter.Name.Equals(candidate.Name, StringComparison.Ordinal))
                 {
                     result = candidate;
                     return true;
@@ -815,13 +800,29 @@ namespace AspNetCoreAnalyzers
             return false;
         }
 
+        private static bool IsFromRoute(IParameterSymbol parameter)
+        {
+            foreach (var attributeData in parameter.GetAttributes())
+            {
+                if (attributeData.AttributeClass == KnownSymbol.FromRouteAttribute)
+                {
+                    continue;
+                }
+
+                return false;
+            }
+
+            return true;
+        }
+
         private static bool TryFindParameter(TemplateParameter templateParameter, MethodDeclarationSyntax methodDeclaration, out ParameterSyntax result)
         {
             if (methodDeclaration.ParameterList is ParameterListSyntax parameterList)
             {
                 foreach (var candidate in parameterList.Parameters)
                 {
-                    if (templateParameter.Name.Equals(candidate.Identifier.Text, StringComparison.Ordinal))
+                    if (IsFromRoute(candidate) &&
+                        templateParameter.Name.Equals(candidate.Identifier.Text, StringComparison.Ordinal))
                     {
                         result = candidate;
                         return true;
@@ -831,6 +832,24 @@ namespace AspNetCoreAnalyzers
 
             result = null;
             return false;
+
+            bool IsFromRoute(ParameterSyntax p)
+            {
+                foreach (var attributeList in p.AttributeLists)
+                {
+                    foreach (var attribute in attributeList.Attributes)
+                    {
+                        if (attribute.Name == KnownSymbol.FromRouteAttribute)
+                        {
+                            continue;
+                        }
+
+                        return false;
+                    }
+                }
+
+                return true;
+            }
         }
 
         private static bool HasHttpVerbAttribute(MethodDeclarationSyntax methodDeclaration, SyntaxNodeAnalysisContext context)
