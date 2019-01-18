@@ -79,7 +79,7 @@ namespace AspNetCoreAnalyzers
                 {
                     foreach (var segment in template.Path)
                     {
-                        if (HasWrongType(segment, context, out var parameter, out var constraintLocation, out var urlTemplate))
+                        if (HasWrongType(segment, context, out var parameter, out var constraint))
                         {
                             context.ReportDiagnostic(
                                 Diagnostic.Create(
@@ -90,13 +90,13 @@ namespace AspNetCoreAnalyzers
                             context.ReportDiagnostic(
                                 Diagnostic.Create(
                                     ASP004RouteParameterType.Descriptor,
-                                    constraintLocation,
-                                    urlTemplate == null
+                                    constraint.Node.GetLocation(),
+                                    constraint.NewText == null
                                         ? ImmutableDictionary<string, string>.Empty
-                                        : ImmutableDictionary<string, string>.Empty.Add(nameof(UrlTemplate), urlTemplate)));
+                                        : ImmutableDictionary<string, string>.Empty.Add(nameof(UrlTemplate), constraint.NewText)));
                         }
 
-                        if (HasWrongSyntax(segment, out var location, out urlTemplate))
+                        if (HasWrongSyntax(segment, out var location, out var urlTemplate))
                         {
                             context.ReportDiagnostic(
                                 Diagnostic.Create(
@@ -212,7 +212,7 @@ namespace AspNetCoreAnalyzers
             }
         }
 
-        private static bool HasWrongType(PathSegment segment, SyntaxNodeAnalysisContext context, out Replacement<ParameterSyntax> parameterReplacement, out Location constraintLocation, out string correctConstraint)
+        private static bool HasWrongType(PathSegment segment, SyntaxNodeAnalysisContext context, out Replacement<ParameterSyntax> parameterReplacement, out Replacement<Span> constraintReplacement)
         {
             if (segment.Parameter is TemplateParameter templateParameter &&
                 templateParameter.Constraints is ImmutableArray<RouteConstraint> constraints)
@@ -220,7 +220,7 @@ namespace AspNetCoreAnalyzers
                 if (context.ContainingSymbol is IMethodSymbol containingMethod &&
                     TryFindParameter(templateParameter, containingMethod, out var parameterSymbol))
                 {
-                    return HasWrongType(parameterSymbol, out parameterReplacement, out constraintLocation, out correctConstraint);
+                    return HasWrongType(parameterSymbol, out parameterReplacement, out constraintReplacement);
                 }
 
                 if (context.ContainingSymbol is INamedTypeSymbol &&
@@ -233,7 +233,7 @@ namespace AspNetCoreAnalyzers
                             HasHttpVerbAttribute(methodDeclaration, context) &&
                             TryFindParameter(templateParameter, methodDeclaration, out var candidateParameter) &&
                             context.SemanticModel.TryGetSymbol(candidateParameter, context.CancellationToken, out parameterSymbol) &&
-                            HasWrongType(parameterSymbol, out parameterReplacement, out constraintLocation, out correctConstraint))
+                            HasWrongType(parameterSymbol, out parameterReplacement, out constraintReplacement))
                         {
                             return true;
                         }
@@ -242,8 +242,7 @@ namespace AspNetCoreAnalyzers
             }
 
             parameterReplacement = default(Replacement<ParameterSyntax>);
-            constraintLocation = null;
-            correctConstraint = null;
+            constraintReplacement = default(Replacement<Span>);
             return false;
 
             bool TryGetType(Span constraint, out QualifiedType type)
@@ -330,7 +329,7 @@ namespace AspNetCoreAnalyzers
                 return null;
             }
 
-            bool HasWrongType(IParameterSymbol parameterSymbol, out Replacement<ParameterSyntax> pr, out Location innerConstraintLocation, out string innerCorrectConstraint)
+            bool HasWrongType(IParameterSymbol parameterSymbol, out Replacement<ParameterSyntax> pr, out Replacement<Span> cr)
             {
                 foreach (var constraint in constraints)
                 {
@@ -341,8 +340,9 @@ namespace AspNetCoreAnalyzers
                         pr = new Replacement<ParameterSyntax>(
                             parameter,
                             parameterSymbol.Type == type ? null : type.Alias ?? type.FullName);
-                        innerConstraintLocation = constraint.Span.GetLocation();
-                        innerCorrectConstraint = GetCorrectConstraintType(parameterSymbol, constraint);
+                        cr = new Replacement<Span>(
+                            constraint.Span,
+                            GetCorrectConstraintType(parameterSymbol, constraint));
                         return pr.NewText != null;
                     }
 
@@ -354,8 +354,9 @@ namespace AspNetCoreAnalyzers
                         pr = new Replacement<ParameterSyntax>(
                             parameter,
                             parameterSymbol.Type.ToDisplayString(SymbolDisplayFormat.MinimallyQualifiedFormat) + "?");
-                        innerConstraintLocation = constraint.Span.GetLocation();
-                        innerCorrectConstraint = string.Empty;
+                        cr = new Replacement<Span>(
+                            constraint.Span,
+                            string.Empty);
                         return true;
                     }
                 }
@@ -370,15 +371,15 @@ namespace AspNetCoreAnalyzers
                         pr = new Replacement<ParameterSyntax>(
                             parameter,
                             typeArg.ToString());
-                        innerConstraintLocation = templateParameter.Name.GetLocation();
-                        innerCorrectConstraint = $"{templateParameter.Name}?";
+                        cr = new Replacement<Span>(
+                            templateParameter.Name,
+                            $"{templateParameter.Name}?");
                         return true;
                     }
                 }
 
                 pr = default(Replacement<ParameterSyntax>);
-                innerConstraintLocation = null;
-                innerCorrectConstraint = null;
+                cr = default(Replacement<Span>);
                 return false;
             }
         }
