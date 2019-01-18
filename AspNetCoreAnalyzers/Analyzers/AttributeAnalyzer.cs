@@ -79,7 +79,7 @@ namespace AspNetCoreAnalyzers
                 {
                     foreach (var segment in template.Path)
                     {
-                        if (HasWrongType(segment, context, out var typeReplacement, out var constraintReplacement))
+                        if (HasWrongType(segment, context, out var typeReplacement, out var spanReplacement))
                         {
                             context.ReportDiagnostic(
                                 Diagnostic.Create(
@@ -90,11 +90,11 @@ namespace AspNetCoreAnalyzers
                             context.ReportDiagnostic(
                                 Diagnostic.Create(
                                     ASP004RouteParameterType.Descriptor,
-                                    constraintReplacement.Node.GetLocation(),
-                                    constraintReplacement.Property(nameof(UrlTemplate))));
+                                    spanReplacement.Node.GetLocation(),
+                                    spanReplacement.Property(nameof(UrlTemplate))));
                         }
 
-                        if (HasWrongSyntax(segment, out var spanReplacement))
+                        if (HasWrongSyntax(segment, out spanReplacement))
                         {
                             context.ReportDiagnostic(
                                 Diagnostic.Create(
