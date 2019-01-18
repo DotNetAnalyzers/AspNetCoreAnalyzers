@@ -1,4 +1,4 @@
-namespace AspNetCoreAnalyzers.Tests.ASP011MultipleOccurencesRouteParameterTests
+namespace AspNetCoreAnalyzers.Tests.ASP011RouteParameterNotUniqueTests
 {
     using Gu.Roslyn.Asserts;
     using Microsoft.CodeAnalysis.Diagnostics;
@@ -7,7 +7,7 @@ namespace AspNetCoreAnalyzers.Tests.ASP011MultipleOccurencesRouteParameterTests
     public class Diagnostics
     {
         private static readonly DiagnosticAnalyzer Analyzer = new AttributeAnalyzer();
-        private static readonly ExpectedDiagnostic ExpectedDiagnostic = ExpectedDiagnostic.Create(ASP011MultipleOccurencesRouteParameter.Descriptor);
+        private static readonly ExpectedDiagnostic ExpectedDiagnostic = ExpectedDiagnostic.Create(ASP011RouteParameterNameMustBeUnique.Descriptor);
 
         [TestCase("\"api/{↓id}/{↓id}\"")]
         public void WhenMethodAttribute(string template)

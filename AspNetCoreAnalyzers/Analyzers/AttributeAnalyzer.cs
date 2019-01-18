@@ -25,7 +25,7 @@ namespace AspNetCoreAnalyzers
             ASP008ValidRouteParameterName.Descriptor,
             ASP009KebabCaseUrl.Descriptor,
             ASP010UrlSyntax.Descriptor,
-            ASP011MultipleOccurencesRouteParameter.Descriptor);
+            ASP011RouteParameterNameMustBeUnique.Descriptor);
 
         public override void Initialize(AnalysisContext context)
         {
@@ -129,7 +129,7 @@ namespace AspNetCoreAnalyzers
                     {
                         context.ReportDiagnostic(
                             Diagnostic.Create(
-                                ASP011MultipleOccurencesRouteParameter.Descriptor,
+                                ASP011RouteParameterNameMustBeUnique.Descriptor,
                                 location));
                     }
                 }
