@@ -22,7 +22,7 @@ namespace AspBox
     public class OrdersController : Controller
     {
         [HttpGet(""api/orders/{↓id}"")]
-        public async Task<IActionResult> GetOrder()
+        public IActionResult Get()
         {
         }
     }
@@ -71,7 +71,7 @@ namespace AspBox
         }
 
         [HttpGet(""api/orders/{orderId}/items/{↓itemId}"")]
-        public async Task<IActionResult> GetOrder(int orderId)
+        public IActionResult Get(int orderId)
         {
             var match = await this.db.Orders.FirstOrDefaultAsync(x => x.Id == orderId);
             if (match == null)
@@ -127,7 +127,7 @@ namespace AspBox
         }
 
         [HttpGet(""api/orders/{↓orderId}/items/{itemId}"")]
-        public async Task<IActionResult> GetOrder(int itemId)
+        public IActionResult Get(int itemId)
         {
             var match = await this.db.Orders.FirstOrDefaultAsync(x => x.Id == itemId);
             if (match == null)
@@ -155,7 +155,7 @@ namespace AspBox
     public class OrdersController : Controller
     {
         [HttpGet(""api/orders/{↓id}"")]
-        public async Task<IActionResult> GetOrder([FromHeader]int headerValue)
+        public IActionResult Get([FromHeader]int headerValue)
         {
             return this.Ok(headerValue);
         }
@@ -177,7 +177,7 @@ namespace AspBox
     public class OrdersController : Controller
     {
         [HttpGet]
-        public IActionResult GetValue()
+        public IActionResult Get()
         {
             return this.Ok();
         }
@@ -201,7 +201,7 @@ namespace AspBox
     public class OrdersController : Controller
     {
         [HttpGet]
-        public IActionResult GetValue()
+        public IActionResult Get()
         {
             return this.Ok();
         }
