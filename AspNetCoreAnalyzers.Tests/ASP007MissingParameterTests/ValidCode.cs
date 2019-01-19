@@ -50,9 +50,15 @@ namespace AspBox
     public class OrdersController : Controller
     {
         [HttpGet]
-        public IActionResult GetValue()
+        public IActionResult Get()
         {
             return this.Ok();
+        }
+
+        [HttpGet]
+        public IActionResult Get(int id)
+        {
+            return this.Ok(id);
         }
     }
 }";

@@ -3,7 +3,6 @@ namespace AspNetCoreAnalyzers
     using System;
     using System.Collections.Generic;
     using System.Collections.Immutable;
-    using System.Linq;
     using Gu.Roslyn.AnalyzerExtensions;
     using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.CSharp;
@@ -583,41 +582,21 @@ namespace AspNetCoreAnalyzers
                     context.Node.TryFirstAncestor(out ClassDeclarationSyntax classDeclaration) &&
                     !classDeclaration.Modifiers.Any(SyntaxKind.PartialKeyword))
                 {
-                    foreach (var attributeList in classDeclaration.AttributeLists)
-                    {
-                        foreach (var attribute in attributeList.Attributes)
-                        {
-                            if (UrlAttribute.TryCreate(attribute, context, out var urlAttribute))
-                            {
-                                if (urlAttribute.UrlTemplate == null)
-                                {
-                                    location = null;
-                                    name = null;
-                                    return false;
-                                }
-
-                                if (urlAttribute.UrlTemplate is UrlTemplate template &&
-                                    !template.Path.Any(x => x.Parameter?.Name.TextEquals(templateParameter.Name) == true))
-                                {
-                                    location = null;
-                                    name = null;
-                                    return false;
-                                }
-                            }
-                        }
-                    }
-
                     foreach (var member in classDeclaration.Members)
                     {
                         if (member is MethodDeclarationSyntax candidate &&
                             HasHttpVerbAttribute(candidate, context) &&
-                            !TryFindParameter(templateParameter, candidate, out _))
+                            TryFindParameter(templateParameter, candidate, out _))
                         {
-                            location = templateParameter.Name.GetLocation();
-                            name = templateParameter.Name.ToString();
-                            return true;
+                            location = null;
+                            name = null;
+                            return false;
                         }
                     }
+
+                    location = templateParameter.Name.GetLocation();
+                    name = templateParameter.Name.ToString();
+                    return true;
                 }
             }
 
@@ -885,13 +864,13 @@ namespace AspNetCoreAnalyzers
                 return builder.Append("Controller");
             }
 
-            bool Equals(StringBuilderPool.PooledStringBuilder builder, string text)
+            bool Equals(StringBuilderPool.PooledStringBuilder x, string y)
             {
-                if (builder.Length == containingType.Name.Length)
+                if (x.Length == y.Length)
                 {
-                    for (var i = 0; i < builder.Length; i++)
+                    for (var i = 0; i < x.Length; i++)
                     {
-                        if (builder[i] != containingType.Name[i])
+                        if (x[i] != y[i])
                         {
                             return false;
                         }

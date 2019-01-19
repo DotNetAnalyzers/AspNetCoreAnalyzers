@@ -1,4 +1,4 @@
-namespace AspNetCoreAnalyzers.Tests.ASP011RouteParameterNotUniqueTests
+namespace AspNetCoreAnalyzers.Tests.ASP011RouteParameterNameMustBeUniqueTests
 {
     using Gu.Roslyn.Asserts;
     using Microsoft.CodeAnalysis.Diagnostics;

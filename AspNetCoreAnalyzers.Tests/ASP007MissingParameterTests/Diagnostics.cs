@@ -27,7 +27,7 @@ namespace AspBox
         }
     }
 }";
-            var message = "The route template has parameter id that does not have a corresponding method parameter.";
+            var message = "The route template has parameter 'id' that does not have a corresponding method parameter.";
             AnalyzerAssert.Diagnostics(Analyzer, ExpectedDiagnostic.WithMessage(message), code);
         }
 
@@ -83,7 +83,7 @@ namespace AspBox
         }
     }
 }";
-            var message = "The route template has parameter itemId that does not have a corresponding method parameter.";
+            var message = "The route template has parameter 'itemId' that does not have a corresponding method parameter.";
             AnalyzerAssert.Diagnostics(Analyzer, ExpectedDiagnostic.WithMessage(message), order, db, code);
         }
 
@@ -195,10 +195,34 @@ namespace AspBox
 {
     using Microsoft.AspNetCore.Mvc;
 
-    [Route(""api/values/{↓valueId}/items"")]
-    [Route(""api/values/{↓valueId}/items/{itemId}"")]
+    [Route(""api/values"")]
+    [Route(""api/values/{↓id}"")]
     [ApiController]
     public class OrdersController : Controller
+    {
+        [HttpGet]
+        public IActionResult Get()
+        {
+            return this.Ok();
+        }
+    }
+}";
+            var message = "The route template has parameter 'id' that does not have a corresponding method parameter.";
+            AnalyzerAssert.Diagnostics(Analyzer, ExpectedDiagnostic.WithMessage(message), code);
+        }
+
+        [Test]
+        public void WhenMultipleRouteAttributesMissingActionWithParameter()
+        {
+            var code = @"
+namespace AspBox
+{
+    using Microsoft.AspNetCore.Mvc;
+
+    [Route(""api/values"")]
+    [Route(""api/values/{↓id}"")]
+    [ApiController]
+    public class ValuesController : Controller
     {
         [HttpGet]
         public IActionResult Get()
