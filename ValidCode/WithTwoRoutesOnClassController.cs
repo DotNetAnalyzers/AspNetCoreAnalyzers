@@ -1,3 +1,4 @@
+#pragma warning disable ASP013 // Name the controller to match the route.
 namespace ValidCode
 {
     using System.Collections.Generic;

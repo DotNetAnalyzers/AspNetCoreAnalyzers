@@ -73,5 +73,18 @@ namespace AspNetCoreAnalyzers
                                                    this.Equals(other);
 
         public override int GetHashCode() => this.Attribute?.GetHashCode() ?? 0;
+
+        public bool TryGetParentMember(out MemberDeclarationSyntax memberDeclaration)
+        {
+            if (this.Attribute.Parent is AttributeListSyntax attributeList &&
+                attributeList.Parent is MemberDeclarationSyntax temp)
+            {
+                memberDeclaration = temp;
+                return true;
+            }
+
+            memberDeclaration = null;
+            return false;
+        }
     }
 }

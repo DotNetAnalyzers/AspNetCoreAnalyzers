@@ -4,8 +4,8 @@ namespace ValidCode
     using Microsoft.AspNetCore.Mvc;
     using System.Collections.Generic;
 
-    [Route("/api/[controller]/{id}")]
-    [Route("/api/[controller]")]
+    [Route("api/[controller]/{id}")]
+    [Route("api/[controller]")]
     [ApiController]
     public class WithBracketControllerController : ControllerBase
     {

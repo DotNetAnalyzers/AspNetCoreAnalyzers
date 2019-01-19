@@ -26,7 +26,8 @@ namespace AspNetCoreAnalyzers
             ASP009KebabCaseUrl.Descriptor,
             ASP010UrlSyntax.Descriptor,
             ASP011RouteParameterNameMustBeUnique.Descriptor,
-            ASP012UseExplicitRoute.Descriptor);
+            ASP012UseExplicitRoute.Descriptor,
+            ASP013ControllerNameShouldMatchRoute.Descriptor);
 
         public override void Initialize(AnalysisContext context)
         {
@@ -142,25 +143,18 @@ namespace AspNetCoreAnalyzers
                                 spanReplacement.Node.GetLocation(),
                                 spanReplacement.Property(nameof(UrlTemplate))));
                     }
+
+                    if (ShouldRenameController(segment, urlAttribute, context, out nameReplacement))
+                    {
+                        context.ReportDiagnostic(
+                            Diagnostic.Create(
+                                ASP013ControllerNameShouldMatchRoute.Descriptor,
+                                nameReplacement.Node,
+                                nameReplacement.Property(nameof(NameSyntax)),
+                                nameReplacement.NewText));
+                    }
                 }
             }
-        }
-
-        private static bool ShouldUseExplicitRoute(PathSegment segment, SyntaxNodeAnalysisContext context, out Replacement<Span> spanReplacement)
-        {
-            if (segment.Span.Equals("[controller]", StringComparison.OrdinalIgnoreCase) &&
-                context.ContainingSymbol is INamedTypeSymbol containingType)
-            {
-                spanReplacement = new Replacement<Span>(
-                    segment.Span,
-                    containingType.Name.EndsWith("Controller", StringComparison.Ordinal)
-                        ? KebabCase(containingType.Name.Substring(0, containingType.Name.Length - 10))
-                        : null);
-                return true;
-            }
-
-            spanReplacement = default(Replacement<Span>);
-            return false;
         }
 
         private static bool HasWrongName(PathSegment segment, UrlAttribute urlAttribute, SyntaxNodeAnalysisContext context, out Replacement<Location> nameReplacement, out Replacement<Span> spanReplacement)
@@ -757,18 +751,18 @@ namespace AspNetCoreAnalyzers
                     return true;
                 }
 
-                if (urlAttribute.Attribute.Parent is AttributeListSyntax attributeList)
+                if (urlAttribute.TryGetParentMember(out var parentMember))
                 {
-                    if (attributeList.Parent is MethodDeclarationSyntax parentMethod &&
-                       parentMethod.Parent is ClassDeclarationSyntax classDeclaration &&
-                       TryGetOtherTemplate(classDeclaration.AttributeLists, out var otherTemplate) &&
-                       ContainsName(otherTemplate.Path))
+                    if (parentMember is MethodDeclarationSyntax parentMethod &&
+                        parentMethod.Parent is ClassDeclarationSyntax classDeclaration &&
+                        TryGetOtherTemplate(classDeclaration.AttributeLists, out var otherTemplate) &&
+                        ContainsName(otherTemplate.Path))
                     {
                         location = parameter.Name.GetLocation();
                         return true;
                     }
 
-                    if (attributeList.Parent is ClassDeclarationSyntax parentClass)
+                    if (parentMember is ClassDeclarationSyntax parentClass)
                     {
                         foreach (var member in parentClass.Members)
                         {
@@ -812,6 +806,100 @@ namespace AspNetCoreAnalyzers
                 }
 
                 result = default(UrlTemplate);
+                return false;
+            }
+        }
+
+        private static bool ShouldUseExplicitRoute(PathSegment segment, SyntaxNodeAnalysisContext context, out Replacement<Span> replacement)
+        {
+            if (segment.Span.Equals("[controller]", StringComparison.OrdinalIgnoreCase) &&
+                context.ContainingSymbol is INamedTypeSymbol containingType)
+            {
+                replacement = new Replacement<Span>(
+                    segment.Span,
+                    containingType.Name.EndsWith("Controller", StringComparison.Ordinal)
+                        ? KebabCase(containingType.Name.Substring(0, containingType.Name.Length - 10))
+                        : null);
+                return true;
+            }
+
+            replacement = default(Replacement<Span>);
+            return false;
+        }
+
+        private static bool ShouldRenameController(PathSegment segment, UrlAttribute urlAttribute, SyntaxNodeAnalysisContext context, out Replacement<Location> replacement)
+        {
+            if (urlAttribute.UrlTemplate is UrlTemplate template &&
+                template.Path.TryLast(x => x.Parameter == null, out var last) &&
+                last == segment &&
+                segment.Span.Length > 0 &&
+                segment.Span[0] != '[' &&
+                context.ContainingSymbol is INamedTypeSymbol containingType &&
+                urlAttribute.TryGetParentMember(out var parent) &&
+                parent is ClassDeclarationSyntax classDeclaration)
+            {
+                var builder = ClassName();
+                if (builder != null)
+                {
+                    if (Equals(builder, containingType.Name))
+                    {
+                        _ = builder.Clear()
+                                   .Return();
+                        replacement = default(Replacement<Location>);
+                        return false;
+                    }
+
+                    replacement = new Replacement<Location>(classDeclaration.Identifier.GetLocation(), builder.Return());
+                    return true;
+                }
+            }
+
+            replacement = default(Replacement<Location>);
+            return false;
+
+            StringBuilderPool.PooledStringBuilder ClassName()
+            {
+                var builder = StringBuilderPool.Borrow()
+                                               .Append(char.ToUpper(segment.Span[0]));
+                for (var i = 1; i < segment.Span.Length; i++)
+                {
+                    var c = segment.Span[i];
+                    if (c == '-')
+                    {
+                        if (i == segment.Span.Length - 2)
+                        {
+                            _ = builder.Clear()
+                                       .Return();
+                            return null;
+                        }
+
+                        i++;
+                        _ = builder.Append(char.ToUpper(segment.Span[i]));
+                    }
+                    else
+                    {
+                        _ = builder.Append(c);
+                    }
+                }
+
+                return builder.Append("Controller");
+            }
+
+            bool Equals(StringBuilderPool.PooledStringBuilder builder, string text)
+            {
+                if (builder.Length == containingType.Name.Length)
+                {
+                    for (var i = 0; i < builder.Length; i++)
+                    {
+                        if (builder[i] != containingType.Name[i])
+                        {
+                            return false;
+                        }
+                    }
+
+                    return true;
+                }
+
                 return false;
             }
         }

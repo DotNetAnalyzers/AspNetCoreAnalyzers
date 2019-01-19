@@ -59,6 +59,10 @@ Roslyn analyzers for ASP.NET.Core.
     <td><a href="https://github.com/DotNetAnalyzers/AspNetCoreAnalyzers/tree/master/documentation/ASP012.md">ASP012</a></td>
     <td>Don't use [controller].</td>
   </tr>
+  <tr>
+    <td><a href="https://github.com/DotNetAnalyzers/AspNetCoreAnalyzers/tree/master/documentation/ASP013.md">ASP013</a></td>
+    <td>Name the controller to match the route.</td>
+  </tr>
 <table>
 <!-- end generated table -->
 
