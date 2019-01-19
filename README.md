@@ -8,6 +8,8 @@
 
 Roslyn analyzers for ASP.NET.Core.
 
+![animation](https://user-images.githubusercontent.com/1640096/51425954-b0d84380-1be3-11e9-8818-dd66e116a30a.gif)
+
 
 <!-- start generated table -->
 <table>
