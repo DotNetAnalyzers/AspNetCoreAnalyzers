@@ -4,7 +4,8 @@ projectUrl https://github.com/DotNetAnalyzers/AspNetCoreAnalyzers
 licenseUrl http://opensource.org/licenses/MIT
 
 releasenotes
-  Initial
+  ASP012 prefer explicit route.
+  ASP013 Name the controller to match the route.
 
 excludedgroups
   Main
