@@ -205,20 +205,17 @@ Or put this at the top of the file to disable all instances.
             }
 
             var builder = StringBuilderPool.Borrow();
-            var first = true;
             foreach (var analyzer in Analyzers.Where(x => x.SupportedDiagnostics.Any(d => d.Id == descriptor.Id)))
             {
                 _ = builder.AppendLine("  <tr>")
-                           .AppendLine($"    <td>{(first ? "Code" : string.Empty)}</td>")
-                           .AppendLine($"     <td><a href=\"{DescriptorInfo.GetCodeFileUri(analyzer)}\">{analyzer.GetType().Name}</a></td>")
+                           .AppendLine($"    <td>{(builder.Length <= "  <tr>\r\n".Length ? "Code" : string.Empty)}</td>")
+                           .AppendLine($"    <td><a href=\"{DescriptorInfo.GetCodeFileUri(analyzer)}\">{analyzer.GetType().Name}</a></td>")
                            .AppendLine("  </tr>");
-
-                first = false;
             }
 
             var text = builder.Return();
-            return stub.Replace("  <tr>\r\n    <td>Code</td>\r\n    <td><a href=\"{URL}\">{TYPENAME}</a></td>\r\n  </tr>\r\n", text, StringComparison.Ordinal)
-                       .Replace("  <tr>\n    <td>Code</td>\n    <td><a href=\"{URL}\">{TYPENAME}</a></td>\n  </tr>\n", text, StringComparison.Ordinal);
+            return stub.Replace("  <tr>\r\n    <td>Code</td>\r\n    <td><a href=\"<URL>\"><TYPENAME></a></td>\r\n  </tr>\r\n", text, StringComparison.Ordinal)
+                       .Replace("  <tr>\n    <td>Code</td>\n    <td><a href=\"<URL>\"><TYPENAME></a></td>\n  </tr>\n", text, StringComparison.Ordinal);
         }
 
         private static string GetTable(string doc)
