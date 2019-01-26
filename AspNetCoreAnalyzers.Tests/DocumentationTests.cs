@@ -17,7 +17,7 @@ namespace AspNetCoreAnalyzers.Tests.Documentation
     using Microsoft.CodeAnalysis.Diagnostics;
     using NUnit.Framework;
 
-    public class Tests
+    public class DocumentationTests
     {
         private static readonly IReadOnlyList<DiagnosticAnalyzer> Analyzers = typeof(AnalyzerCategory)
                                                                               .Assembly
