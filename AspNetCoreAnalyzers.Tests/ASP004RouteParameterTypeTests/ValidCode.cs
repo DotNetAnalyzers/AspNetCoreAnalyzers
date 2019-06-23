@@ -49,7 +49,7 @@ namespace AspBox
     }
 }".AssertReplace("\"api/orders/{id:int}\"", template)
   .AssertReplace("byte id", parameter);
-            AnalyzerAssert.Valid(Analyzer, code);
+            RoslynAssert.Valid(Analyzer, code);
         }
 
         [TestCase("\"api/orders/\" + \"{value:int}\"")]
@@ -70,7 +70,7 @@ namespace AspBox
         }
     }
 }".AssertReplace("\"api/orders/{value}\"", template);
-            AnalyzerAssert.Valid(Analyzer, code);
+            RoslynAssert.Valid(Analyzer, code);
         }
 
         [Test]
@@ -125,7 +125,7 @@ namespace AspBox
         }
     }
 }";
-            AnalyzerAssert.Valid(Analyzer, order, db, code);
+            RoslynAssert.Valid(Analyzer, order, db, code);
         }
 
         [TestCase("{value:bool}",     "bool")]
@@ -157,7 +157,7 @@ namespace AspBox
 }".AssertReplace("int", type)
   .AssertReplace("{value}", constraint)
                 ;
-            AnalyzerAssert.Valid(Analyzer, code);
+            RoslynAssert.Valid(Analyzer, code);
         }
 
         [TestCase("api/orders/{id:int}")]
@@ -216,7 +216,7 @@ namespace AspBox
         }
     }
 }".AssertReplace("api/orders/{id:int}", template);
-            AnalyzerAssert.Valid(Analyzer, order, db, code);
+            RoslynAssert.Valid(Analyzer, order, db, code);
         }
 
         [TestCase("api/orders/{id:min(1)}")]
@@ -274,7 +274,7 @@ namespace AspBox
         }
     }
 }".AssertReplace("api/orders/{id:int}", template);
-            AnalyzerAssert.Valid(Analyzer, order, db, code);
+            RoslynAssert.Valid(Analyzer, order, db, code);
         }
 
         [TestCase("api/orders/{id:minlength(1)}")]
@@ -335,7 +335,7 @@ namespace AspBox
         }
     }
 }".AssertReplace("api/orders/{id}", template);
-            AnalyzerAssert.Valid(Analyzer, order, db, code);
+            RoslynAssert.Valid(Analyzer, order, db, code);
         }
     }
 }

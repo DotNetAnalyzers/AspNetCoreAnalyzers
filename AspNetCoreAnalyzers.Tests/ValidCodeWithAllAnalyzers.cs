@@ -20,12 +20,12 @@ namespace AspNetCoreAnalyzers.Tests
         private static readonly Solution AnalyzersProjectSolution = CodeFactory.CreateSolution(
             ProjectFile.Find("AspNetCoreAnalyzers.csproj"),
             AllAnalyzers,
-            AnalyzerAssert.MetadataReferences);
+            RoslynAssert.MetadataReferences);
 
         private static readonly Solution ValidCodeProjectSln = CodeFactory.CreateSolution(
             ProjectFile.Find("ValidCode.csproj"),
             AllAnalyzers,
-            AnalyzerAssert.MetadataReferences);
+            RoslynAssert.MetadataReferences);
 
         [SetUp]
         public void Setup()
@@ -51,13 +51,13 @@ namespace AspNetCoreAnalyzers.Tests
         [TestCaseSource(nameof(AllAnalyzers))]
         public void ValidCodeProject(DiagnosticAnalyzer analyzer)
         {
-            AnalyzerAssert.Valid(analyzer, ValidCodeProjectSln);
+            RoslynAssert.Valid(analyzer, ValidCodeProjectSln);
         }
 
         [TestCaseSource(nameof(AllAnalyzers))]
         public void AnalyzersSolution(DiagnosticAnalyzer analyzer)
         {
-            AnalyzerAssert.NoAnalyzerDiagnostics(analyzer, AnalyzersProjectSolution);
+            RoslynAssert.NoAnalyzerDiagnostics(analyzer, AnalyzersProjectSolution);
         }
     }
 }

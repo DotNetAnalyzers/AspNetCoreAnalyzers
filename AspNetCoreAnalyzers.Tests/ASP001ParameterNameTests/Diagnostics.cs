@@ -28,7 +28,7 @@ namespace AspBox
     }
 }";
 
-            AnalyzerAssert.Diagnostics(Analyzer, ExpectedDiagnostic, before);
+            RoslynAssert.Diagnostics(Analyzer, ExpectedDiagnostic, before);
         }
     }
 }

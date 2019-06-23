@@ -33,7 +33,7 @@ namespace AspBox
     }
 }".AssertReplace("\"api/{text}\"", after);
 
-            AnalyzerAssert.Valid(Analyzer, code);
+            RoslynAssert.Valid(Analyzer, code);
         }
 
         [Test]
@@ -63,7 +63,7 @@ namespace AspBox
     }
 }";
 
-            AnalyzerAssert.Valid(Analyzer, Descriptor, code);
+            RoslynAssert.Valid(Analyzer, Descriptor, code);
         }
 
         [TestCase("\"api/orders/\" + \"{wrong}\"")]
@@ -84,7 +84,7 @@ namespace AspBox
         }
     }
 }".AssertReplace("\"api/orders/{value}\"", template);
-            AnalyzerAssert.Valid(Analyzer, code);
+            RoslynAssert.Valid(Analyzer, code);
         }
 
         [Test]
@@ -139,7 +139,7 @@ namespace AspBox
         }
     }
 }";
-            AnalyzerAssert.Valid(Analyzer, order, db, code);
+            RoslynAssert.Valid(Analyzer, order, db, code);
         }
 
         [Test]
@@ -194,7 +194,7 @@ namespace AspBox
         }
     }
 }";
-            AnalyzerAssert.Valid(Analyzer, order, db, code);
+            RoslynAssert.Valid(Analyzer, order, db, code);
         }
 
         [Test]
@@ -249,7 +249,7 @@ namespace AspBox
         }
     }
 }";
-            AnalyzerAssert.Valid(Analyzer, order, db, code);
+            RoslynAssert.Valid(Analyzer, order, db, code);
         }
     }
 }

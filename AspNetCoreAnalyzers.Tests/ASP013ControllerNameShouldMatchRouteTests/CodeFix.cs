@@ -45,7 +45,7 @@ namespace AspBox
   .AssertReplace("api/orders", template);
 
             var message = $"Name the controller to match the route. Expected: '{className}'.";
-            AnalyzerAssert.CodeFix(Analyzer, Fix, ExpectedDiagnostic.WithMessage(message), code, fixedCode);
+            RoslynAssert.CodeFix(Analyzer, Fix, ExpectedDiagnostic.WithMessage(message), code, fixedCode);
         }
     }
 }

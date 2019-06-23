@@ -50,7 +50,7 @@ namespace AspBox
         }
     }
 }".AssertReplace("\"api/orders/{id}\"", after);
-            AnalyzerAssert.CodeFix(Analyzer, Fix, ExpectedDiagnostic, code, fixedCode);
+            RoslynAssert.CodeFix(Analyzer, Fix, ExpectedDiagnostic, code, fixedCode);
         }
     }
 }

@@ -43,7 +43,7 @@ namespace AspBox
     }
 }".AssertReplace("OrdersController", className)
   .AssertReplace("api/orders", after);
-            AnalyzerAssert.CodeFix(Analyzer, Fix, ExpectedDiagnostic, code, fixedCode);
+            RoslynAssert.CodeFix(Analyzer, Fix, ExpectedDiagnostic, code, fixedCode);
         }
     }
 }

@@ -47,7 +47,7 @@ namespace AspBox
         }
     }
 }".AssertReplace("\"api/orders/{id}\"", after);
-            AnalyzerAssert.CodeFix(Analyzer, Fix, ExpectedDiagnostic, code, fixedCode);
+            RoslynAssert.CodeFix(Analyzer, Fix, ExpectedDiagnostic, code, fixedCode);
         }
 
         [TestCase("\"api/orders/{↓action}\"")]
@@ -73,7 +73,7 @@ namespace AspBox
     }
 }".AssertReplace("\"api/orders/{id}\"", before);
 
-            AnalyzerAssert.NoFix(Analyzer, Fix, ExpectedDiagnostic, code);
+            RoslynAssert.NoFix(Analyzer, Fix, ExpectedDiagnostic, code);
         }
     }
 }

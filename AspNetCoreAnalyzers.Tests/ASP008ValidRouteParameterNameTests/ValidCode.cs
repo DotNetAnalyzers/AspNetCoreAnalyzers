@@ -56,7 +56,7 @@ namespace AspBox
     }
 }".AssertReplace("\"api/{value}\"", parameter)
   .AssertReplace("string", type);
-            AnalyzerAssert.Valid(Analyzer, code);
+            RoslynAssert.Valid(Analyzer, code);
         }
     }
 }

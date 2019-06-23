@@ -22,13 +22,13 @@ namespace AspNetCoreAnalyzers.Tests
         private static readonly Solution Solution = CodeFactory.CreateSolution(
             new FileInfo("C:\\Git\\Gu.Xml\\Gu.Xml.sln"),
             AllAnalyzers,
-            AnalyzerAssert.MetadataReferences);
+            RoslynAssert.MetadataReferences);
 
         [TestCaseSource(nameof(AllAnalyzers))]
         public void Run(DiagnosticAnalyzer analyzer)
         {
             var diagnostics = Analyze.GetDiagnostics(Solution, analyzer);
-            AnalyzerAssert.NoDiagnostics(diagnostics);
+            RoslynAssert.NoDiagnostics(diagnostics);
         }
     }
 }

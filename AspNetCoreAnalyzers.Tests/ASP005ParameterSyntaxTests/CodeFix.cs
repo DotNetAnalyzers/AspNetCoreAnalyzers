@@ -57,7 +57,7 @@ namespace AspBox
         }
     }
 }".AssertReplace("\"api/orders/{id:long}\"", after);
-            AnalyzerAssert.CodeFix(Analyzer, Fix, ExpectedDiagnostic, code, fixedCode);
+            RoslynAssert.CodeFix(Analyzer, Fix, ExpectedDiagnostic, code, fixedCode);
         }
 
         [TestCase("\"api/orders/{id:↓minlength(1}\"",            "\"api/orders/{id:minlength(1)}\"")]
@@ -100,7 +100,7 @@ namespace AspBox
     }
 }".AssertReplace("\"api/orders/{id}\"", after);
 
-            AnalyzerAssert.CodeFix(Analyzer, Fix, ExpectedDiagnostic, code, fixedCode);
+            RoslynAssert.CodeFix(Analyzer, Fix, ExpectedDiagnostic, code, fixedCode);
         }
     }
 }

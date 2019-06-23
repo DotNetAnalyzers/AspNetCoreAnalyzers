@@ -28,7 +28,7 @@ namespace AspBox
     }
 }";
             var message = "The route template has parameter 'id' that does not have a corresponding method parameter.";
-            AnalyzerAssert.Diagnostics(Analyzer, ExpectedDiagnostic.WithMessage(message), code);
+            RoslynAssert.Diagnostics(Analyzer, ExpectedDiagnostic.WithMessage(message), code);
         }
 
         [Test]
@@ -84,7 +84,7 @@ namespace AspBox
     }
 }";
             var message = "The route template has parameter 'itemId' that does not have a corresponding method parameter.";
-            AnalyzerAssert.Diagnostics(Analyzer, ExpectedDiagnostic.WithMessage(message), order, db, code);
+            RoslynAssert.Diagnostics(Analyzer, ExpectedDiagnostic.WithMessage(message), order, db, code);
         }
 
         [Test]
@@ -139,7 +139,7 @@ namespace AspBox
         }
     }
 }";
-            AnalyzerAssert.Diagnostics(Analyzer, ExpectedDiagnostic, order, db, code);
+            RoslynAssert.Diagnostics(Analyzer, ExpectedDiagnostic, order, db, code);
         }
 
         [TestCase("[FromHeader]")]
@@ -161,7 +161,7 @@ namespace AspBox
         }
     }
 }".AssertReplace("[FromHeader]", attribute);
-            AnalyzerAssert.Diagnostics(Analyzer, ExpectedDiagnostic, code);
+            RoslynAssert.Diagnostics(Analyzer, ExpectedDiagnostic, code);
         }
 
         [Test]
@@ -184,7 +184,7 @@ namespace AspBox
     }
 }";
 
-            AnalyzerAssert.Diagnostics(Analyzer, ExpectedDiagnostic, code);
+            RoslynAssert.Diagnostics(Analyzer, ExpectedDiagnostic, code);
         }
 
         [Test]
@@ -208,7 +208,7 @@ namespace AspBox
     }
 }";
             var message = "The route template has parameter 'id' that does not have a corresponding method parameter.";
-            AnalyzerAssert.Diagnostics(Analyzer, ExpectedDiagnostic.WithMessage(message), code);
+            RoslynAssert.Diagnostics(Analyzer, ExpectedDiagnostic.WithMessage(message), code);
         }
 
         [Test]
@@ -232,7 +232,7 @@ namespace AspBox
     }
 }";
 
-            AnalyzerAssert.Diagnostics(Analyzer, ExpectedDiagnostic, code);
+            RoslynAssert.Diagnostics(Analyzer, ExpectedDiagnostic, code);
         }
     }
 }

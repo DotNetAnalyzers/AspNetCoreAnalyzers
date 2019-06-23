@@ -48,7 +48,7 @@ namespace AspBox
     }
 }".AssertReplace("\"api/orders/↓{id:wrong}\"", before);
 
-            AnalyzerAssert.NoFix(Analyzer, Fix, ExpectedDiagnostic, code);
+            RoslynAssert.NoFix(Analyzer, Fix, ExpectedDiagnostic, code);
         }
 
         [TestCase("\"api/orders/{id:minlength(↓wrong))}\"")]
@@ -75,7 +75,7 @@ namespace AspBox
     }
 }".AssertReplace("\"api/orders/↓{id:wrong}\"", before);
 
-            AnalyzerAssert.NoFix(Analyzer, Fix, ExpectedDiagnostic, code);
+            RoslynAssert.NoFix(Analyzer, Fix, ExpectedDiagnostic, code);
         }
 
         [TestCase("\"api/orders/{id:regex(\\\\d):minlength(wrong)}\"", 54, 59)]
@@ -102,7 +102,7 @@ namespace AspBox
                 ASP005ParameterSyntax.DiagnosticId,
                 ASP005ParameterSyntax.Descriptor.MessageFormat.ToString(CultureInfo.InvariantCulture),
                 new FileLinePositionSpan("OrdersController.cs", new LinePosition(8, start), new LinePosition(8, end)));
-            AnalyzerAssert.Diagnostics(Analyzer, expectedDiagnostic, code);
+            RoslynAssert.Diagnostics(Analyzer, expectedDiagnostic, code);
         }
     }
 }

@@ -38,7 +38,7 @@ namespace AspBox
         }
     }
 }".AssertReplace("\"api/orders/{value}\"", template);
-            AnalyzerAssert.Valid(Analyzer,  code);
+            RoslynAssert.Valid(Analyzer,  code);
         }
 
         [TestCase("\"api/orders/\" + \"{wrong}\"")]
@@ -59,7 +59,7 @@ namespace AspBox
         }
     }
 }".AssertReplace("\"api/orders/{value}\"", template);
-            AnalyzerAssert.Valid(Analyzer, code);
+            RoslynAssert.Valid(Analyzer, code);
         }
 
         [Test]
@@ -82,7 +82,7 @@ namespace AspBox
         }
     }
 }";
-            AnalyzerAssert.Valid(Analyzer, code);
+            RoslynAssert.Valid(Analyzer, code);
         }
 
         [Test]
@@ -108,7 +108,7 @@ namespace AspBox
         }
     }
 }";
-            AnalyzerAssert.Valid(Analyzer, code);
+            RoslynAssert.Valid(Analyzer, code);
         }
 
         [Test]
@@ -134,7 +134,7 @@ namespace AspBox
         }
     }
 }";
-            AnalyzerAssert.Valid(Analyzer, code);
+            RoslynAssert.Valid(Analyzer, code);
         }
 
         [Test]
@@ -155,7 +155,7 @@ namespace AspBox
         }
     }
 }";
-            AnalyzerAssert.Valid(Analyzer, code);
+            RoslynAssert.Valid(Analyzer, code);
         }
 
         [TestCase("[FromHeader]")]
@@ -177,7 +177,7 @@ namespace AspBox
         }
     }
 }".AssertReplace("[FromHeader]", attribute);
-            AnalyzerAssert.Valid(Analyzer, Descriptor, code);
+            RoslynAssert.Valid(Analyzer, Descriptor, code);
         }
 
         [Test]
@@ -198,7 +198,7 @@ namespace AspBox
         }
     }
 }";
-            AnalyzerAssert.Valid(Analyzer, code);
+            RoslynAssert.Valid(Analyzer, code);
         }
     }
 }

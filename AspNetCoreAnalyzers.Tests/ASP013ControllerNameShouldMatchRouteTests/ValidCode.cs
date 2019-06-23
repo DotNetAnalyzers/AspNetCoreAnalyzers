@@ -32,7 +32,7 @@ namespace AspBox
         }
     }
 }".AssertReplace("api/orders", template);
-            AnalyzerAssert.Valid(Analyzer, Descriptor, code);
+            RoslynAssert.Valid(Analyzer, Descriptor, code);
         }
     }
 }

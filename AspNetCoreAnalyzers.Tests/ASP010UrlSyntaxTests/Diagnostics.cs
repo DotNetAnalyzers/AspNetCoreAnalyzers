@@ -29,7 +29,7 @@ namespace AspBox
     }
 }".AssertReplace("\"api/a↓?b/{id}\"", before);
 
-            AnalyzerAssert.Diagnostics(Analyzer, ExpectedDiagnostic, code);
+            RoslynAssert.Diagnostics(Analyzer, ExpectedDiagnostic, code);
         }
 
         [TestCase("\"api/a↓?b\"")]
@@ -53,7 +53,7 @@ namespace AspBox
     }
 }".AssertReplace("\"api/a↓?b\"", before);
 
-            AnalyzerAssert.Diagnostics(Analyzer, ExpectedDiagnostic, code);
+            RoslynAssert.Diagnostics(Analyzer, ExpectedDiagnostic, code);
         }
     }
 }

@@ -56,7 +56,7 @@ namespace AspBox
     }
 }".AssertReplace("\"api/orders/{id}\"", after)
   .AssertReplace("byte id", parameter);
-            AnalyzerAssert.CodeFix(Analyzer, Fix, ExpectedDiagnostic, code, fixedCode);
+            RoslynAssert.CodeFix(Analyzer, Fix, ExpectedDiagnostic, code, fixedCode);
         }
 
         [TestCase("\"api/orders/{id:↓minlength(1)}\"")]
@@ -89,7 +89,7 @@ namespace AspBox
     }
 }".AssertReplace("\"api/orders/{id}\"", template);
 
-            AnalyzerAssert.NoFix(Analyzer, Fix, ExpectedDiagnostic, code);
+            RoslynAssert.NoFix(Analyzer, Fix, ExpectedDiagnostic, code);
         }
 
         [TestCase("int?")]
@@ -129,7 +129,7 @@ namespace AspBox
         }
     }
 }".AssertReplace("int?", parameter);
-            AnalyzerAssert.CodeFix(Analyzer, Fix, ExpectedDiagnostic, code, fixedCode);
+            RoslynAssert.CodeFix(Analyzer, Fix, ExpectedDiagnostic, code, fixedCode);
         }
     }
 }
