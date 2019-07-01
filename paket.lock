@@ -782,7 +782,7 @@ GROUP Test
 STORAGE: NONE
 NUGET
   remote: https://www.nuget.org/api/v2
-    Gu.Roslyn.Asserts (2.8)
+    Gu.Roslyn.Asserts (2.9)
       Microsoft.CodeAnalysis.CSharp.Workspaces (>= 2.0)
     Libuv (1.10) - restriction: >= netcoreapp2.2
       Microsoft.NETCore.Platforms (>= 1.0.1) - restriction: >= netstandard1.0
@@ -2076,7 +2076,7 @@ NUGET
       System.Composition.Hosting (>= 1.2) - restriction: || (>= net45) (&& (>= netstandard1.0) (< win8)) (&& (< netstandard1.0) (>= portable-net45+win8+wp8+wpa81) (< win8)) (&& (< netstandard1.0) (>= win8)) (>= netstandard2.0) (>= wp8) (>= wpa81)
       System.Composition.Runtime (>= 1.2) - restriction: || (>= net45) (&& (>= netstandard1.0) (< win8)) (&& (< netstandard1.0) (>= portable-net45+win8+wp8+wpa81) (< win8)) (&& (< netstandard1.0) (>= win8)) (>= netstandard2.0) (>= wp8) (>= wpa81)
     System.Configuration.ConfigurationManager (4.5) - restriction: >= netcoreapp2.2
-      System.Security.Cryptography.ProtectedData (>= 4.5) - restriction: && (< net461) (>= netstandard2.0) (< xamarinios) (< xamarinmac)
+      System.Security.Cryptography.ProtectedData (>= 4.5) - restriction: && (< net461) (>= netstandard2.0) (< xamarinios)
       System.Security.Permissions (>= 4.5) - restriction: || (>= monoandroid) (>= monotouch) (>= net461) (>= netstandard2.0) (>= xamarintvos) (>= xamarinwatchos)
     System.Console (4.3.1) - restriction: || (&& (< net35) (>= net46) (< netstandard1.4) (>= netstandard2.0)) (&& (< net35) (>= netstandard1.4) (< netstandard1.5) (< win8) (< wpa81)) (&& (< net35) (< netstandard1.4) (>= netstandard2.0) (< win8) (< wpa81)) (&& (< net35) (>= netstandard1.5) (< netstandard1.6) (< win8) (< wpa81)) (&& (< net35) (< netstandard1.5) (>= netstandard2.0) (< win8) (< wpa81)) (&& (< net35) (>= netstandard1.6) (< netstandard2.0) (< win8) (< wpa81)) (&& (< net35) (< netstandard1.6) (>= netstandard2.0) (< win8) (< wpa81)) (&& (< netstandard1.5) (>= netstandard2.0) (>= uap10.0)) (&& (< netstandard1.5) (>= uap10.0) (< uap10.1))
       Microsoft.NETCore.Platforms (>= 1.1) - restriction: && (< monoandroid) (< monotouch) (< net46) (>= netstandard1.3) (< xamarinios) (< xamarinmac) (< xamarintvos) (< xamarinwatchos)
