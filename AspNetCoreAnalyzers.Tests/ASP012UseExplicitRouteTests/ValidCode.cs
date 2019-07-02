@@ -4,12 +4,12 @@ namespace AspNetCoreAnalyzers.Tests.ASP012UseExplicitRouteTests
     using Microsoft.CodeAnalysis.Diagnostics;
     using NUnit.Framework;
 
-    public class ValidCode
+    public static class ValidCode
     {
         private static readonly DiagnosticAnalyzer Analyzer = new AttributeAnalyzer();
 
         [Test]
-        public void Simple()
+        public static void Simple()
         {
             var code = @"
 namespace AspBox

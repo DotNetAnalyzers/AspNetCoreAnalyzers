@@ -5,7 +5,7 @@ namespace AspNetCoreAnalyzers.Tests.ASP001ParameterNameTests
     using Microsoft.CodeAnalysis.Diagnostics;
     using NUnit.Framework;
 
-    public class ValidCode
+    public static class ValidCode
     {
         private static readonly DiagnosticAnalyzer Analyzer = new AttributeAnalyzer();
         private static readonly DiagnosticDescriptor Descriptor = ASP001ParameterSymbolName.Descriptor;
@@ -21,7 +21,7 @@ namespace AspNetCoreAnalyzers.Tests.ASP001ParameterNameTests
         [TestCase("\"api/orders/{value?}\"")]
         [TestCase("\"api/orders/{value:alpha}\"")]
         [TestCase("\"api/orders/{value:regex(a-(0|1))}\"")]
-        public void When(string template)
+        public static void When(string template)
         {
             var code = @"
 namespace AspBox
@@ -42,7 +42,7 @@ namespace AspBox
         }
 
         [TestCase("\"api/orders/\" + \"{wrong}\"")]
-        public void IgnoreWhen(string template)
+        public static void IgnoreWhen(string template)
         {
             var code = @"
 namespace AspBox
@@ -63,7 +63,7 @@ namespace AspBox
         }
 
         [Test]
-        public void ImplicitFromRoute()
+        public static void ImplicitFromRoute()
         {
             var code = @"
 namespace AspBox
@@ -86,7 +86,7 @@ namespace AspBox
         }
 
         [Test]
-        public void ImplicitOptionalFromRoute()
+        public static void ImplicitOptionalFromRoute()
         {
             var code = @"
 namespace AspBox
@@ -112,7 +112,7 @@ namespace AspBox
         }
 
         [Test]
-        public void ImplicitTypedFromRoute()
+        public static void ImplicitTypedFromRoute()
         {
             var code = @"
 namespace AspBox
@@ -138,7 +138,7 @@ namespace AspBox
         }
 
         [Test]
-        public void ExplicitFromRoute()
+        public static void ExplicitFromRoute()
         {
             var code = @"
 namespace AspBox
@@ -160,7 +160,7 @@ namespace AspBox
 
         [TestCase("[FromHeader]")]
         [TestCase("[FromBody]")]
-        public void WhenWrongAttribute(string attribute)
+        public static void WhenWrongAttribute(string attribute)
         {
             var code = @"
 namespace AspBox
@@ -181,7 +181,7 @@ namespace AspBox
         }
 
         [Test]
-        public void WhenFromHeaderAndNoRouteParameter()
+        public static void WhenFromHeaderAndNoRouteParameter()
         {
             var code = @"
 namespace AspBox

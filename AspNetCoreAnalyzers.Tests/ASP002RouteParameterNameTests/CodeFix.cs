@@ -5,7 +5,7 @@ namespace AspNetCoreAnalyzers.Tests.ASP002RouteParameterNameTests
     using Microsoft.CodeAnalysis.Diagnostics;
     using NUnit.Framework;
 
-    public class CodeFix
+    public static class CodeFix
     {
         private static readonly DiagnosticAnalyzer Analyzer = new AttributeAnalyzer();
         private static readonly ExpectedDiagnostic ExpectedDiagnostic = ExpectedDiagnostic.Create(ASP002RouteParameterName.Descriptor);
@@ -15,7 +15,7 @@ namespace AspNetCoreAnalyzers.Tests.ASP002RouteParameterNameTests
         [TestCase("\"api/{↓text*}\"",       "\"api/{text}\"")]
         [TestCase("@\"api/{↓value}\"",      "@\"api/{text}\"")]
         [TestCase("\"api/{↓value:alpha}\"", "\"api/{text:alpha}\"")]
-        public void WhenHttpGet(string before, string after)
+        public static void WhenHttpGet(string before, string after)
         {
             var code = @"
 namespace AspBox
@@ -53,7 +53,7 @@ namespace AspBox
         }
 
         [Test]
-        public void WhenRouteAndHttpGetOnMethod()
+        public static void WhenRouteAndHttpGetOnMethod()
         {
             var code = @"
 namespace AspBox
@@ -97,7 +97,7 @@ namespace AspBox
         [TestCase("\"api/{text1:regex(\\\\\\\\d+)}/{↓value}\"",                                      "\"api/{text1:regex(\\\\\\\\d+)}/{text2}\"")]
         [TestCase("@\"api/{text1:regex(\\d+)}/{↓value}\"",                                           "@\"api/{text1:regex(\\d+)}/{text2}\"")]
         [TestCase("\"api/{text1::regex(^\\\\\\\\d{{3}}-\\\\\\\\d{{2}}-\\\\\\\\d{{4}}$)}/{↓value}\"", "\"api/{text1::regex(^\\\\\\\\d{{3}}-\\\\\\\\d{{2}}-\\\\\\\\d{{4}}$)}/{text2}\"")]
-        public void WhenWrongNameSecondParameter(string before, string after)
+        public static void WhenWrongNameSecondParameter(string before, string after)
         {
             var code = @"
 namespace AspBox

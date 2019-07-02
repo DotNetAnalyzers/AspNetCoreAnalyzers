@@ -5,7 +5,7 @@ namespace AspNetCoreAnalyzers.Tests.ASP013ControllerNameShouldMatchRouteTests
     using Microsoft.CodeAnalysis.Diagnostics;
     using NUnit.Framework;
 
-    public class CodeFix
+    public static class CodeFix
     {
         private static readonly DiagnosticAnalyzer Analyzer = new AttributeAnalyzer();
         private static readonly ExpectedDiagnostic ExpectedDiagnostic = ExpectedDiagnostic.Create(ASP013ControllerNameShouldMatchRoute.Descriptor);
@@ -17,7 +17,7 @@ namespace AspNetCoreAnalyzers.Tests.ASP013ControllerNameShouldMatchRouteTests
         [TestCase("api/sample-data",      "SampleDataController")]
         [TestCase("api/orders/{id}",      "OrdersController")]
         [TestCase("api/sample-data/{id}", "SampleDataController")]
-        public void WhenMethodAttribute(string template, string className)
+        public static void WhenMethodAttribute(string template, string className)
         {
             var code = @"
 namespace AspBox

@@ -5,7 +5,7 @@ namespace AspNetCoreAnalyzers.Tests.ASP007MissingParameterTests
     using Microsoft.CodeAnalysis.Diagnostics;
     using NUnit.Framework;
 
-    public class ValidCode
+    public static class ValidCode
     {
         private static readonly DiagnosticAnalyzer Analyzer = new AttributeAnalyzer();
         private static readonly DiagnosticDescriptor Descriptor = ASP007MissingParameter.Descriptor;
@@ -13,7 +13,7 @@ namespace AspNetCoreAnalyzers.Tests.ASP007MissingParameterTests
         [TestCase("\"api/{text}\"")]
         [TestCase("@\"api/{text}\"")]
         [TestCase("\"api/{text:alpha}\"")]
-        public void WhenHttpGet(string after)
+        public static void WhenHttpGet(string after)
         {
             var code = @"
 namespace AspBox
@@ -37,7 +37,7 @@ namespace AspBox
         }
 
         [Test]
-        public void WhenHttpGetAndTwoRoutesOnClass()
+        public static void WhenHttpGetAndTwoRoutesOnClass()
         {
             var code = @"
 namespace AspBox
@@ -67,7 +67,7 @@ namespace AspBox
         }
 
         [TestCase("\"api/orders/\" + \"{wrong}\"")]
-        public void IgnoreWhen(string template)
+        public static void IgnoreWhen(string template)
         {
             var code = @"
 namespace AspBox
@@ -88,7 +88,7 @@ namespace AspBox
         }
 
         [Test]
-        public void ImplicitFromRoute()
+        public static void ImplicitFromRoute()
         {
             var order = @"
 namespace AspBox
@@ -143,7 +143,7 @@ namespace AspBox
         }
 
         [Test]
-        public void ExplicitFromRoute()
+        public static void ExplicitFromRoute()
         {
             var order = @"
 namespace AspBox
@@ -198,7 +198,7 @@ namespace AspBox
         }
 
         [Test]
-        public void WhenFromHeaderAndNoRouteParameter()
+        public static void WhenFromHeaderAndNoRouteParameter()
         {
             var order = @"
 namespace AspBox

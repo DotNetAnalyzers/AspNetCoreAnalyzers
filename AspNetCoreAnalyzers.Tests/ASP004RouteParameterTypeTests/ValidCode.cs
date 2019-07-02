@@ -4,7 +4,7 @@ namespace AspNetCoreAnalyzers.Tests.ASP004RouteParameterTypeTests
     using Microsoft.CodeAnalysis.Diagnostics;
     using NUnit.Framework;
 
-    public class ValidCode
+    public static class ValidCode
     {
         private static readonly DiagnosticAnalyzer Analyzer = new AttributeAnalyzer();
 
@@ -31,7 +31,7 @@ namespace AspNetCoreAnalyzers.Tests.ASP004RouteParameterTypeTests
         [TestCase("\"api/orders/{id:range(0,10)}\"",    "long id")]
         [TestCase("\"api/orders/{id:alpha}\"",          "string id")]
         [TestCase("\"api/orders/{id:regex(a-(0|1))}\"", "string id")]
-        public void When(string template, string parameter)
+        public static void When(string template, string parameter)
         {
             var code = @"
 namespace AspBox
@@ -53,7 +53,7 @@ namespace AspBox
         }
 
         [TestCase("\"api/orders/\" + \"{value:int}\"")]
-        public void IgnoreWhen(string template)
+        public static void IgnoreWhen(string template)
         {
             var code = @"
 namespace AspBox
@@ -74,7 +74,7 @@ namespace AspBox
         }
 
         [Test]
-        public void ImplicitType()
+        public static void ImplicitType()
         {
             var order = @"
 namespace AspBox
@@ -136,7 +136,7 @@ namespace AspBox
         [TestCase("{value:int}",      "int")]
         [TestCase("{value:long}",     "long")]
         [TestCase("{value:guid}",     "System.Guid")]
-        public void ExplicitType(string constraint, string type)
+        public static void ExplicitType(string constraint, string type)
         {
             var code = @"
 namespace AspBox
@@ -165,7 +165,7 @@ namespace AspBox
         [TestCase("api/orders/{id:int:max(1)}")]
         [TestCase("api/orders/{id:int:range(1,10)}")]
         [TestCase("api/orders/{id:int:required}")]
-        public void ExplicitInt(string template)
+        public static void ExplicitInt(string template)
         {
             var order = @"
 namespace AspBox
@@ -223,7 +223,7 @@ namespace AspBox
         [TestCase("api/orders/{id:max(1)}")]
         [TestCase("api/orders/{id:range(1,10)}")]
         [TestCase("api/orders/{id:required}")]
-        public void ImplicitLong(string template)
+        public static void ImplicitLong(string template)
         {
             var order = @"
 namespace AspBox
@@ -284,7 +284,7 @@ namespace AspBox
         [TestCase("api/orders/{id:alpha}")]
         [TestCase("api/orders/{id:regex(a-(0|1))}")]
         [TestCase("api/orders/{id:required}")]
-        public void ImplicitString(string template)
+        public static void ImplicitString(string template)
         {
             var order = @"
 namespace AspBox

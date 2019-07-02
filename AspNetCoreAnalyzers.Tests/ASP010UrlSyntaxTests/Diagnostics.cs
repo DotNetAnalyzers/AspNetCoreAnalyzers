@@ -4,14 +4,14 @@ namespace AspNetCoreAnalyzers.Tests.ASP010UrlSyntaxTests
     using Microsoft.CodeAnalysis.Diagnostics;
     using NUnit.Framework;
 
-    public class Diagnostics
+    public static class Diagnostics
     {
         private static readonly DiagnosticAnalyzer Analyzer = new AttributeAnalyzer();
         private static readonly ExpectedDiagnostic ExpectedDiagnostic = ExpectedDiagnostic.Create(ASP010UrlSyntax.Descriptor);
 
         [TestCase("\"api/a↓?b/{id}\"")]
         [TestCase("\"api/↓/b/{id}\"")]
-        public void WhenMethodAttribute(string before)
+        public static void WhenMethodAttribute(string before)
         {
             var code = @"
 namespace AspBox
@@ -34,7 +34,7 @@ namespace AspBox
 
         [TestCase("\"api/a↓?b\"")]
         [TestCase("\"api/↓/b\"")]
-        public void WhenRouteAttribute(string before)
+        public static void WhenRouteAttribute(string before)
         {
             var code = @"
 namespace AspBox

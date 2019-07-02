@@ -5,7 +5,7 @@ namespace AspNetCoreAnalyzers.Tests.ASP001ParameterNameTests
     using Microsoft.CodeAnalysis.Diagnostics;
     using NUnit.Framework;
 
-    public class CodeFix
+    public static class CodeFix
     {
         private static readonly DiagnosticAnalyzer Analyzer = new AttributeAnalyzer();
         private static readonly ExpectedDiagnostic ExpectedDiagnostic = ExpectedDiagnostic.Create(ASP001ParameterSymbolName.Descriptor);
@@ -23,7 +23,7 @@ namespace AspNetCoreAnalyzers.Tests.ASP001ParameterNameTests
         [TestCase("\"api/orders/{value:alpha}\"")]
         [TestCase("\"api/orders/{value:regex(a-(0|1))}\"")]
         [TestCase("\"api/orders/{value:regex(^\\\\d{{3}}-\\\\d{{2}}-\\\\d{4}$)}\"")]
-        public void WhenHttpGet(string template)
+        public static void WhenHttpGet(string template)
         {
             var code = @"
 namespace AspBox
@@ -60,7 +60,7 @@ namespace AspBox
         }
 
         [Test]
-        public void WhenRouteAndHttpGetOnMethod()
+        public static void WhenRouteAndHttpGetOnMethod()
         {
             var code = @"
 namespace AspBox
@@ -99,7 +99,7 @@ namespace AspBox
         }
 
         [Test]
-        public void ImplicitSingleParameter()
+        public static void ImplicitSingleParameter()
         {
             var order = @"
 namespace AspBox
@@ -185,7 +185,7 @@ namespace AspBox
         }
 
         [Test]
-        public void FirstParameter()
+        public static void FirstParameter()
         {
             var before = @"
 namespace AspBox
@@ -222,7 +222,7 @@ namespace AspBox
         }
 
         [Test]
-        public void LastParameter()
+        public static void LastParameter()
         {
             var before = @"
 namespace AspBox
@@ -259,7 +259,7 @@ namespace AspBox
         }
 
         [Test]
-        public void ExplicitFromRouteAttributeSingleParameter()
+        public static void ExplicitFromRouteAttributeSingleParameter()
         {
             var before = @"
 namespace AspBox

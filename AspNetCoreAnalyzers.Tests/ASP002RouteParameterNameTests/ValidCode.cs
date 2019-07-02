@@ -4,7 +4,7 @@ namespace AspNetCoreAnalyzers.Tests.ASP002RouteParameterNameTests
     using Microsoft.CodeAnalysis.Diagnostics;
     using NUnit.Framework;
 
-    public class ValidCode
+    public static class ValidCode
     {
         private static readonly DiagnosticAnalyzer Analyzer = new AttributeAnalyzer();
 
@@ -15,7 +15,7 @@ namespace AspNetCoreAnalyzers.Tests.ASP002RouteParameterNameTests
         [TestCase("@\"api/{text}\"")]
         [TestCase("\"api/{text:alpha}\"")]
         [TestCase("\"api/{text=abc}\"")]
-        public void WhenHttpGet(string after)
+        public static void WhenHttpGet(string after)
         {
             var code = @"
 namespace AspBox
@@ -39,7 +39,7 @@ namespace AspBox
         }
 
         [TestCase("\"api/orders/\" + \"{wrong}\"")]
-        public void IgnoreWhen(string template)
+        public static void IgnoreWhen(string template)
         {
             var code = @"
 namespace AspBox
@@ -60,7 +60,7 @@ namespace AspBox
         }
 
         [Test]
-        public void ImplicitFromRoute()
+        public static void ImplicitFromRoute()
         {
             var code = @"
 namespace AspBox
@@ -81,7 +81,7 @@ namespace AspBox
         }
 
         [Test]
-        public void ExplicitFromRoute()
+        public static void ExplicitFromRoute()
         {
             var code = @"
 namespace AspBox
@@ -102,7 +102,7 @@ namespace AspBox
         }
 
         [Test]
-        public void WhenFromHeaderAndNoRouteParameter()
+        public static void WhenFromHeaderAndNoRouteParameter()
         {
             var code = @"
 namespace AspBox

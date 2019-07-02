@@ -4,7 +4,7 @@ namespace AspNetCoreAnalyzers.Tests.ASP006ParameterRegexTests
     using Microsoft.CodeAnalysis.Diagnostics;
     using NUnit.Framework;
 
-    public class ValidCode
+    public static class ValidCode
     {
         private static readonly DiagnosticAnalyzer Analyzer = new AttributeAnalyzer();
 
@@ -36,7 +36,7 @@ namespace AspNetCoreAnalyzers.Tests.ASP006ParameterRegexTests
         [TestCase("@\"api/orders/{value:regex(^\\\\\\\\d{{3}}-\\\\\\\\d{{2}}-\\\\\\\\d{{4}}$)}\"", "string")]
         [TestCase("@\"api/orders/{value:regex(^\\\\d{{3}}-\\\\d{{2}}-\\\\d{{4}}$)}\"", "string")]
         [TestCase("\"api/orders/{value:required}\"",                                              "string")]
-        public void WithParameter(string parameter, string type)
+        public static void WithParameter(string parameter, string type)
         {
             var code = @"
 namespace AspBox

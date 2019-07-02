@@ -6,13 +6,13 @@ namespace AspNetCoreAnalyzers.Tests.Helpers
     using Microsoft.CodeAnalysis.CSharp;
     using NUnit.Framework;
 
-    public class UrlTemplateTests
+    public static class UrlTemplateTests
     {
         [TestCase("foo",     new[] { "foo" })]
         [TestCase("/foo",     new[] { "foo" })]
         [TestCase("~/foo",     new[] { "foo" })]
         [TestCase("foo/bar", new[] { "foo", "bar" })]
-        public void TryParse(string text, string[] expected)
+        public static void TryParse(string text, string[] expected)
         {
             var syntaxTree = CSharpSyntaxTree.ParseText(@"
 namespace AspBox
@@ -45,7 +45,7 @@ namespace AspBox
         [TestCase("{id:required}/info",   new[] { "{id:required}", "info" })]
         [TestCase("api/orders/{id}",      new[] { "api", "orders", "{id}" })]
         [TestCase("api/orders/{id}/info", new[] { "api", "orders", "{id}", "info" })]
-        public void TryParseWithParameter(string text, string[] expected)
+        public static void TryParseWithParameter(string text, string[] expected)
         {
             var syntaxTree = CSharpSyntaxTree.ParseText(@"
 namespace AspBox
@@ -81,7 +81,7 @@ namespace AspBox
         [TestCase("\"orders/{id:max(2)}\"",            new[] { "orders", "{id:max(2)}" },            new[] { "max(2)" })]
         [TestCase("\"orders/{id:int:max(2)}\"",        new[] { "orders", "{id:int:max(2)}" },        new[] { "int", "max(2)" })]
         [TestCase("\"orders/{id:range(1,23)}\"",       new[] { "orders", "{id:range(1,23)}" },       new[] { "range(1,23)" })]
-        public void TryParseWhenIntParameter(string text, string[] segments, string[] constraints)
+        public static void TryParseWhenIntParameter(string text, string[] segments, string[] constraints)
         {
             var syntaxTree = CSharpSyntaxTree.ParseText(@"
 namespace AspBox
@@ -125,7 +125,7 @@ namespace AspBox
         [TestCase("\"orders/{id:regex(a{{0,1}})}\"",                         new[] { "orders", "{id:regex(a{{0,1}})}" },                   new[] { "regex(a{{0,1}})" })]
         [TestCase("\"orders/{id:minlength(1):regex(a{{0,1}})}\"",            new[] { "orders", "{id:minlength(1):regex(a{{0,1}})}" },      new[] { "minlength(1)", "regex(a{{0,1}})" })]
         [TestCase("\"orders/{id:regex(a{{0,1}}):minlength(1)}\"",            new[] { "orders", "{id:regex(a{{0,1}}):minlength(1)}" },      new[] { "regex(a{{0,1}})", "minlength(1)" })]
-        public void TryParseWhenStringParameter(string text, string[] segments, string[] constraints)
+        public static void TryParseWhenStringParameter(string text, string[] segments, string[] constraints)
         {
             var syntaxTree = CSharpSyntaxTree.ParseText(@"
 namespace AspBox
@@ -163,7 +163,7 @@ namespace AspBox
         [TestCase("{/i/d/}",        new[] { "{/i/d/}" },           "/i/d/")]
         [TestCase("orders/{id/}",   new[] { "orders", "{id/}" },   "id/")]
         [TestCase("orders/{/i/d/}", new[] { "orders", "{/i/d/}" }, "/i/d/")]
-        public void TryParseWhenSyntaxErrorParameter(string text, string[] segments, string name)
+        public static void TryParseWhenSyntaxErrorParameter(string text, string[] segments, string name)
         {
             var syntaxTree = CSharpSyntaxTree.ParseText(@"
 namespace AspBox
@@ -193,7 +193,7 @@ namespace AspBox
         [TestCase("orders/{id:}",      new[] { "orders", "{id:}" },      new[] { "" })]
         [TestCase("orders/{id:min(1}", new[] { "orders", "{id:min(1}" }, new[] { "min(1" })]
         [TestCase("orders/{id:min1)}", new[] { "orders", "{id:min1)}" }, new[] { "min1)" })]
-        public void TryParseWhenSyntaxErrorConstraint(string text, string[] segments, string[] constraints)
+        public static void TryParseWhenSyntaxErrorConstraint(string text, string[] segments, string[] constraints)
         {
             var syntaxTree = CSharpSyntaxTree.ParseText(@"
 namespace AspBox

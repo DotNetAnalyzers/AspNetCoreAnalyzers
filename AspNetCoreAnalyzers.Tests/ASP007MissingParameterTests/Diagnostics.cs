@@ -4,13 +4,13 @@ namespace AspNetCoreAnalyzers.Tests.ASP007MissingParameterTests
     using Microsoft.CodeAnalysis.Diagnostics;
     using NUnit.Framework;
 
-    public class Diagnostics
+    public static class Diagnostics
     {
         private static readonly DiagnosticAnalyzer Analyzer = new AttributeAnalyzer();
         private static readonly ExpectedDiagnostic ExpectedDiagnostic = ExpectedDiagnostic.Create(ASP007MissingParameter.Descriptor);
 
         [Test]
-        public void WhenNoParameter()
+        public static void WhenNoParameter()
         {
             var code = @"
 namespace AspBox
@@ -32,7 +32,7 @@ namespace AspBox
         }
 
         [Test]
-        public void WhenLastIsMissing()
+        public static void WhenLastIsMissing()
         {
             var order = @"
 namespace AspBox
@@ -88,7 +88,7 @@ namespace AspBox
         }
 
         [Test]
-        public void WhenFirstIsMissing()
+        public static void WhenFirstIsMissing()
         {
             var order = @"
 namespace AspBox
@@ -144,7 +144,7 @@ namespace AspBox
 
         [TestCase("[FromHeader]")]
         [TestCase("[FromBody]")]
-        public void WhenWrongAttribute(string attribute)
+        public static void WhenWrongAttribute(string attribute)
         {
             var code = @"
 namespace AspBox
@@ -165,7 +165,7 @@ namespace AspBox
         }
 
         [Test]
-        public void WhenRouteOnClass()
+        public static void WhenRouteOnClass()
         {
             var code = @"
 namespace AspBox
@@ -188,7 +188,7 @@ namespace AspBox
         }
 
         [Test]
-        public void WhenRoutesOnClass()
+        public static void WhenRoutesOnClass()
         {
             var code = @"
 namespace AspBox
@@ -212,7 +212,7 @@ namespace AspBox
         }
 
         [Test]
-        public void WhenMultipleRouteAttributesMissingActionWithParameter()
+        public static void WhenMultipleRouteAttributesMissingActionWithParameter()
         {
             var code = @"
 namespace AspBox

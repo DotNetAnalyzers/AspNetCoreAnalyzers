@@ -5,7 +5,7 @@ namespace AspNetCoreAnalyzers.Tests.ASP009KebabCaseUrlTests
     using Microsoft.CodeAnalysis.Diagnostics;
     using NUnit.Framework;
 
-    public class CodeFix
+    public static class CodeFix
     {
         private static readonly DiagnosticAnalyzer Analyzer = new AttributeAnalyzer();
         private static readonly ExpectedDiagnostic ExpectedDiagnostic = ExpectedDiagnostic.Create(ASP009KebabCaseUrl.Descriptor);
@@ -15,7 +15,7 @@ namespace AspNetCoreAnalyzers.Tests.ASP009KebabCaseUrlTests
         [TestCase("\"api/↓TwoWords/{id}\"",  "\"api/two-words/{id}\"")]
         [TestCase("\"api/↓twoWords/{id}\"",  "\"api/two-words/{id}\"")]
         [TestCase("\"api/↓two_words/{id}\"", "\"api/two-words/{id}\"")]
-        public void WhenMethodAttribute(string before, string after)
+        public static void WhenMethodAttribute(string before, string after)
         {
             var code = @"
 namespace AspBox
@@ -55,7 +55,7 @@ namespace AspBox
         [TestCase("\"api/↓TwoWords\"",  "\"api/two-words\"")]
         [TestCase("\"api/↓twoWords\"",  "\"api/two-words\"")]
         [TestCase("\"api/↓two_words\"", "\"api/two-words\"")]
-        public void WhenRouteAttribute(string before, string after)
+        public static void WhenRouteAttribute(string before, string after)
         {
             var code = @"
 namespace AspBox

@@ -5,7 +5,7 @@ namespace AspNetCoreAnalyzers.Tests.ASP004RouteParameterTypeTests
     using Microsoft.CodeAnalysis.Diagnostics;
     using NUnit.Framework;
 
-    public class CodeFix
+    public static class CodeFix
     {
         private static readonly DiagnosticAnalyzer Analyzer = new AttributeAnalyzer();
         private static readonly ExpectedDiagnostic ExpectedDiagnostic = ExpectedDiagnostic.Create(ASP004RouteParameterType.Descriptor);
@@ -21,7 +21,7 @@ namespace AspNetCoreAnalyzers.Tests.ASP004RouteParameterTypeTests
         [TestCase("\"api/orders/{id:↓float}\"",        "\"api/orders/{id:double}\"",     "double id")]
         [TestCase("\"api/orders/{id:↓int}\"",          "\"api/orders/{id:float}\"",      "float id")]
         [TestCase("\"api/orders/{id:↓float}\"",        "\"api/orders/{id:guid}\"",       "System.Guid id")]
-        public void When(string before, string after, string parameter)
+        public static void When(string before, string after, string parameter)
         {
             var code = @"
 namespace AspBox
@@ -71,7 +71,7 @@ namespace AspBox
         [TestCase("\"api/orders/{id:↓regex(^\\\\d{{3}}-\\\\d{{2}}-\\\\d{4}$)}\"")]
         [TestCase("@\"api/orders/{id:↓regex(^\\d{{3}}-\\d{{2}}-\\d{4}$)}\"")]
         [TestCase("@\"api/orders/{id:↓regex(^\\\\d{{3}}-\\\\d{{2}}-\\\\d{4}$)}\"")]
-        public void NoFixWhen(string template)
+        public static void NoFixWhen(string template)
         {
             var code = @"
 namespace AspBox
@@ -94,7 +94,7 @@ namespace AspBox
 
         [TestCase("int?")]
         [TestCase("Nullable<int>")]
-        public void WhenOptional(string parameter)
+        public static void WhenOptional(string parameter)
         {
             var code = @"
 namespace AspBox

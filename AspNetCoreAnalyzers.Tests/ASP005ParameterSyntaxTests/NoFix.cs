@@ -8,7 +8,7 @@ namespace AspNetCoreAnalyzers.Tests.ASP005ParameterSyntaxTests
     using Microsoft.CodeAnalysis.Text;
     using NUnit.Framework;
 
-    public class NoFix
+    public static class NoFix
     {
         private static readonly DiagnosticAnalyzer Analyzer = new AttributeAnalyzer();
         private static readonly ExpectedDiagnostic ExpectedDiagnostic = ExpectedDiagnostic.Create(ASP005ParameterSyntax.Descriptor);
@@ -30,7 +30,7 @@ namespace AspNetCoreAnalyzers.Tests.ASP005ParameterSyntaxTests
         [TestCase("\"api/orders/{id:↓:long)}\"")]
         [TestCase("\"api/orders/{id:long:↓)}\"")]
         [TestCase("\"api/orders/{id:long:↓:)}\"")]
-        public void WhenLong(string before)
+        public static void WhenLong(string before)
         {
             var code = @"
 namespace AspBox
@@ -57,7 +57,7 @@ namespace AspBox
         [TestCase("\"api/orders/{id:maxlength(↓wrong))}\"")]
         [TestCase("\"api/orders/{id:regex(\\\\d):minlength(↓wrong))}\"")]
         [TestCase("@\"api/orders/{id:regex(\\d):minlength(↓wrong))}\"")]
-        public void WhenString(string before)
+        public static void WhenString(string before)
         {
             var code = @"
 namespace AspBox
@@ -80,7 +80,7 @@ namespace AspBox
 
         [TestCase("\"api/orders/{id:regex(\\\\d):minlength(wrong)}\"", 54, 59)]
         [TestCase("@\"api/orders/{id:regex(\\d):minlength(wrong)}\"",  54, 59)]
-        public void WhenStringExplicitSpan(string before, int start, int end)
+        public static void WhenStringExplicitSpan(string before, int start, int end)
         {
             var code = @"
 namespace AspBox

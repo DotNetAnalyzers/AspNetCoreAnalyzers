@@ -5,7 +5,7 @@ namespace AspNetCoreAnalyzers.Tests.ASP008ValidRouteParameterNameTests
     using Microsoft.CodeAnalysis.Diagnostics;
     using NUnit.Framework;
 
-    public class CodeFix
+    public static class CodeFix
     {
         private static readonly DiagnosticAnalyzer Analyzer = new AttributeAnalyzer();
         private static readonly ExpectedDiagnostic ExpectedDiagnostic = ExpectedDiagnostic.Create(ASP008ValidRouteParameterName.Descriptor);
@@ -14,7 +14,7 @@ namespace AspNetCoreAnalyzers.Tests.ASP008ValidRouteParameterNameTests
         [TestCase("\"api/orders/{↓id }\"",                         "\"api/orders/{id}\"")]
         [TestCase("\"api/orders/{↓ id}\"",                         "\"api/orders/{id}\"")]
         [TestCase("\"api/orders/{↓ id }\"",                         "\"api/orders/{id}\"")]
-        public void When(string before, string after)
+        public static void When(string before, string after)
         {
             var code = @"
 namespace AspBox
@@ -55,7 +55,7 @@ namespace AspBox
         [TestCase("\"api/orders/{↓controller}\"")]
         [TestCase("\"api/orders/{↓handler}\"")]
         [TestCase("\"api/orders/{↓page}\"")]
-        public void NoFixWhen(string before)
+        public static void NoFixWhen(string before)
         {
             var code = @"
 namespace AspBox

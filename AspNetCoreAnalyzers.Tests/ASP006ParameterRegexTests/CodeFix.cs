@@ -5,7 +5,7 @@ namespace AspNetCoreAnalyzers.Tests.ASP006ParameterRegexTests
     using Microsoft.CodeAnalysis.Diagnostics;
     using NUnit.Framework;
 
-    public class CodeFix
+    public static class CodeFix
     {
         private static readonly DiagnosticAnalyzer Analyzer = new AttributeAnalyzer();
         private static readonly ExpectedDiagnostic ExpectedDiagnostic = ExpectedDiagnostic.Create(ASP006ParameterRegex.Descriptor);
@@ -17,7 +17,7 @@ namespace AspNetCoreAnalyzers.Tests.ASP006ParameterRegexTests
         [TestCase("@\"api/orders/{id:regex(↓\\d+)}\"",                        "@\"api/orders/{id:regex(\\\\d+)}\"")]
         [TestCase("\"api/orders/{id:regex(↓^\\\\d{3}-\\\\d{2}-\\\\d{4}$)}\"", "\"api/orders/{id:regex(^\\\\\\\\d{{3}}-\\\\\\\\d{{2}}-\\\\\\\\d{{4}}$)}\"")]
         [TestCase("@\"api/orders/{id:regex(↓^\\d{3}-\\d{2}-\\d{4}$)}\"",      "@\"api/orders/{id:regex(^\\\\d{{3}}-\\\\d{{2}}-\\\\d{{4}}$)}\"")]
-        public void When(string before, string after)
+        public static void When(string before, string after)
         {
             var code = @"
 namespace AspBox

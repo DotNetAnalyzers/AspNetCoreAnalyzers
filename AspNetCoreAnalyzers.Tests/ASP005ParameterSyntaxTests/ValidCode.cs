@@ -4,7 +4,7 @@ namespace AspNetCoreAnalyzers.Tests.ASP005ParameterSyntaxTests
     using Microsoft.CodeAnalysis.Diagnostics;
     using NUnit.Framework;
 
-    public class ValidCode
+    public static class ValidCode
     {
         private static readonly DiagnosticAnalyzer Analyzer = new AttributeAnalyzer();
 
@@ -35,7 +35,7 @@ namespace AspNetCoreAnalyzers.Tests.ASP005ParameterSyntaxTests
         [TestCase("api/orders/{value:regex(a{{0,1}})}",                                          "string")]
         [TestCase("api/orders/{value:minlength(1):maxlength(2):required:alpha:regex(a{{0,1}})}", "string")]
         [TestCase("api/orders/{value:required}",                                                 "string")]
-        public void WithParameter(string parameter, string type)
+        public static void WithParameter(string parameter, string type)
         {
             var code = @"
 namespace AspBox

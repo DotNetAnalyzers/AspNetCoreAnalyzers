@@ -5,7 +5,7 @@ namespace AspNetCoreAnalyzers.Tests.ASP003ParameterSymbolTypeTests
     using Microsoft.CodeAnalysis.Diagnostics;
     using NUnit.Framework;
 
-    public class CodeFix
+    public static class CodeFix
     {
         private static readonly DiagnosticAnalyzer Analyzer = new AttributeAnalyzer();
         private static readonly ExpectedDiagnostic ExpectedDiagnostic = ExpectedDiagnostic.Create(ASP003ParameterSymbolType.Descriptor);
@@ -33,7 +33,7 @@ namespace AspNetCoreAnalyzers.Tests.ASP003ParameterSymbolTypeTests
         [TestCase("\"api/orders/{id:regex(^\\\\d{{3}}-\\\\d{{2}}-\\\\d{4}$)}\"",  "string id")]
         [TestCase("@\"api/orders/{id:regex(^\\d{{3}}-\\d{{2}}-\\d{4}$)}\"",       "string id")]
         [TestCase("@\"api/orders/{id:regex(^\\\\d{{3}}-\\\\d{{2}}-\\\\d{4}$)}\"", "string id")]
-        public void WhenHttpGet(string template, string parameter)
+        public static void WhenHttpGet(string template, string parameter)
         {
             var code = @"
 namespace AspBox
@@ -71,7 +71,7 @@ namespace AspBox
         }
 
         [Test]
-        public void WhenHttpGetAndRouteOnClass()
+        public static void WhenHttpGetAndRouteOnClass()
         {
             var code = @"
 namespace AspBox
@@ -123,7 +123,7 @@ namespace AspBox
 
         [TestCase("int?")]
         [TestCase("Nullable<int>")]
-        public void RemoveNullableWhenNotOptional(string parameter)
+        public static void RemoveNullableWhenNotOptional(string parameter)
         {
             var code = @"
 namespace AspBox
@@ -162,7 +162,7 @@ namespace AspBox
         }
 
         [Test]
-        public void MakeNullableToMatchOptional()
+        public static void MakeNullableToMatchOptional()
         {
             var code = @"
 namespace AspBox

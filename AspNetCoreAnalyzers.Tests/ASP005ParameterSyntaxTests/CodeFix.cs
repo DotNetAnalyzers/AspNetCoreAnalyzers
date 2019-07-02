@@ -5,7 +5,7 @@ namespace AspNetCoreAnalyzers.Tests.ASP005ParameterSyntaxTests
     using Microsoft.CodeAnalysis.Diagnostics;
     using NUnit.Framework;
 
-    public class CodeFix
+    public static class CodeFix
     {
         private static readonly DiagnosticAnalyzer Analyzer = new AttributeAnalyzer();
         private static readonly ExpectedDiagnostic ExpectedDiagnostic = ExpectedDiagnostic.Create(ASP005ParameterSyntax.Descriptor);
@@ -24,7 +24,7 @@ namespace AspNetCoreAnalyzers.Tests.ASP005ParameterSyntaxTests
         [TestCase("\"api/orders/{id:min(1}\"",      "\"api/orders/{id:min(1)}\"")]
         [TestCase("\"api/orders/{id:max(1}\"",      "\"api/orders/{id:max(1)}\"")]
         [TestCase("\"api/orders/{id:range(1,2}\"",  "\"api/orders/{id:range(1,2)}\"")]
-        public void WhenLong(string before, string after)
+        public static void WhenLong(string before, string after)
         {
             var code = @"
 namespace AspBox
@@ -66,7 +66,7 @@ namespace AspBox
         [TestCase("\"api/orders/{id:↓length(1,2}\"",             "\"api/orders/{id:length(1,2)}\"")]
         [TestCase("\"api/orders/{id:↓regex((a|b)-c}\"",          "\"api/orders/{id:regex((a|b)-c)}\"")]
         [TestCase("\"api/orders/{id:regex(\\\\d+):↓length(1}\"", "\"api/orders/{id:regex(\\\\d+):length(1)}\"")]
-        public void WhenString(string before, string after)
+        public static void WhenString(string before, string after)
         {
             var code = @"
 namespace AspBox

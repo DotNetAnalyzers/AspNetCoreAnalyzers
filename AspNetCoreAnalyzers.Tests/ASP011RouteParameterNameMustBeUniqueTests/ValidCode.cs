@@ -4,14 +4,14 @@ namespace AspNetCoreAnalyzers.Tests.ASP011RouteParameterNameMustBeUniqueTests
     using Microsoft.CodeAnalysis.Diagnostics;
     using NUnit.Framework;
 
-    public class ValidCode
+    public static class ValidCode
     {
         private static readonly DiagnosticAnalyzer Analyzer = new AttributeAnalyzer();
 
         [TestCase("\"{value}\"")]
         [TestCase("\"api/orders/{value}\"")]
         [TestCase("\"api/two-words/{value}\"")]
-        public void WithParameter(string parameter)
+        public static void WithParameter(string parameter)
         {
             var code = @"
 namespace AspBox
@@ -34,7 +34,7 @@ namespace AspBox
         }
 
         [Test]
-        public void TwoActions()
+        public static void TwoActions()
         {
             var code = @"
 namespace AspBox

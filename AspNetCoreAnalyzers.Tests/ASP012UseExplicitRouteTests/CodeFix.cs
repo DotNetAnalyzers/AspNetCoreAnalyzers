@@ -5,7 +5,7 @@ namespace AspNetCoreAnalyzers.Tests.ASP012UseExplicitRouteTests
     using Microsoft.CodeAnalysis.Diagnostics;
     using NUnit.Framework;
 
-    public class CodeFix
+    public static class CodeFix
     {
         private static readonly DiagnosticAnalyzer Analyzer = new AttributeAnalyzer();
         private static readonly ExpectedDiagnostic ExpectedDiagnostic = ExpectedDiagnostic.Create(ASP012UseExplicitRoute.Descriptor);
@@ -16,7 +16,7 @@ namespace AspNetCoreAnalyzers.Tests.ASP012UseExplicitRouteTests
         [TestCase("OrdersController",      "api/[controller]/{id}", "api/orders/{id}")]
         [TestCase("SampleDataController ", "api/[controller]",      "api/sample-data")]
         [TestCase("SampleDataController ", "api/[controller]/{id}", "api/sample-data/{id}")]
-        public void WhenRouteAttribute(string className, string before, string after)
+        public static void WhenRouteAttribute(string className, string before, string after)
         {
             var code = @"
 namespace AspBox

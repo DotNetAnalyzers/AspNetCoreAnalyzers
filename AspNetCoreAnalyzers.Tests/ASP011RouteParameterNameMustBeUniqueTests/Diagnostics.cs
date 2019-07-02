@@ -4,13 +4,13 @@ namespace AspNetCoreAnalyzers.Tests.ASP011RouteParameterNameMustBeUniqueTests
     using Microsoft.CodeAnalysis.Diagnostics;
     using NUnit.Framework;
 
-    public class Diagnostics
+    public static class Diagnostics
     {
         private static readonly DiagnosticAnalyzer Analyzer = new AttributeAnalyzer();
         private static readonly ExpectedDiagnostic ExpectedDiagnostic = ExpectedDiagnostic.Create(ASP011RouteParameterNameMustBeUnique.Descriptor);
 
         [TestCase("\"api/{↓id}/{↓id}\"")]
-        public void WhenMethodAttribute(string template)
+        public static void WhenMethodAttribute(string template)
         {
             var code = @"
 namespace AspBox
@@ -32,7 +32,7 @@ namespace AspBox
         }
 
         [Test]
-        public void WhenRouteOnClassAndHttpGetOnMethod()
+        public static void WhenRouteOnClassAndHttpGetOnMethod()
         {
             var code = @"
 namespace AspBox
@@ -55,7 +55,7 @@ namespace AspBox
         }
 
         [Test]
-        public void Issue39()
+        public static void Issue39()
         {
             var code = @"
 namespace AspBox
@@ -78,7 +78,7 @@ namespace AspBox
         }
 
         [Test]
-        public void WhenMultipleRoutesOnClassAndHttpGetOnMethod()
+        public static void WhenMultipleRoutesOnClassAndHttpGetOnMethod()
         {
             var code = @"
 namespace AspBox

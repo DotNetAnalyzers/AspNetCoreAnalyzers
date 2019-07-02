@@ -5,14 +5,14 @@ namespace AspNetCoreAnalyzers.Tests.Helpers
     using Microsoft.CodeAnalysis.CSharp;
     using NUnit.Framework;
 
-    public class SpanTests
+    public static class SpanTests
     {
         [TestCase("\"abc\"", "abc",  true)]
         [TestCase("\"abc\"", "ab",   false)]
         [TestCase("\"abc\"", "bc",   false)]
         [TestCase("\"abc\"", "a",    false)]
         [TestCase("\"abc\"", "abcd", false)]
-        public void Equals(string text, string value, bool expected)
+        public static void Equals(string text, string value, bool expected)
         {
             var syntaxTree = CSharpSyntaxTree.ParseText(@"
 namespace AspBox.Controllers
@@ -35,7 +35,7 @@ namespace AspBox.Controllers
         [TestCase("\"abc\"", "a",    true)]
         [TestCase("\"abc\"", "bc",   false)]
         [TestCase("\"abc\"", "abcd", false)]
-        public void StartsWith(string text, string value, bool expected)
+        public static void StartsWith(string text, string value, bool expected)
         {
             var syntaxTree = CSharpSyntaxTree.ParseText(@"
 namespace AspBox.Controllers
@@ -58,7 +58,7 @@ namespace AspBox.Controllers
         [TestCase("\"abc\"", "c",    true)]
         [TestCase("\"abc\"", "ab",   false)]
         [TestCase("\"abc\"", "dabc", false)]
-        public void EndsWith(string text, string value, bool expected)
+        public static void EndsWith(string text, string value, bool expected)
         {
             var syntaxTree = CSharpSyntaxTree.ParseText(@"
 namespace AspBox.Controllers
@@ -82,7 +82,7 @@ namespace AspBox.Controllers
         [TestCase("\"abc\"", "ab",   0)]
         [TestCase("\"abc\"", "e",    -1)]
         [TestCase("\"abc\"", "dabc", -1)]
-        public void IndexOf(string text, string value, int expected)
+        public static void IndexOf(string text, string value, int expected)
         {
             var syntaxTree = CSharpSyntaxTree.ParseText(@"
 namespace AspBox.Controllers
@@ -115,7 +115,7 @@ namespace AspBox.Controllers
         [TestCase("\"123abc\"", "ab",   0)]
         [TestCase("\"123abc\"", "e",    -4)]
         [TestCase("\"123abc\"", "dabc", -4)]
-        public void IndexOfWhenOffset(string text, string value, int expected)
+        public static void IndexOfWhenOffset(string text, string value, int expected)
         {
             var syntaxTree = CSharpSyntaxTree.ParseText(@"
 namespace AspBox.Controllers
