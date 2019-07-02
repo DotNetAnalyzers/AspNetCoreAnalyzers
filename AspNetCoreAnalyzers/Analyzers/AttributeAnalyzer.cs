@@ -30,6 +30,13 @@ namespace AspNetCoreAnalyzers
 
         public override void Initialize(AnalysisContext context)
         {
+            if (context == null)
+            {
+                throw new ArgumentNullException(nameof(context));
+            }
+
+            context.EnableConcurrentExecution();
+            context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.Analyze | GeneratedCodeAnalysisFlags.ReportDiagnostics);
             context.RegisterSyntaxNodeAction(c => Handle(c), SyntaxKind.Attribute);
         }
 
