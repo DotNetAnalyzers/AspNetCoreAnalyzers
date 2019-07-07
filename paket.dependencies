@@ -19,13 +19,12 @@ group Analyzers
 group Test
   storage: none
   source https://nuget.org/api/v2
-  nuget Microsoft.CodeAnalysis.CSharp.Workspaces
-  nuget System.Runtime.CompilerServices.Unsafe
-  nuget Gu.Roslyn.Asserts
+  nuget Microsoft.NET.Test.Sdk
   nuget NUnit
   nuget NUnit3TestAdapter
-  nuget Microsoft.NET.Test.Sdk
-  nuget Microsoft.AspNetCore.All 2.2.0
+  nuget Gu.Roslyn.Asserts
+  nuget Microsoft.CodeAnalysis.CSharp.Workspaces
+  nuget Microsoft.AspNetCore.All
 
 group Build
   source https://nuget.org/api/v2
