@@ -782,8 +782,10 @@ GROUP Test
 STORAGE: NONE
 NUGET
   remote: https://www.nuget.org/api/v2
-    Gu.Roslyn.Asserts (3.0)
+    Gu.Roslyn.Asserts (3.1)
+      Gu.Roslyn.Asserts.Analyzers
       Microsoft.CodeAnalysis.CSharp.Workspaces (>= 3.0)
+    Gu.Roslyn.Asserts.Analyzers (3.1.2)
     Libuv (1.10) - restriction: >= netcoreapp2.2
       Microsoft.NETCore.Platforms (>= 1.0.1) - restriction: >= netstandard1.0
     MessagePack (1.7.3.7) - restriction: >= netcoreapp2.2
