@@ -6,7 +6,7 @@ namespace AspNetCoreAnalyzers
     {
         public const string DiagnosticId = "ASP008";
 
-        internal static readonly DiagnosticDescriptor Descriptor = new DiagnosticDescriptor(
+        public static readonly DiagnosticDescriptor Descriptor = new DiagnosticDescriptor(
             id: DiagnosticId,
             title: "Invalid route parameter name.",
             messageFormat: "Invalid route parameter name.",

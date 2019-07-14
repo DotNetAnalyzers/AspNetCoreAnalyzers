@@ -9,7 +9,7 @@ namespace AspNetCoreAnalyzers
     {
         public const string DiagnosticId = "ASP006";
 
-        internal static readonly DiagnosticDescriptor Descriptor = new DiagnosticDescriptor(
+        public static readonly DiagnosticDescriptor Descriptor = new DiagnosticDescriptor(
             id: DiagnosticId,
             title: "Escape constraint regex.",
             messageFormat: "Escape constraint regex.",

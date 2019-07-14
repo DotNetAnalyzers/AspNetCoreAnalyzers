@@ -28,7 +28,6 @@
     <PackageReleaseNotes>ASP012 prefer explicit route.
 ASP013 Name the controller to match the route.</PackageReleaseNotes>
   </PropertyGroup>
-
   
   <Target Name="PostBuild" AfterTargets="PostBuildEvent" Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <Exec Command=".paket\paket.exe pack publish" WorkingDirectory="$(SolutionDir)" />

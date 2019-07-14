@@ -6,7 +6,7 @@ namespace AspNetCoreAnalyzers
     {
         public const string DiagnosticId = "ASP005";
 
-        internal static readonly DiagnosticDescriptor Descriptor = new DiagnosticDescriptor(
+        public static readonly DiagnosticDescriptor Descriptor = new DiagnosticDescriptor(
             id: DiagnosticId,
             title: "Syntax error in parameter.",
             messageFormat: "Syntax error in parameter.",

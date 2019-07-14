@@ -6,7 +6,7 @@ namespace AspNetCoreAnalyzers
     {
         public const string DiagnosticId = "ASP003";
 
-        internal static readonly DiagnosticDescriptor Descriptor = new DiagnosticDescriptor(
+        public static readonly DiagnosticDescriptor Descriptor = new DiagnosticDescriptor(
             id: DiagnosticId,
             title: "Parameter type does not match the type specified by the name specified by the route parameter.",
             messageFormat: "Parameter type does not match the type specified by the name specified by the route parameter.",

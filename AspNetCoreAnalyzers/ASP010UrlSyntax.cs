@@ -6,7 +6,7 @@ namespace AspNetCoreAnalyzers
     {
         public const string DiagnosticId = "ASP010";
 
-        internal static readonly DiagnosticDescriptor Descriptor = new DiagnosticDescriptor(
+        public static readonly DiagnosticDescriptor Descriptor = new DiagnosticDescriptor(
             id: DiagnosticId,
             title: "Unexpected character in url.",
             messageFormat: "Literal sections cannot contain the '{0}' character",

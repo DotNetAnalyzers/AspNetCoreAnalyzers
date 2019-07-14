@@ -6,7 +6,7 @@ namespace AspNetCoreAnalyzers
     {
         public const string DiagnosticId = "ASP009";
 
-        internal static readonly DiagnosticDescriptor Descriptor = new DiagnosticDescriptor(
+        public static readonly DiagnosticDescriptor Descriptor = new DiagnosticDescriptor(
             id: DiagnosticId,
             title: "Use kebab-cased urls.",
             messageFormat: "Use kebab-cased urls.",
