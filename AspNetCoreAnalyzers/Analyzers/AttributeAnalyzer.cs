@@ -986,7 +986,7 @@ namespace AspNetCoreAnalyzers
 
             internal readonly string NewText;
 
-            public Replacement(T node, string newText)
+            internal Replacement(T node, string newText)
             {
                 this.Node = node;
                 this.NewText = newText;

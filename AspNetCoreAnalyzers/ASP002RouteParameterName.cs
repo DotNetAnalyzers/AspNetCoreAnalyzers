@@ -2,7 +2,7 @@ namespace AspNetCoreAnalyzers
 {
     using Microsoft.CodeAnalysis;
 
-    internal static class ASP002RouteParameterName
+    public static class ASP002RouteParameterName
     {
         public const string DiagnosticId = "ASP002";
 

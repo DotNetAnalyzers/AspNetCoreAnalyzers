@@ -3,9 +3,9 @@ namespace AspNetCoreAnalyzers
     using Microsoft.CodeAnalysis;
 
     /// <summary>
-    /// https://docs.microsoft.com/en-us/aspnet/core/fundamentals/routing?view=aspnetcore-2.2#regular-expressions
+    /// https://docs.microsoft.com/en-us/aspnet/core/fundamentals/routing?view=aspnetcore-2.2#regular-expressions.
     /// </summary>
-    internal static class ASP006ParameterRegex
+    public static class ASP006ParameterRegex
     {
         public const string DiagnosticId = "ASP006";
 

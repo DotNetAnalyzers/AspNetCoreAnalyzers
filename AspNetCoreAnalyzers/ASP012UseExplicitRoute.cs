@@ -2,7 +2,7 @@ namespace AspNetCoreAnalyzers
 {
     using Microsoft.CodeAnalysis;
 
-    internal static class ASP012UseExplicitRoute
+    public static class ASP012UseExplicitRoute
     {
         public const string DiagnosticId = "ASP012";
 

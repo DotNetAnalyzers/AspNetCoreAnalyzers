@@ -5,7 +5,7 @@ namespace AspNetCoreAnalyzers.Tests.ASP007MissingParameterTests
     using Microsoft.CodeAnalysis.Diagnostics;
     using NUnit.Framework;
 
-    public static class ValidCode
+    public static class Valid
     {
         private static readonly DiagnosticAnalyzer Analyzer = new AttributeAnalyzer();
         private static readonly DiagnosticDescriptor Descriptor = ASP007MissingParameter.Descriptor;

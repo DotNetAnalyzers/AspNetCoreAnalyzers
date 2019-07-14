@@ -4,7 +4,7 @@ namespace AspNetCoreAnalyzers.Tests.ASP011RouteParameterNameMustBeUniqueTests
     using Microsoft.CodeAnalysis.Diagnostics;
     using NUnit.Framework;
 
-    public static class ValidCode
+    public static class Valid
     {
         private static readonly DiagnosticAnalyzer Analyzer = new AttributeAnalyzer();
 

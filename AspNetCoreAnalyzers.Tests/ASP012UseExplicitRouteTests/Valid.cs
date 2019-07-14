@@ -1,17 +1,15 @@
-namespace AspNetCoreAnalyzers.Tests.ASP009KebabCaseUrlTests
+namespace AspNetCoreAnalyzers.Tests.ASP012UseExplicitRouteTests
 {
     using Gu.Roslyn.Asserts;
     using Microsoft.CodeAnalysis.Diagnostics;
     using NUnit.Framework;
 
-    public static class ValidCode
+    public static class Valid
     {
         private static readonly DiagnosticAnalyzer Analyzer = new AttributeAnalyzer();
 
-        [TestCase("\"{value}\"")]
-        [TestCase("\"api/orders/{value}\"")]
-        [TestCase("\"api/two-words/{value}\"")]
-        public static void WithParameter(string parameter)
+        [Test]
+        public static void Simple()
         {
             var code = @"
 namespace AspBox
@@ -20,16 +18,17 @@ namespace AspBox
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.EntityFrameworkCore;
 
+    [Route(""api/orders"")]
     [ApiController]
     public class OrdersController : Controller
     {
-        [HttpGet(""api/{value}"")]
+        [HttpGet(""{value}"")]
         public IActionResult GetValue(string value)
         {
             return this.Ok(value);
         }
     }
-}".AssertReplace("\"api/{value}\"", parameter);
+}";
             RoslynAssert.Valid(Analyzer, code);
         }
     }

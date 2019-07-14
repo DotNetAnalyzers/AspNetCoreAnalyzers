@@ -2,7 +2,7 @@ namespace AspNetCoreAnalyzers
 {
     using Microsoft.CodeAnalysis;
 
-    internal static class ASP013ControllerNameShouldMatchRoute
+    public static class ASP013ControllerNameShouldMatchRoute
     {
         public const string DiagnosticId = "ASP013";
 

@@ -8,7 +8,7 @@ namespace AspNetCoreAnalyzers.Tests
     using Microsoft.CodeAnalysis.Diagnostics;
     using NUnit.Framework;
 
-    public static class ValidCodeWithAllAnalyzers
+    public static class ValidWithAllAnalyzers
     {
         private static readonly IReadOnlyList<DiagnosticAnalyzer> AllAnalyzers = typeof(HelpLink)
                                                                                  .Assembly.GetTypes()

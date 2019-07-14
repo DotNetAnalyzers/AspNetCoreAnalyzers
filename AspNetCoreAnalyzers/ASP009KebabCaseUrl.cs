@@ -2,7 +2,7 @@ namespace AspNetCoreAnalyzers
 {
     using Microsoft.CodeAnalysis;
 
-    internal static class ASP009KebabCaseUrl
+    public static class ASP009KebabCaseUrl
     {
         public const string DiagnosticId = "ASP009";
 

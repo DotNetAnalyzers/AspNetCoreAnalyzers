@@ -2,7 +2,7 @@ namespace AspNetCoreAnalyzers
 {
     using Microsoft.CodeAnalysis;
 
-    internal static class ASP010UrlSyntax
+    public static class ASP010UrlSyntax
     {
         public const string DiagnosticId = "ASP010";
 
