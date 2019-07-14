@@ -24,7 +24,7 @@ group Test
   nuget NUnit3TestAdapter
   nuget Gu.Roslyn.Asserts
   nuget Microsoft.CodeAnalysis.CSharp.Workspaces
-  nuget Microsoft.AspNetCore.All
+  nuget Microsoft.AspNetCore.All 2.2.0
 
 group Build
   source https://nuget.org/api/v2
