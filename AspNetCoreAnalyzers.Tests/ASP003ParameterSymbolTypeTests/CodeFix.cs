@@ -35,7 +35,7 @@ namespace AspNetCoreAnalyzers.Tests.ASP003ParameterSymbolTypeTests
         [TestCase("@\"api/orders/{id:regex(^\\\\d{{3}}-\\\\d{{2}}-\\\\d{4}$)}\"", "string id")]
         public static void WhenHttpGet(string template, string parameter)
         {
-            var code = @"
+            var before = @"
 namespace AspBox
 {
     using Microsoft.AspNetCore.Mvc;
@@ -51,7 +51,7 @@ namespace AspBox
     }
 }".AssertReplace("\"api/orders/{id}\"", template);
 
-            var fixedCode = @"
+            var after = @"
 namespace AspBox
 {
     using Microsoft.AspNetCore.Mvc;
@@ -67,13 +67,13 @@ namespace AspBox
     }
 }".AssertReplace("\"api/orders/{id}\"", template)
   .AssertReplace("byte id", parameter);
-            RoslynAssert.CodeFix(Analyzer, Fix, ExpectedDiagnostic, code, fixedCode);
+            RoslynAssert.CodeFix(Analyzer, Fix, ExpectedDiagnostic, before, after);
         }
 
         [Test]
         public static void WhenHttpGetAndRouteOnClass()
         {
-            var code = @"
+            var before = @"
 namespace AspBox
 {
     using Microsoft.AspNetCore.Mvc;
@@ -96,7 +96,7 @@ namespace AspBox
     }
 }";
 
-            var fixedCode = @"
+            var after = @"
 namespace AspBox
 {
     using Microsoft.AspNetCore.Mvc;
@@ -118,14 +118,14 @@ namespace AspBox
         }
     }
 }";
-            RoslynAssert.CodeFix(Analyzer, Fix, ExpectedDiagnostic, code, fixedCode);
+            RoslynAssert.CodeFix(Analyzer, Fix, ExpectedDiagnostic, before, after);
         }
 
         [TestCase("int?")]
         [TestCase("Nullable<int>")]
         public static void RemoveNullableWhenNotOptional(string parameter)
         {
-            var code = @"
+            var before = @"
 namespace AspBox
 {
     using System;
@@ -142,7 +142,7 @@ namespace AspBox
     }
 }".AssertReplace("int?", parameter);
 
-            var fixedCode = @"
+            var after = @"
 namespace AspBox
 {
     using System;
@@ -158,13 +158,13 @@ namespace AspBox
         }
     }
 }";
-            RoslynAssert.CodeFix(Analyzer, Fix, ExpectedDiagnostic, code, fixedCode);
+            RoslynAssert.CodeFix(Analyzer, Fix, ExpectedDiagnostic, before, after);
         }
 
         [Test]
         public static void MakeNullableToMatchOptional()
         {
-            var code = @"
+            var before = @"
 namespace AspBox
 {
     using System;
@@ -181,7 +181,7 @@ namespace AspBox
     }
 }";
 
-            var fixedCode = @"
+            var after = @"
 namespace AspBox
 {
     using System;
@@ -197,7 +197,7 @@ namespace AspBox
         }
     }
 }";
-            RoslynAssert.CodeFix(Analyzer, Fix, ExpectedDiagnostic, code, fixedCode);
+            RoslynAssert.CodeFix(Analyzer, Fix, ExpectedDiagnostic, before, after);
         }
     }
 }

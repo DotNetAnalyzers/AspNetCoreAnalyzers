@@ -25,7 +25,7 @@ namespace AspNetCoreAnalyzers.Tests.ASP001ParameterNameTests
         [TestCase("\"api/orders/{value:regex(^\\\\d{{3}}-\\\\d{{2}}-\\\\d{4}$)}\"")]
         public static void WhenHttpGet(string template)
         {
-            var code = @"
+            var before = @"
 namespace AspBox
 {
     using Microsoft.AspNetCore.Mvc;
@@ -41,7 +41,7 @@ namespace AspBox
     }
 }".AssertReplace("\"api/orders/{value}\"", template);
 
-            var fixedCode = @"
+            var after = @"
 namespace AspBox
 {
     using Microsoft.AspNetCore.Mvc;
@@ -56,13 +56,13 @@ namespace AspBox
         }
     }
 }".AssertReplace("\"api/orders/{value}\"", template);
-            RoslynAssert.CodeFix(Analyzer, Fix, ExpectedDiagnostic, code, fixedCode);
+            RoslynAssert.CodeFix(Analyzer, Fix, ExpectedDiagnostic, before, after);
         }
 
         [Test]
         public static void WhenRouteAndHttpGetOnMethod()
         {
-            var code = @"
+            var before = @"
 namespace AspBox
 {
     using Microsoft.AspNetCore.Mvc;
@@ -79,7 +79,7 @@ namespace AspBox
     }
 }";
 
-            var fixedCode = @"
+            var after = @"
 namespace AspBox
 {
     using Microsoft.AspNetCore.Mvc;
@@ -95,7 +95,7 @@ namespace AspBox
         }
     }
 }";
-            RoslynAssert.CodeFix(Analyzer, Fix, ExpectedDiagnostic, code, fixedCode);
+            RoslynAssert.CodeFix(Analyzer, Fix, ExpectedDiagnostic, before, after);
         }
 
         [Test]

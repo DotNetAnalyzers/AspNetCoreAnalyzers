@@ -19,7 +19,7 @@ namespace AspNetCoreAnalyzers.Tests.ASP013ControllerNameShouldMatchRouteTests
         [TestCase("api/sample-data/{id}", "SampleDataController")]
         public static void WhenMethodAttribute(string template, string className)
         {
-            var code = @"
+            var before = @"
 namespace AspBox
 {
     using Microsoft.AspNetCore.Mvc;
@@ -31,7 +31,7 @@ namespace AspBox
     }
 }".AssertReplace("api/orders", template);
 
-            var fixedCode = @"
+            var after = @"
 namespace AspBox
 {
     using Microsoft.AspNetCore.Mvc;
@@ -45,7 +45,7 @@ namespace AspBox
   .AssertReplace("api/orders", template);
 
             var message = $"Name the controller to match the route. Expected: '{className}'.";
-            RoslynAssert.CodeFix(Analyzer, Fix, ExpectedDiagnostic.WithMessage(message), code, fixedCode);
+            RoslynAssert.CodeFix(Analyzer, Fix, ExpectedDiagnostic.WithMessage(message), before, after);
         }
     }
 }

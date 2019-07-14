@@ -12,7 +12,7 @@ namespace AspNetCoreAnalyzers.Tests.ASP001ParameterNameTests
         [Test]
         public static void BothParameters()
         {
-            var before = @"
+            var code = @"
 namespace AspBox
 {
     using Microsoft.AspNetCore.Mvc;
@@ -28,7 +28,7 @@ namespace AspBox
     }
 }";
 
-            RoslynAssert.Diagnostics(Analyzer, ExpectedDiagnostic, before);
+            RoslynAssert.Diagnostics(Analyzer, ExpectedDiagnostic, code);
         }
     }
 }

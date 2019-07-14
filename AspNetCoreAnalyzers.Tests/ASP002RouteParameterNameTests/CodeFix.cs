@@ -55,7 +55,7 @@ namespace AspBox
         [Test]
         public static void WhenRouteAndHttpGetOnMethod()
         {
-            var code = @"
+            var before = @"
 namespace AspBox
 {
     using Microsoft.AspNetCore.Mvc;
@@ -72,7 +72,7 @@ namespace AspBox
     }
 }";
 
-            var fixedCode = @"
+            var after = @"
 namespace AspBox
 {
     using Microsoft.AspNetCore.Mvc;
@@ -88,7 +88,7 @@ namespace AspBox
         }
     }
 }";
-            RoslynAssert.CodeFix(Analyzer, Fix, ExpectedDiagnostic, code, fixedCode);
+            RoslynAssert.CodeFix(Analyzer, Fix, ExpectedDiagnostic, before, after);
         }
 
         [TestCase("\"api/{text1}/{↓value}\"",                                                        "\"api/{text1}/{text2}\"")]

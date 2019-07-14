@@ -96,7 +96,7 @@ namespace AspBox
         [TestCase("Nullable<int>")]
         public static void WhenOptional(string parameter)
         {
-            var code = @"
+            var before = @"
 namespace AspBox
 {
     using System;
@@ -113,7 +113,7 @@ namespace AspBox
     }
 }".AssertReplace("int?", parameter);
 
-            var fixedCode = @"
+            var after = @"
 namespace AspBox
 {
     using System;
@@ -129,7 +129,7 @@ namespace AspBox
         }
     }
 }".AssertReplace("int?", parameter);
-            RoslynAssert.CodeFix(Analyzer, Fix, ExpectedDiagnostic, code, fixedCode);
+            RoslynAssert.CodeFix(Analyzer, Fix, ExpectedDiagnostic, before, after);
         }
     }
 }
