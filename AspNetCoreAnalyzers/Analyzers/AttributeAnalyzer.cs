@@ -190,8 +190,8 @@ namespace AspNetCoreAnalyzers
                 }
             }
 
-            nameReplacement = default(Replacement<Location>);
-            spanReplacement = default(Replacement<Span>);
+            nameReplacement = default;
+            spanReplacement = default;
             return false;
 
             bool IsOrphan(IParameterSymbol p)
@@ -244,8 +244,8 @@ namespace AspNetCoreAnalyzers
                 }
             }
 
-            typeReplacement = default(Replacement<TypeSyntax>);
-            constraintReplacement = default(Replacement<Span>);
+            typeReplacement = default;
+            constraintReplacement = default;
             return false;
 
             bool TryGetType(Span constraint, out QualifiedType type)
@@ -381,8 +381,8 @@ namespace AspNetCoreAnalyzers
                     }
                 }
 
-                newType = default(Replacement<TypeSyntax>);
-                newConstraint = default(Replacement<Span>);
+                newType = default;
+                newConstraint = default;
                 return false;
             }
         }
@@ -487,7 +487,7 @@ namespace AspNetCoreAnalyzers
                 }
             }
 
-            replacement = default(Replacement<Span>);
+            replacement = default;
             return false;
 
             bool HasWrongIntArgumentSyntax(RouteConstraint constraint, string methodName, out Span result)
@@ -508,7 +508,7 @@ namespace AspNetCoreAnalyzers
                     }
                 }
 
-                result = default(Span);
+                result = default;
                 return false;
             }
         }
@@ -569,7 +569,7 @@ namespace AspNetCoreAnalyzers
                 }
             }
 
-            replacement = default(Replacement<Span>);
+            replacement = default;
             return false;
         }
 
@@ -638,7 +638,7 @@ namespace AspNetCoreAnalyzers
                 }
             }
 
-            replacement = default(Replacement<Span>);
+            replacement = default;
             return false;
         }
 
@@ -791,7 +791,7 @@ namespace AspNetCoreAnalyzers
                     }
                 }
 
-                result = default(UrlTemplate);
+                result = default;
                 return false;
             }
         }
@@ -809,7 +809,7 @@ namespace AspNetCoreAnalyzers
                 return true;
             }
 
-            replacement = default(Replacement<Span>);
+            replacement = default;
             return false;
         }
 
@@ -831,7 +831,7 @@ namespace AspNetCoreAnalyzers
                     {
                         _ = builder.Clear()
                                    .Return();
-                        replacement = default(Replacement<Location>);
+                        replacement = default;
                         return false;
                     }
 
@@ -840,7 +840,7 @@ namespace AspNetCoreAnalyzers
                 }
             }
 
-            replacement = default(Replacement<Location>);
+            replacement = default;
             return false;
 
             StringBuilderPool.PooledStringBuilder ClassName()

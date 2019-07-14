@@ -53,7 +53,7 @@ namespace AspNetCoreAnalyzers
                 }
             }
 
-            template = default(UrlTemplate);
+            template = default;
             return false;
         }
 

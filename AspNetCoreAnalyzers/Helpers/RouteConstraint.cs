@@ -28,7 +28,7 @@ namespace AspNetCoreAnalyzers
             if (pos >= span.TextSpan.End ||
                 span[pos] != ':')
             {
-                constraint = default(RouteConstraint);
+                constraint = default;
                 return false;
             }
 
@@ -48,7 +48,7 @@ namespace AspNetCoreAnalyzers
                 }
             }
 
-            constraint = default(RouteConstraint);
+            constraint = default;
             return false;
         }
 

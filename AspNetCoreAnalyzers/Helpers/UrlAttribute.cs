@@ -60,7 +60,7 @@ namespace AspNetCoreAnalyzers
                 return true;
             }
 
-            result = default(UrlAttribute);
+            result = default;
             return false;
         }
 

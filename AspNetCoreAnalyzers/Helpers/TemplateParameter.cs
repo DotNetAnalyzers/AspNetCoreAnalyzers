@@ -79,7 +79,7 @@ namespace AspNetCoreAnalyzers
                 return true;
             }
 
-            result = default(TemplateParameter);
+            result = default;
             return false;
         }
 

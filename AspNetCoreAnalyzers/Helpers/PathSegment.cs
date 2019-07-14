@@ -56,7 +56,7 @@ namespace AspNetCoreAnalyzers
                 return true;
             }
 
-            segment = default(PathSegment);
+            segment = default;
             return false;
 
             bool TrySkipStart()
