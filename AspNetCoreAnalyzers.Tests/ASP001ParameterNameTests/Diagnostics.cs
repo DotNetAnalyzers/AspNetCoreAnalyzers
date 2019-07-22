@@ -15,6 +15,7 @@ namespace AspNetCoreAnalyzers.Tests.ASP001ParameterNameTests
             var code = @"
 namespace AspBox
 {
+    using System.Threading.Tasks;
     using Microsoft.AspNetCore.Mvc;
 
     [ApiController]

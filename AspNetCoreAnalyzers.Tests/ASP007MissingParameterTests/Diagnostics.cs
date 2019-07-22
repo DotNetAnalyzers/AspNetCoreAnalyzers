@@ -15,16 +15,13 @@ namespace AspNetCoreAnalyzers.Tests.ASP007MissingParameterTests
             var code = @"
 namespace AspBox
 {
-    using System.Threading.Tasks;
     using Microsoft.AspNetCore.Mvc;
 
     [ApiController]
     public class OrdersController : Controller
     {
         [HttpGet(""api/orders/{↓id}"")]
-        public IActionResult Get()
-        {
-        }
+        public IActionResult Get() => this.Ok();
     }
 }";
             var message = "The route template has parameter 'id' that does not have a corresponding method parameter.";
@@ -71,7 +68,7 @@ namespace AspBox
         }
 
         [HttpGet(""api/orders/{orderId}/items/{↓itemId}"")]
-        public IActionResult Get(int orderId)
+        public async Task<IActionResult> Get(int orderId)
         {
             var match = await this.db.Orders.FirstOrDefaultAsync(x => x.Id == orderId);
             if (match == null)
@@ -127,7 +124,7 @@ namespace AspBox
         }
 
         [HttpGet(""api/orders/{↓orderId}/items/{itemId}"")]
-        public IActionResult Get(int itemId)
+        public async Task<IActionResult> Get(int itemId)
         {
             var match = await this.db.Orders.FirstOrDefaultAsync(x => x.Id == itemId);
             if (match == null)

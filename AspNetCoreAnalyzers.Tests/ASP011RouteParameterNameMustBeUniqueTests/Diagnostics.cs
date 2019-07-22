@@ -62,11 +62,11 @@ namespace AspBox
 {
     using Microsoft.AspNetCore.Mvc;
 
-    [Route(""api/values/{id}"")]
+    [Route(""api/values/{↓id}"")]
     [ApiController]
     public class ValuesController : ControllerBase
     {
-        [HttpGet(""api/values/{id}"")]
+        [HttpGet(""api/values/{↓id}"")]
         public ActionResult<string> Get(string id)
         {
             return this.Ok(id);
