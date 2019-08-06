@@ -22,7 +22,7 @@ namespace AspNetCoreAnalyzers.Tests
         private static readonly Solution Solution = CodeFactory.CreateSolution(
             new FileInfo("C:\\Git\\Gu.Xml\\Gu.Xml.sln"),
             AllAnalyzers,
-            RoslynAssert.MetadataReferences);
+            MetadataReferences.FromAttributes());
 
         [TestCaseSource(nameof(AllAnalyzers))]
         public static void Run(DiagnosticAnalyzer analyzer)

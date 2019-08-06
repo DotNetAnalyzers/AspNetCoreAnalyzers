@@ -19,12 +19,12 @@ namespace AspNetCoreAnalyzers.Tests
         private static readonly Solution AnalyzersProjectSolution = CodeFactory.CreateSolution(
             ProjectFile.Find("AspNetCoreAnalyzers.csproj"),
             AllAnalyzers,
-            RoslynAssert.MetadataReferences);
+            MetadataReferences.FromAttributes());
 
         private static readonly Solution ValidCodeProjectSln = CodeFactory.CreateSolution(
             ProjectFile.Find("ValidCode.csproj"),
             AllAnalyzers,
-            RoslynAssert.MetadataReferences);
+            MetadataReferences.FromAttributes());
 
         [Test]
         public static void NotEmpty()
