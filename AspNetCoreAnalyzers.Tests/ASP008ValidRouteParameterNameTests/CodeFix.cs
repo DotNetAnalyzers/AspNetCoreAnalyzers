@@ -8,7 +8,7 @@ namespace AspNetCoreAnalyzers.Tests.ASP008ValidRouteParameterNameTests
     public static class CodeFix
     {
         private static readonly DiagnosticAnalyzer Analyzer = new AttributeAnalyzer();
-        private static readonly ExpectedDiagnostic ExpectedDiagnostic = ExpectedDiagnostic.Create(ASP008ValidRouteParameterName.Descriptor);
+        private static readonly ExpectedDiagnostic ExpectedDiagnostic = ExpectedDiagnostic.Create(Descriptors.ASP008ValidRouteParameterName);
         private static readonly CodeFixProvider Fix = new TemplateTextFix();
 
         [TestCase("\"api/orders/{↓id }\"",                         "\"api/orders/{id}\"")]

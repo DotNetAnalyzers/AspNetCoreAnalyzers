@@ -7,7 +7,7 @@ namespace AspNetCoreAnalyzers.Tests.ASP010UrlSyntaxTests
     public static class Diagnostics
     {
         private static readonly DiagnosticAnalyzer Analyzer = new AttributeAnalyzer();
-        private static readonly ExpectedDiagnostic ExpectedDiagnostic = ExpectedDiagnostic.Create(ASP010UrlSyntax.Descriptor);
+        private static readonly ExpectedDiagnostic ExpectedDiagnostic = ExpectedDiagnostic.Create(Descriptors.ASP010UrlSyntax);
 
         [TestCase("\"api/a↓?b/{id}\"")]
         [TestCase("\"api/↓/b/{id}\"")]

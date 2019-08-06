@@ -8,7 +8,7 @@ namespace AspNetCoreAnalyzers.Tests.ASP013ControllerNameShouldMatchRouteTests
     public static class Valid
     {
         private static readonly DiagnosticAnalyzer Analyzer = new AttributeAnalyzer();
-        private static readonly DiagnosticDescriptor Descriptor = ASP013ControllerNameShouldMatchRoute.Descriptor;
+        private static readonly DiagnosticDescriptor Descriptor = Descriptors.ASP013ControllerNameShouldMatchRoute;
 
         [TestCase("api/orders")]
         [TestCase("api/[controller]")]

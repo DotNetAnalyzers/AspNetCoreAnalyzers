@@ -8,7 +8,7 @@ namespace AspNetCoreAnalyzers.Tests.ASP004RouteParameterTypeTests
     public static class CodeFix
     {
         private static readonly DiagnosticAnalyzer Analyzer = new AttributeAnalyzer();
-        private static readonly ExpectedDiagnostic ExpectedDiagnostic = ExpectedDiagnostic.Create(ASP004RouteParameterType.Descriptor);
+        private static readonly ExpectedDiagnostic ExpectedDiagnostic = ExpectedDiagnostic.Create(Descriptors.ASP004RouteParameterType);
         private static readonly CodeFixProvider Fix = new TemplateTextFix();
 
         [TestCase("\"{id:↓float}\"",                   "\"{id:int}\"",                   "int id")]

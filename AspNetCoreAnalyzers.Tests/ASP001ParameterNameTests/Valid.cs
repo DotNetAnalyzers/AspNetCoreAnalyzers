@@ -8,7 +8,7 @@ namespace AspNetCoreAnalyzers.Tests.ASP001ParameterNameTests
     public static class Valid
     {
         private static readonly DiagnosticAnalyzer Analyzer = new AttributeAnalyzer();
-        private static readonly DiagnosticDescriptor Descriptor = ASP001ParameterSymbolName.Descriptor;
+        private static readonly DiagnosticDescriptor Descriptor = Descriptors.ASP001ParameterSymbolName;
 
         [TestCase("@\"{value}\"")]
         [TestCase("\"{value}\"")]

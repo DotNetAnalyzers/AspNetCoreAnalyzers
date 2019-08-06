@@ -16,13 +16,13 @@ namespace AspNetCoreAnalyzers
     public class TemplateTextFix : DocumentEditorCodeFixProvider
     {
         public override ImmutableArray<string> FixableDiagnosticIds { get; } = ImmutableArray.Create(
-            ASP002RouteParameterName.DiagnosticId,
-            ASP004RouteParameterType.DiagnosticId,
-            ASP005ParameterSyntax.DiagnosticId,
-            ASP006ParameterRegex.DiagnosticId,
-            ASP008ValidRouteParameterName.DiagnosticId,
-            ASP009KebabCaseUrl.DiagnosticId,
-            ASP012UseExplicitRoute.DiagnosticId);
+            Descriptors.ASP002RouteParameterName.Id,
+            Descriptors.ASP004RouteParameterType.Id,
+            Descriptors.ASP005ParameterSyntax.Id,
+            Descriptors.ASP006ParameterRegex.Id,
+            Descriptors.ASP008ValidRouteParameterName.Id,
+            Descriptors.ASP009KebabCaseUrl.Id,
+            Descriptors.ASP012UseExplicitRoute.Id);
 
         protected override async Task RegisterCodeFixesAsync(DocumentEditorCodeFixContext context)
         {
@@ -67,25 +67,42 @@ namespace AspNetCoreAnalyzers
 
         private static string GetTitle(Diagnostic diagnostic)
         {
-            switch (diagnostic.Id)
+            if (diagnostic.Id == Descriptors.ASP002RouteParameterName.Id)
             {
-                case ASP002RouteParameterName.DiagnosticId:
-                    return "Rename parameter.";
-                case ASP004RouteParameterType.DiagnosticId:
-                    return "Change type to match symbol.";
-                case ASP005ParameterSyntax.DiagnosticId:
-                    return "Fix syntax error.";
-                case ASP006ParameterRegex.DiagnosticId:
-                    return "Escape regex.";
-                case ASP008ValidRouteParameterName.DiagnosticId:
-                    return "Fix name.";
-                case ASP009KebabCaseUrl.DiagnosticId:
-                    return "To lowercase.";
-                case ASP012UseExplicitRoute.DiagnosticId:
-                    return "To explicit route.";
-                default:
-                    throw new InvalidOperationException("Should never get here.");
+                return "Rename parameter.";
             }
+
+            if (diagnostic.Id == Descriptors.ASP004RouteParameterType.Id)
+            {
+                return "Change type to match symbol.";
+            }
+
+            if (diagnostic.Id == Descriptors.ASP005ParameterSyntax.Id)
+            {
+                return "Fix syntax error.";
+            }
+
+            if (diagnostic.Id == Descriptors.ASP006ParameterRegex.Id)
+            {
+                return "Escape regex.";
+            }
+
+            if (diagnostic.Id == Descriptors.ASP008ValidRouteParameterName.Id)
+            {
+                return "Fix name.";
+            }
+
+            if (diagnostic.Id == Descriptors.ASP009KebabCaseUrl.Id)
+            {
+                return "To lowercase.";
+            }
+
+            if (diagnostic.Id == Descriptors.ASP012UseExplicitRoute.Id)
+            {
+                return "To explicit route.";
+            }
+
+            throw new InvalidOperationException("Should never get here.");
         }
     }
 }

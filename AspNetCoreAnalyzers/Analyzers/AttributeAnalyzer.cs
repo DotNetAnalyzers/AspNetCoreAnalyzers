@@ -14,19 +14,19 @@ namespace AspNetCoreAnalyzers
     public class AttributeAnalyzer : DiagnosticAnalyzer
     {
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get; } = ImmutableArray.Create(
-            ASP001ParameterSymbolName.Descriptor,
-            ASP002RouteParameterName.Descriptor,
-            ASP003ParameterSymbolType.Descriptor,
-            ASP004RouteParameterType.Descriptor,
-            ASP005ParameterSyntax.Descriptor,
-            ASP006ParameterRegex.Descriptor,
-            ASP007MissingParameter.Descriptor,
-            ASP008ValidRouteParameterName.Descriptor,
-            ASP009KebabCaseUrl.Descriptor,
-            ASP010UrlSyntax.Descriptor,
-            ASP011RouteParameterNameMustBeUnique.Descriptor,
-            ASP012UseExplicitRoute.Descriptor,
-            ASP013ControllerNameShouldMatchRoute.Descriptor);
+            Descriptors.ASP001ParameterSymbolName,
+            Descriptors.ASP002RouteParameterName,
+            Descriptors.ASP003ParameterSymbolType,
+            Descriptors.ASP004RouteParameterType,
+            Descriptors.ASP005ParameterSyntax,
+            Descriptors.ASP006ParameterRegex,
+            Descriptors.ASP007MissingParameter,
+            Descriptors.ASP008ValidRouteParameterName,
+            Descriptors.ASP009KebabCaseUrl,
+            Descriptors.ASP010UrlSyntax,
+            Descriptors.ASP011RouteParameterNameMustBeUnique,
+            Descriptors.ASP012UseExplicitRoute,
+            Descriptors.ASP013ControllerNameShouldMatchRoute);
 
         public override void Initialize(AnalysisContext context)
         {
@@ -53,13 +53,13 @@ namespace AspNetCoreAnalyzers
                     {
                         context.ReportDiagnostic(
                             Diagnostic.Create(
-                                ASP001ParameterSymbolName.Descriptor,
+                                Descriptors.ASP001ParameterSymbolName,
                                 nameReplacement.Node,
                                 nameReplacement.Property(nameof(NameSyntax))));
 
                         context.ReportDiagnostic(
                             Diagnostic.Create(
-                                ASP002RouteParameterName.Descriptor,
+                                Descriptors.ASP002RouteParameterName,
                                 spanReplacement.Node.GetLocation(),
                                 spanReplacement.Property(nameof(UrlTemplate))));
                     }
@@ -68,13 +68,13 @@ namespace AspNetCoreAnalyzers
                     {
                         context.ReportDiagnostic(
                             Diagnostic.Create(
-                                ASP003ParameterSymbolType.Descriptor,
+                                Descriptors.ASP003ParameterSymbolType,
                                 typeReplacement.Node.GetLocation(),
                                 typeReplacement.Property(nameof(TypeSyntax))));
 
                         context.ReportDiagnostic(
                             Diagnostic.Create(
-                                ASP004RouteParameterType.Descriptor,
+                                Descriptors.ASP004RouteParameterType,
                                 spanReplacement.Node.GetLocation(),
                                 spanReplacement.Property(nameof(UrlTemplate))));
                     }
@@ -83,7 +83,7 @@ namespace AspNetCoreAnalyzers
                     {
                         context.ReportDiagnostic(
                             Diagnostic.Create(
-                                ASP005ParameterSyntax.Descriptor,
+                                Descriptors.ASP005ParameterSyntax,
                                 spanReplacement.Node.GetLocation(),
                                 spanReplacement.Property(nameof(UrlTemplate))));
                     }
@@ -92,7 +92,7 @@ namespace AspNetCoreAnalyzers
                     {
                         context.ReportDiagnostic(
                             Diagnostic.Create(
-                                ASP006ParameterRegex.Descriptor,
+                                Descriptors.ASP006ParameterRegex,
                                 spanReplacement.Node.GetLocation(),
                                 spanReplacement.Property(nameof(UrlTemplate))));
                     }
@@ -101,7 +101,7 @@ namespace AspNetCoreAnalyzers
                     {
                         context.ReportDiagnostic(
                             Diagnostic.Create(
-                                ASP007MissingParameter.Descriptor,
+                                Descriptors.ASP007MissingParameter,
                                 location,
                                 name));
                     }
@@ -110,7 +110,7 @@ namespace AspNetCoreAnalyzers
                     {
                         context.ReportDiagnostic(
                             Diagnostic.Create(
-                                ASP008ValidRouteParameterName.Descriptor,
+                                Descriptors.ASP008ValidRouteParameterName,
                                 spanReplacement.Node.GetLocation(),
                                 spanReplacement.Property(nameof(UrlTemplate))));
                     }
@@ -119,7 +119,7 @@ namespace AspNetCoreAnalyzers
                     {
                         context.ReportDiagnostic(
                             Diagnostic.Create(
-                                ASP009KebabCaseUrl.Descriptor,
+                                Descriptors.ASP009KebabCaseUrl,
                                 segment.Span.GetLocation(),
                                 ImmutableDictionary<string, string>.Empty.Add(nameof(UrlTemplate), kebabCase)));
                     }
@@ -128,7 +128,7 @@ namespace AspNetCoreAnalyzers
                     {
                         context.ReportDiagnostic(
                             Diagnostic.Create(
-                                ASP010UrlSyntax.Descriptor,
+                                Descriptors.ASP010UrlSyntax,
                                 location,
                                 segment.Span.ToString(location)));
                     }
@@ -137,7 +137,7 @@ namespace AspNetCoreAnalyzers
                     {
                         context.ReportDiagnostic(
                             Diagnostic.Create(
-                                ASP011RouteParameterNameMustBeUnique.Descriptor,
+                                Descriptors.ASP011RouteParameterNameMustBeUnique,
                                 location));
                     }
 
@@ -145,7 +145,7 @@ namespace AspNetCoreAnalyzers
                     {
                         context.ReportDiagnostic(
                             Diagnostic.Create(
-                                ASP012UseExplicitRoute.Descriptor,
+                                Descriptors.ASP012UseExplicitRoute,
                                 spanReplacement.Node.GetLocation(),
                                 spanReplacement.Property(nameof(UrlTemplate))));
                     }
@@ -154,7 +154,7 @@ namespace AspNetCoreAnalyzers
                     {
                         context.ReportDiagnostic(
                             Diagnostic.Create(
-                                ASP013ControllerNameShouldMatchRoute.Descriptor,
+                                Descriptors.ASP013ControllerNameShouldMatchRoute,
                                 nameReplacement.Node,
                                 nameReplacement.Property(nameof(NameSyntax)),
                                 nameReplacement.NewText));

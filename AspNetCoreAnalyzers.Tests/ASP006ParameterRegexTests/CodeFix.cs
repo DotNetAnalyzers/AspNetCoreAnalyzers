@@ -8,7 +8,7 @@ namespace AspNetCoreAnalyzers.Tests.ASP006ParameterRegexTests
     public static class CodeFix
     {
         private static readonly DiagnosticAnalyzer Analyzer = new AttributeAnalyzer();
-        private static readonly ExpectedDiagnostic ExpectedDiagnostic = ExpectedDiagnostic.Create(ASP006ParameterRegex.Descriptor);
+        private static readonly ExpectedDiagnostic ExpectedDiagnostic = ExpectedDiagnostic.Create(Descriptors.ASP006ParameterRegex);
         private static readonly CodeFixProvider Fix = new TemplateTextFix();
 
         [TestCase("\"api/orders/{id:regex(↓a{1})}\"",                         "\"api/orders/{id:regex(a{{1}})}\"")]

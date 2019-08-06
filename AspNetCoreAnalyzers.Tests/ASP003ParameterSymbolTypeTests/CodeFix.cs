@@ -8,7 +8,7 @@ namespace AspNetCoreAnalyzers.Tests.ASP003ParameterSymbolTypeTests
     public static class CodeFix
     {
         private static readonly DiagnosticAnalyzer Analyzer = new AttributeAnalyzer();
-        private static readonly ExpectedDiagnostic ExpectedDiagnostic = ExpectedDiagnostic.Create(ASP003ParameterSymbolType.Descriptor);
+        private static readonly ExpectedDiagnostic ExpectedDiagnostic = ExpectedDiagnostic.Create(Descriptors.ASP003ParameterSymbolType);
         private static readonly CodeFixProvider Fix = new ParameterTypeFix();
 
         [TestCase("\"{id:int}\"",                                                 "int id")]

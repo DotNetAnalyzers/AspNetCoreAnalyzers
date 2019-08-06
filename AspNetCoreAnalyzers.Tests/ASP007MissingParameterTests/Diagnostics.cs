@@ -7,7 +7,7 @@ namespace AspNetCoreAnalyzers.Tests.ASP007MissingParameterTests
     public static class Diagnostics
     {
         private static readonly DiagnosticAnalyzer Analyzer = new AttributeAnalyzer();
-        private static readonly ExpectedDiagnostic ExpectedDiagnostic = ExpectedDiagnostic.Create(ASP007MissingParameter.Descriptor);
+        private static readonly ExpectedDiagnostic ExpectedDiagnostic = ExpectedDiagnostic.Create(Descriptors.ASP007MissingParameter);
 
         [Test]
         public static void WhenNoParameter()

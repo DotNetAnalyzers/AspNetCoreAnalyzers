@@ -7,7 +7,7 @@ namespace AspNetCoreAnalyzers.Tests.ASP001ParameterNameTests
     public static class Diagnostics
     {
         private static readonly DiagnosticAnalyzer Analyzer = new AttributeAnalyzer();
-        private static readonly ExpectedDiagnostic ExpectedDiagnostic = ExpectedDiagnostic.Create(ASP001ParameterSymbolName.Descriptor);
+        private static readonly ExpectedDiagnostic ExpectedDiagnostic = ExpectedDiagnostic.Create(Descriptors.ASP001ParameterSymbolName);
 
         [Test]
         public static void BothParameters()

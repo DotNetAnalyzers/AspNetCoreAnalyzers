@@ -7,7 +7,7 @@ namespace AspNetCoreAnalyzers.Tests.ASP011RouteParameterNameMustBeUniqueTests
     public static class Diagnostics
     {
         private static readonly DiagnosticAnalyzer Analyzer = new AttributeAnalyzer();
-        private static readonly ExpectedDiagnostic ExpectedDiagnostic = ExpectedDiagnostic.Create(ASP011RouteParameterNameMustBeUnique.Descriptor);
+        private static readonly ExpectedDiagnostic ExpectedDiagnostic = ExpectedDiagnostic.Create(Descriptors.ASP011RouteParameterNameMustBeUnique);
 
         [TestCase("\"api/{↓id}/{↓id}\"")]
         public static void WhenMethodAttribute(string template)

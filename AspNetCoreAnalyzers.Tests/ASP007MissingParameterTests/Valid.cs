@@ -8,7 +8,7 @@ namespace AspNetCoreAnalyzers.Tests.ASP007MissingParameterTests
     public static class Valid
     {
         private static readonly DiagnosticAnalyzer Analyzer = new AttributeAnalyzer();
-        private static readonly DiagnosticDescriptor Descriptor = ASP007MissingParameter.Descriptor;
+        private static readonly DiagnosticDescriptor Descriptor = Descriptors.ASP007MissingParameter;
 
         [TestCase("\"api/{text}\"")]
         [TestCase("@\"api/{text}\"")]

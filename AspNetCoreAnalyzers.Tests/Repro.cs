@@ -13,7 +13,7 @@ namespace AspNetCoreAnalyzers.Tests
     public static class Repro
     {
         ////ReSharper disable once UnusedMember.Local
-        private static readonly IReadOnlyList<DiagnosticAnalyzer> AllAnalyzers = typeof(HelpLink)
+        private static readonly IReadOnlyList<DiagnosticAnalyzer> AllAnalyzers = typeof(Descriptors)
             .Assembly.GetTypes()
             .Where(typeof(DiagnosticAnalyzer).IsAssignableFrom)
             .Select(t => (DiagnosticAnalyzer)Activator.CreateInstance(t))

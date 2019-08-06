@@ -16,7 +16,7 @@ namespace AspNetCoreAnalyzers
     public class RenameTypeFix : CodeFixProvider
     {
         public override ImmutableArray<string> FixableDiagnosticIds { get; } = ImmutableArray.Create(
-            ASP013ControllerNameShouldMatchRoute.DiagnosticId);
+            Descriptors.ASP013ControllerNameShouldMatchRoute.Id);
 
         public override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
 

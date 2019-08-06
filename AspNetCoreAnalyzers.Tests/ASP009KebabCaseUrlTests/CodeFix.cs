@@ -8,7 +8,7 @@ namespace AspNetCoreAnalyzers.Tests.ASP009KebabCaseUrlTests
     public static class CodeFix
     {
         private static readonly DiagnosticAnalyzer Analyzer = new AttributeAnalyzer();
-        private static readonly ExpectedDiagnostic ExpectedDiagnostic = ExpectedDiagnostic.Create(ASP009KebabCaseUrl.Descriptor);
+        private static readonly ExpectedDiagnostic ExpectedDiagnostic = ExpectedDiagnostic.Create(Descriptors.ASP009KebabCaseUrl);
         private static readonly CodeFixProvider Fix = new TemplateTextFix();
 
         [TestCase("\"api/↓Orders/{id}\"",    "\"api/orders/{id}\"")]

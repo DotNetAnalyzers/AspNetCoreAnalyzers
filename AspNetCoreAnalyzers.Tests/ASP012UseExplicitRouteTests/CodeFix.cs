@@ -8,7 +8,7 @@ namespace AspNetCoreAnalyzers.Tests.ASP012UseExplicitRouteTests
     public static class CodeFix
     {
         private static readonly DiagnosticAnalyzer Analyzer = new AttributeAnalyzer();
-        private static readonly ExpectedDiagnostic ExpectedDiagnostic = ExpectedDiagnostic.Create(ASP012UseExplicitRoute.Descriptor);
+        private static readonly ExpectedDiagnostic ExpectedDiagnostic = ExpectedDiagnostic.Create(Descriptors.ASP012UseExplicitRoute);
         private static readonly CodeFixProvider Fix = new TemplateTextFix();
 
         [TestCase("OrdersController",      "[controller]",          "orders")]
