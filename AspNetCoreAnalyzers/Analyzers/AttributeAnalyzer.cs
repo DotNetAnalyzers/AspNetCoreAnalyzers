@@ -8,7 +8,6 @@ namespace AspNetCoreAnalyzers
     using Microsoft.CodeAnalysis.CSharp;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
     using Microsoft.CodeAnalysis.Diagnostics;
-    using Attribute = Gu.Roslyn.AnalyzerExtensions.Attribute;
 
     [DiagnosticAnalyzer(LanguageNames.CSharp)]
     public class AttributeAnalyzer : DiagnosticAnalyzer
@@ -964,13 +963,13 @@ namespace AspNetCoreAnalyzers
             {
                 foreach (var attribute in attributeList.Attributes)
                 {
-                    if (Attribute.IsType(attribute, KnownSymbol.HttpDeleteAttribute, context.SemanticModel, context.CancellationToken) ||
-                        Attribute.IsType(attribute, KnownSymbol.HttpGetAttribute, context.SemanticModel, context.CancellationToken) ||
-                        Attribute.IsType(attribute, KnownSymbol.HttpHeadAttribute, context.SemanticModel, context.CancellationToken) ||
-                        Attribute.IsType(attribute, KnownSymbol.HttpOptionsAttribute, context.SemanticModel, context.CancellationToken) ||
-                        Attribute.IsType(attribute, KnownSymbol.HttpPatchAttribute, context.SemanticModel, context.CancellationToken) ||
-                        Attribute.IsType(attribute, KnownSymbol.HttpPostAttribute, context.SemanticModel, context.CancellationToken) ||
-                        Attribute.IsType(attribute, KnownSymbol.HttpPutAttribute, context.SemanticModel, context.CancellationToken))
+                    if (context.SemanticModel.TryGetNamedType(attribute, KnownSymbol.HttpDeleteAttribute, context.CancellationToken, out _) ||
+                        context.SemanticModel.TryGetNamedType(attribute, KnownSymbol.HttpGetAttribute, context.CancellationToken, out _) ||
+                        context.SemanticModel.TryGetNamedType(attribute, KnownSymbol.HttpHeadAttribute, context.CancellationToken, out _) ||
+                        context.SemanticModel.TryGetNamedType(attribute, KnownSymbol.HttpOptionsAttribute, context.CancellationToken, out _) ||
+                        context.SemanticModel.TryGetNamedType(attribute, KnownSymbol.HttpPatchAttribute, context.CancellationToken, out _) ||
+                        context.SemanticModel.TryGetNamedType(attribute, KnownSymbol.HttpPostAttribute, context.CancellationToken, out _) ||
+                        context.SemanticModel.TryGetNamedType(attribute, KnownSymbol.HttpPutAttribute, context.CancellationToken, out _))
                     {
                         return true;
                     }
