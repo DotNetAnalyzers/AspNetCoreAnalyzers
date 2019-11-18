@@ -714,18 +714,20 @@ STORAGE: NONE
 NUGET
   remote: https://www.nuget.org/api/v2
     AsyncUsageAnalyzers (1.0.0-alpha003)
-    Gu.Analyzers (1.5.5-dev)
-    IDisposableAnalyzers (2.1.2)
-    Microsoft.CodeAnalysis.FxCopAnalyzers (2.9.4)
-      Microsoft.CodeAnalysis.VersionCheckAnalyzer (2.9.4)
-      Microsoft.CodeQuality.Analyzers (2.9.4)
-      Microsoft.NetCore.Analyzers (2.9.4)
-      Microsoft.NetFramework.Analyzers (2.9.4)
-    Microsoft.CodeAnalysis.VersionCheckAnalyzer (2.9.4)
-    Microsoft.CodeQuality.Analyzers (2.9.4)
-    Microsoft.NetCore.Analyzers (2.9.4)
-    Microsoft.NetFramework.Analyzers (2.9.4)
-    StyleCop.Analyzers (1.1.118)
+    Gu.Analyzers (1.6.4-dev)
+    IDisposableAnalyzers (3.0)
+    Microsoft.CodeAnalysis.FxCopAnalyzers (2.9.7)
+      Microsoft.CodeAnalysis.VersionCheckAnalyzer (2.9.7)
+      Microsoft.CodeQuality.Analyzers (2.9.7)
+      Microsoft.NetCore.Analyzers (2.9.7)
+      Microsoft.NetFramework.Analyzers (2.9.7)
+    Microsoft.CodeAnalysis.VersionCheckAnalyzer (2.9.7)
+    Microsoft.CodeQuality.Analyzers (2.9.7)
+    Microsoft.NetCore.Analyzers (2.9.7)
+    Microsoft.NetFramework.Analyzers (2.9.7)
+    StyleCop.Analyzers (1.2.0-beta.113)
+      StyleCop.Analyzers.Unstable (>= 1.2.0.113)
+    StyleCop.Analyzers.Unstable (1.2.0.113)
 
 GROUP Build
 NUGET
