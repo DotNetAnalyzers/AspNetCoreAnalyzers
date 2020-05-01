@@ -6,4 +6,8 @@
     <Nullable>enable</Nullable>
     <CodeAnalysisRuleSet>ValidCode.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="5.0.0-preview.3.20181.2" />
+  </ItemGroup>
 </Project>
