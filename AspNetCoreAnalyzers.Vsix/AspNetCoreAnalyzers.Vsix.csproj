@@ -3,15 +3,14 @@
   <Import Sdk="Microsoft.NET.Sdk" Project="Sdk.props" />
 
   <PropertyGroup>
-    <TargetFramework>net472</TargetFramework>
+    <TargetFramework>net461</TargetFramework>
     <RootNamespace>AspNetCoreAnalyzers</RootNamespace>
     <TargetName>AspNetCoreAnalyzers</TargetName>
     <NoWarn>NU1605</NoWarn>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
   </PropertyGroup>
 
   <PropertyGroup>
-    <SchemaVersion>2.0</SchemaVersion>
-    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     <GeneratePkgDefFile>false</GeneratePkgDefFile>
     <IncludeAssemblyInVSIXContainer>false</IncludeAssemblyInVSIXContainer>
     <IncludeDebugSymbolsInVSIXContainer>false</IncludeDebugSymbolsInVSIXContainer>
@@ -31,18 +30,13 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.VSSDK.BuildTools" Version="16.7.3069" PrivateAssets="all" />
+    <PackageReference Include="Microsoft.VSSDK.BuildTools" Version="16.8.2" PrivateAssets="all" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\AspNetCoreAnalyzers\AspNetCoreAnalyzers.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <None Include="source.extension.vsixmanifest">
-      <SubType>Designer</SubType>
-    </None>
-  </ItemGroup>
 
   <ItemGroup>
     <!-- https://github.com/dotnet/sdk/issues/433 -->
@@ -52,8 +46,9 @@
   </ItemGroup>
 
   <Import Sdk="Microsoft.NET.Sdk" Project="Sdk.targets" />
+  
   <Import Project="$(VSToolsPath)\VSSDK\Microsoft.VsSDK.targets" Condition="Exists('$(VSToolsPath)\VSSDK\Microsoft.VsSDK.targets')" />
-
+  
   <Target Name="IncludeNuGetPackageReferences" AfterTargets="GetVsixSourceItems">
     <ItemGroup>
       <VSIXSourceItem Include="@(ReferenceCopyLocalPaths)" Condition="'%(ReferenceCopyLocalPaths.NuGetPackageId)' == 'Gu.Roslyn.Extensions'" />
