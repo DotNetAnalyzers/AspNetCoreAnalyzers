@@ -9,6 +9,6 @@
 
   <ItemGroup>
     <PackageReference Include="AspNetCoreAnalyzers" Version="0.2.0-dev" PrivateAssets="all" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="5.0.0-preview.3.20181.2" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="5.0.0-preview.7.20365.15" />
   </ItemGroup>
 </Project>
