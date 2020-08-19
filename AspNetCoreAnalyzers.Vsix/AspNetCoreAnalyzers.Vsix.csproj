@@ -37,6 +37,11 @@
     <ProjectReference Include="..\AspNetCoreAnalyzers\AspNetCoreAnalyzers.csproj" />
   </ItemGroup>
 
+  <Target Name="GetVsixVersion" Returns="$(VsixVersion)">
+    <PropertyGroup>
+      <VsixVersion>$(FileVersion)</VsixVersion>
+    </PropertyGroup>
+  </Target>
 
   <ItemGroup>
     <!-- https://github.com/dotnet/sdk/issues/433 -->
