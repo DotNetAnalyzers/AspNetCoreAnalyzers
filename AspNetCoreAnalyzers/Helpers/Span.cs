@@ -1,4 +1,4 @@
-namespace AspNetCoreAnalyzers
+﻿namespace AspNetCoreAnalyzers
 {
     using System;
     using Microsoft.CodeAnalysis;
@@ -35,7 +35,7 @@ namespace AspNetCoreAnalyzers
             return this.Literal.Equals(other.Literal) && this.TextSpan == other.TextSpan;
         }
 
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
             return obj is Span other &&
                    this.Equals(other);

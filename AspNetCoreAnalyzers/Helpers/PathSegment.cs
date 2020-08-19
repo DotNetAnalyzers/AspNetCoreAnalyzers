@@ -1,4 +1,4 @@
-namespace AspNetCoreAnalyzers
+﻿namespace AspNetCoreAnalyzers
 {
     using System;
     using System.Diagnostics;
@@ -99,7 +99,7 @@ namespace AspNetCoreAnalyzers
             return this.Span.Equals(other.Span);
         }
 
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
             return obj is PathSegment other &&
                    this.Equals(other);

@@ -3,6 +3,8 @@
     using System;
     using System.Collections.Generic;
     using System.Collections.Immutable;
+    using System.Diagnostics.CodeAnalysis;
+    using System.Globalization;
     using Gu.Roslyn.AnalyzerExtensions;
     using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.CSharp;
@@ -180,7 +182,7 @@
                     // Using TryFirst instead of Count() here as a silly optimization
                     // As it is called after TrySingle it means Count() > 1
                     if (method.Parameters.TryFirst(x => IsOrphan(x), out _) &&
-                        method.TrySingleDeclaration(context.CancellationToken, out MethodDeclarationSyntax methodDeclaration))
+                        method.TrySingleDeclaration(context.CancellationToken, out MethodDeclarationSyntax? methodDeclaration))
                     {
                         nameReplacement = new Replacement<Location>(methodDeclaration.ParameterList.GetLocation(), null);
                         spanReplacement = new Replacement<Span>(templateParameter.Name, null);
@@ -388,7 +390,7 @@
 
         private static bool HasWrongSyntax(PathSegment segment, out Replacement<Span> replacement)
         {
-            if (segment.Parameter is TemplateParameter parameter)
+            if (segment.Parameter is  { } parameter)
             {
                 if (parameter.Name.EndsWith("}", StringComparison.Ordinal))
                 {
@@ -572,9 +574,9 @@
             return false;
         }
 
-        private static bool HasMissingMethodParameter(PathSegment segment, SyntaxNodeAnalysisContext context, out Location location, out string name)
+        private static bool HasMissingMethodParameter(PathSegment segment, SyntaxNodeAnalysisContext context, [NotNullWhen(true)] out Location? location, [NotNullWhen(true)] out string? name)
         {
-            if (segment.Parameter is TemplateParameter templateParameter)
+            if (segment.Parameter is { } templateParameter)
             {
                 if (context.ContainingSymbol is IMethodSymbol containingMethod &&
                     !TryFindParameter(templateParameter, containingMethod, out _))
@@ -585,7 +587,7 @@
                 }
 
                 if (context.ContainingSymbol is INamedTypeSymbol &&
-                    context.Node.TryFirstAncestor(out ClassDeclarationSyntax classDeclaration) &&
+                    context.Node.TryFirstAncestor(out ClassDeclarationSyntax? classDeclaration) &&
                     !classDeclaration.Modifiers.Any(SyntaxKind.PartialKeyword))
                 {
                     foreach (var member in classDeclaration.Members)
@@ -613,7 +615,7 @@
 
         private static bool HasInvalidName(PathSegment segment, out Replacement<Span> replacement)
         {
-            if (segment.Parameter is TemplateParameter parameter)
+            if (segment.Parameter is { } parameter)
             {
                 if (parameter.Name.StartsWith(" ", StringComparison.OrdinalIgnoreCase) ||
                     parameter.Name.EndsWith(" ", StringComparison.OrdinalIgnoreCase))
@@ -682,7 +684,7 @@
                         _ = builder.Append("-");
                     }
 
-                    _ = builder.Append(char.ToLower(c));
+                    _ = builder.Append(char.ToLower(c, CultureInfo.InvariantCulture));
                 }
                 else if (c == '_')
                 {
@@ -889,7 +891,7 @@
             }
         }
 
-        private static bool TryFindParameter(TemplateParameter templateParameter, IMethodSymbol method, out IParameterSymbol result)
+        private static bool TryFindParameter(TemplateParameter templateParameter, IMethodSymbol method, [NotNullWhen(true)] out IParameterSymbol? result)
         {
             foreach (var candidate in method.Parameters)
             {
@@ -920,9 +922,9 @@
             return true;
         }
 
-        private static bool TryFindParameter(TemplateParameter templateParameter, MethodDeclarationSyntax methodDeclaration, out ParameterSyntax result)
+        private static bool TryFindParameter(TemplateParameter templateParameter, MethodDeclarationSyntax methodDeclaration, [NotNullWhen(true)] out ParameterSyntax? result)
         {
-            if (methodDeclaration.ParameterList is ParameterListSyntax parameterList)
+            if (methodDeclaration.ParameterList is  { } parameterList)
             {
                 foreach (var candidate in parameterList.Parameters)
                 {

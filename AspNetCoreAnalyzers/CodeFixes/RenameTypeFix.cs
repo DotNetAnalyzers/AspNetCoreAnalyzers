@@ -1,4 +1,4 @@
-namespace AspNetCoreAnalyzers
+﻿namespace AspNetCoreAnalyzers
 {
     using System.Collections.Immutable;
     using System.Composition;
@@ -28,7 +28,7 @@ namespace AspNetCoreAnalyzers
                                              .ConfigureAwait(false);
             foreach (var diagnostic in context.Diagnostics)
             {
-                if (syntaxRoot.TryFindNodeOrAncestor(diagnostic, out ClassDeclarationSyntax classDeclarationSyntax) &&
+                if (syntaxRoot.TryFindNodeOrAncestor(diagnostic, out ClassDeclarationSyntax? classDeclarationSyntax) &&
                     semanticModel.TryGetSymbol(classDeclarationSyntax, context.CancellationToken, out var parameter) &&
                     diagnostic.Properties.TryGetValue(nameof(NameSyntax), out var name))
                 {
