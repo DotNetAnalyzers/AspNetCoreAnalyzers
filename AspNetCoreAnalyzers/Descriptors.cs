@@ -1,10 +1,10 @@
-namespace AspNetCoreAnalyzers
+﻿namespace AspNetCoreAnalyzers
 {
     using Microsoft.CodeAnalysis;
 
-    public static class Descriptors
+    internal static class Descriptors
     {
-        public static readonly DiagnosticDescriptor ASP001ParameterSymbolName = Create(
+        internal static readonly DiagnosticDescriptor ASP001ParameterSymbolName = Create(
             id: "ASP001",
             title: "Parameter name does not match the name specified by the route parameter.",
             messageFormat: "Parameter name does not match the name specified by the route parameter.",
@@ -13,7 +13,7 @@ namespace AspNetCoreAnalyzers
             isEnabledByDefault: true,
             description: "Parameter name does not match the name specified by the route parameter.");
 
-        public static readonly DiagnosticDescriptor ASP002RouteParameterName = Descriptors.Create(
+        internal static readonly DiagnosticDescriptor ASP002RouteParameterName = Descriptors.Create(
             id: "ASP002",
             title: "Route parameter name does not match the method parameter name.",
             messageFormat: "Route parameter name does not match the method parameter name.",
@@ -22,7 +22,7 @@ namespace AspNetCoreAnalyzers
             isEnabledByDefault: true,
             description: "Route parameter name does not match the method parameter name.");
 
-        public static readonly DiagnosticDescriptor ASP003ParameterSymbolType = Descriptors.Create(
+        internal static readonly DiagnosticDescriptor ASP003ParameterSymbolType = Descriptors.Create(
             id: "ASP003",
             title: "Parameter type does not match the type specified by the name specified by the route parameter.",
             messageFormat: "Parameter type does not match the type specified by the name specified by the route parameter.",
@@ -31,7 +31,7 @@ namespace AspNetCoreAnalyzers
             isEnabledByDefault: true,
             description: "Parameter type does not match the type specified by the name specified by the route parameter.");
 
-        public static readonly DiagnosticDescriptor ASP004RouteParameterType = Descriptors.Create(
+        internal static readonly DiagnosticDescriptor ASP004RouteParameterType = Descriptors.Create(
             id: "ASP004",
             title: "Route parameter type does not match the method parameter type.",
             messageFormat: "Route parameter type does not match the method parameter type.",
@@ -40,7 +40,7 @@ namespace AspNetCoreAnalyzers
             isEnabledByDefault: true,
             description: "Route parameter type does not match the method parameter type.");
 
-        public static readonly DiagnosticDescriptor ASP005ParameterSyntax = Descriptors.Create(
+        internal static readonly DiagnosticDescriptor ASP005ParameterSyntax = Descriptors.Create(
             id: "ASP005",
             title: "Syntax error in parameter.",
             messageFormat: "Syntax error in parameter.",
@@ -52,7 +52,7 @@ namespace AspNetCoreAnalyzers
         /// <summary>
         /// https://docs.microsoft.com/en-us/aspnet/core/fundamentals/routing?view=aspnetcore-2.2#regular-expressions.
         /// </summary>
-        public static readonly DiagnosticDescriptor ASP006ParameterRegex = Descriptors.Create(
+        internal static readonly DiagnosticDescriptor ASP006ParameterRegex = Descriptors.Create(
             id: "ASP006",
             title: "Escape constraint regex.",
             messageFormat: "Escape constraint regex.",
@@ -61,7 +61,7 @@ namespace AspNetCoreAnalyzers
             isEnabledByDefault: true,
             description: "Escape constraint regex.");
 
-        public static readonly DiagnosticDescriptor ASP007MissingParameter = Descriptors.Create(
+        internal static readonly DiagnosticDescriptor ASP007MissingParameter = Descriptors.Create(
             id: "ASP007",
             title: "The method has no corresponding parameter.",
             messageFormat: "The route template has parameter '{0}' that does not have a corresponding method parameter.",
@@ -70,7 +70,7 @@ namespace AspNetCoreAnalyzers
             isEnabledByDefault: true,
             description: "The method has no corresponding parameter.");
 
-        public static readonly DiagnosticDescriptor ASP008ValidRouteParameterName = Descriptors.Create(
+        internal static readonly DiagnosticDescriptor ASP008ValidRouteParameterName = Descriptors.Create(
             id: "ASP008",
             title: "Invalid route parameter name.",
             messageFormat: "Invalid route parameter name.",
@@ -79,7 +79,7 @@ namespace AspNetCoreAnalyzers
             isEnabledByDefault: true,
             description: "Invalid route parameter name.");
 
-        public static readonly DiagnosticDescriptor ASP009KebabCaseUrl = Descriptors.Create(
+        internal static readonly DiagnosticDescriptor ASP009KebabCaseUrl = Descriptors.Create(
             id: "ASP009",
             title: "Use kebab-cased urls.",
             messageFormat: "Use kebab-cased urls.",
@@ -88,7 +88,7 @@ namespace AspNetCoreAnalyzers
             isEnabledByDefault: true,
             description: "Use kebab-cased urls.");
 
-        public static readonly DiagnosticDescriptor ASP010UrlSyntax = Descriptors.Create(
+        internal static readonly DiagnosticDescriptor ASP010UrlSyntax = Descriptors.Create(
             id: "ASP010",
             title: "Unexpected character in url.",
             messageFormat: "Literal sections cannot contain the '{0}' character",
@@ -97,7 +97,7 @@ namespace AspNetCoreAnalyzers
             isEnabledByDefault: true,
             description: "Unexpected character in url.");
 
-        public static readonly DiagnosticDescriptor ASP011RouteParameterNameMustBeUnique = Descriptors.Create(
+        internal static readonly DiagnosticDescriptor ASP011RouteParameterNameMustBeUnique = Descriptors.Create(
             id: "ASP011",
             title: "Route parameter appears more than once.",
             messageFormat: "Route parameter appears more than once.",
@@ -106,7 +106,7 @@ namespace AspNetCoreAnalyzers
             isEnabledByDefault: true,
             description: "Route parameter appears more than once.");
 
-        public static readonly DiagnosticDescriptor ASP012UseExplicitRoute = Descriptors.Create(
+        internal static readonly DiagnosticDescriptor ASP012UseExplicitRoute = Descriptors.Create(
             id: "ASP012",
             title: "Don't use [controller].",
             messageFormat: "Don't use [controller].",
@@ -115,7 +115,7 @@ namespace AspNetCoreAnalyzers
             isEnabledByDefault: true,
             description: "Don't use [controller]. Prefer explicit string so that renaming the class is not a breaking change.");
 
-        public static readonly DiagnosticDescriptor ASP013ControllerNameShouldMatchRoute = Descriptors.Create(
+        internal static readonly DiagnosticDescriptor ASP013ControllerNameShouldMatchRoute = Descriptors.Create(
             id: "ASP013",
             title: "Name the controller to match the route.",
             messageFormat: "Name the controller to match the route. Expected: '{0}'.",
@@ -143,7 +143,7 @@ namespace AspNetCoreAnalyzers
           string category,
           DiagnosticSeverity defaultSeverity,
           bool isEnabledByDefault,
-          string description = null,
+          string? description = null,
           params string[] customTags)
         {
             return new DiagnosticDescriptor(

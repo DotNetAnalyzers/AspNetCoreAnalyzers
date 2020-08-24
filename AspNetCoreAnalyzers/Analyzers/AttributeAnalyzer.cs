@@ -48,7 +48,7 @@
             if (!context.IsExcludedFromAnalysis() &&
                 context.Node is AttributeSyntax attribute &&
                 UrlAttribute.TryCreate(attribute, context, out var urlAttribute) &&
-                urlAttribute.UrlTemplate is UrlTemplate template)
+                urlAttribute.UrlTemplate is { } template)
             {
                 foreach (var segment in template.Path)
                 {
@@ -169,7 +169,7 @@
         private static bool HasWrongName(PathSegment segment, UrlAttribute urlAttribute, SyntaxNodeAnalysisContext context, out Replacement<Location> nameReplacement, out Replacement<Span> spanReplacement)
         {
             if (context.ContainingSymbol is IMethodSymbol method &&
-                segment.Parameter is TemplateParameter templateParameter)
+                segment.Parameter is { } templateParameter)
             {
                 if (!TryFindParameter(templateParameter, method, out _))
                 {
@@ -200,11 +200,11 @@
             bool IsOrphan(IParameterSymbol p)
             {
                 if (IsFromRoute(p) &&
-                    urlAttribute.UrlTemplate is UrlTemplate template)
+                    urlAttribute.UrlTemplate is { } template)
                 {
                     foreach (var candidateSegment in template.Path)
                     {
-                        if (candidateSegment.Parameter is TemplateParameter candidateParameter &&
+                        if (candidateSegment.Parameter is { } candidateParameter &&
                             candidateParameter.Name.Equals(p.Name, StringComparison.Ordinal))
                         {
                             return false;
@@ -229,7 +229,7 @@
                 }
 
                 if (context.ContainingSymbol is INamedTypeSymbol &&
-                    context.Node.TryFirstAncestor(out ClassDeclarationSyntax classDeclaration) &&
+                    context.Node.TryFirstAncestor(out ClassDeclarationSyntax? classDeclaration) &&
                     !classDeclaration.Modifiers.Any(SyntaxKind.PartialKeyword))
                 {
                     foreach (var member in classDeclaration.Members)
@@ -313,11 +313,11 @@
                     return true;
                 }
 
-                type = null;
+                type = null!;
                 return false;
             }
 
-            string GetCorrectConstraintType(IParameterSymbol parameterSymbol, RouteConstraint constraint)
+            string? GetCorrectConstraintType(IParameterSymbol parameterSymbol, RouteConstraint constraint)
             {
                 if (constraint.Span.Equals("bool", StringComparison.Ordinal) ||
                     constraint.Span.Equals("decimal", StringComparison.Ordinal) ||
@@ -328,7 +328,9 @@
                     constraint.Span.Equals("datetime", StringComparison.Ordinal) ||
                     constraint.Span.Equals("guid", StringComparison.Ordinal))
                 {
-                    return parameterSymbol.Type.ToDisplayString(SymbolDisplayFormat.MinimallyQualifiedFormat).ToLower();
+#pragma warning disable CA1308 // Normalize strings to uppercase
+                    return parameterSymbol.Type.ToDisplayString(SymbolDisplayFormat.MinimallyQualifiedFormat).ToLower(CultureInfo.InvariantCulture);
+#pragma warning restore CA1308 // Normalize strings to uppercase
                 }
 
                 return null;
@@ -845,7 +847,7 @@
             replacement = default;
             return false;
 
-            StringBuilderPool.PooledStringBuilder ClassName()
+            StringBuilderPool.PooledStringBuilder? ClassName()
             {
                 var builder = StringBuilderPool.Borrow()
                                                .Append(char.ToUpper(segment.Span[0], CultureInfo.InvariantCulture));

@@ -32,6 +32,16 @@
             return !left.Equals(right);
         }
 
+        public bool Equals(UrlAttribute other)
+        {
+            return Equals(this.Attribute, other.Attribute);
+        }
+
+        public override bool Equals(object? obj) => obj is UrlAttribute other &&
+                                                    this.Equals(other);
+
+        public override int GetHashCode() => this.Attribute?.GetHashCode() ?? 0;
+
         internal static bool TryCreate(AttributeSyntax attribute, SyntaxNodeAnalysisContext context, out UrlAttribute result)
         {
             if (context.SemanticModel.TryGetType(attribute, context.CancellationToken, out var type) &&
@@ -63,16 +73,6 @@
             result = default;
             return false;
         }
-
-        public bool Equals(UrlAttribute other)
-        {
-            return Equals(this.Attribute, other.Attribute);
-        }
-
-        public override bool Equals(object? obj) => obj is UrlAttribute other &&
-                                                    this.Equals(other);
-
-        public override int GetHashCode() => this.Attribute?.GetHashCode() ?? 0;
 
         internal bool TryGetParentMember(out MemberDeclarationSyntax memberDeclaration)
         {

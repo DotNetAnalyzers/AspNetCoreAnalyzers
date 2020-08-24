@@ -27,6 +27,21 @@
             return !left.Equals(right);
         }
 
+        public bool Equals(TemplateParameter other)
+        {
+            return this.Name.Equals(other.Name);
+        }
+
+        public override bool Equals(object? obj)
+        {
+            return obj is TemplateParameter other && this.Equals(other);
+        }
+
+        public override int GetHashCode()
+        {
+            return this.Name.GetHashCode();
+        }
+
         internal static bool TryParse(Span span, out TemplateParameter result)
         {
             if (span.TryIndexOf('{', out var start) &&
@@ -81,21 +96,6 @@
 
             result = default;
             return false;
-        }
-
-        public bool Equals(TemplateParameter other)
-        {
-            return this.Name.Equals(other.Name);
-        }
-
-        public override bool Equals(object? obj)
-        {
-            return obj is TemplateParameter other && this.Equals(other);
-        }
-
-        public override int GetHashCode()
-        {
-            return this.Name.GetHashCode();
         }
     }
 }

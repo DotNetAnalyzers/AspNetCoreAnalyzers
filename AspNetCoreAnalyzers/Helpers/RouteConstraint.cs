@@ -23,6 +23,22 @@
             return !left.Equals(right);
         }
 
+        public bool Equals(RouteConstraint other)
+        {
+            return this.Span.Equals(other.Span);
+        }
+
+        public override bool Equals(object? obj)
+        {
+            return obj is RouteConstraint other &&
+                   this.Equals(other);
+        }
+
+        public override int GetHashCode()
+        {
+            return this.Span.GetHashCode();
+        }
+
         internal static bool TryRead(Span span, int pos, out RouteConstraint constraint)
         {
             if (pos >= span.TextSpan.End ||
@@ -50,22 +66,6 @@
 
             constraint = default;
             return false;
-        }
-
-        public bool Equals(RouteConstraint other)
-        {
-            return this.Span.Equals(other.Span);
-        }
-
-        public override bool Equals(object? obj)
-        {
-            return obj is RouteConstraint other &&
-                   this.Equals(other);
-        }
-
-        public override int GetHashCode()
-        {
-            return this.Span.GetHashCode();
         }
     }
 }

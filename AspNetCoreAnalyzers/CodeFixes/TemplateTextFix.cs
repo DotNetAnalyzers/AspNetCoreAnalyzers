@@ -44,7 +44,7 @@
 
                     SyntaxToken WithValueText()
                     {
-                        var token = literal.Token;
+                        var token = literal!.Token;
                         return SyntaxFactory.Token(
                             token.LeadingTrivia,
                             token.Kind(),
@@ -55,8 +55,8 @@
                         string ReplaceSpan(string oldText, int offset)
                         {
                             return StringBuilderPool.Borrow()
-                                                    .Append(oldText, 0, diagnostic.Location.SourceSpan.Start - offset)
-                                                    .Append(text)
+                                                    .Append(oldText, 0, diagnostic!.Location.SourceSpan.Start - offset)
+                                                    .Append(text!)
                                                     .Append(oldText, diagnostic.Location.SourceSpan.End - offset)
                                                     .Return();
                         }

@@ -33,6 +33,22 @@
             return !left.Equals(right);
         }
 
+        public bool Equals(UrlTemplate other)
+        {
+            return this.Literal.Equals(other.Literal);
+        }
+
+        public override bool Equals(object? obj)
+        {
+            return obj is UrlTemplate other &&
+                   this.Equals(other);
+        }
+
+        public override int GetHashCode()
+        {
+            return this.Literal.GetHashCode();
+        }
+
         internal static bool TryParse(LiteralExpressionSyntax literal, out UrlTemplate template)
         {
             if (literal.IsKind(SyntaxKind.StringLiteralExpression))
@@ -55,22 +71,6 @@
 
             template = default;
             return false;
-        }
-
-        public bool Equals(UrlTemplate other)
-        {
-            return this.Literal.Equals(other.Literal);
-        }
-
-        public override bool Equals(object? obj)
-        {
-            return obj is UrlTemplate other &&
-                   this.Equals(other);
-        }
-
-        public override int GetHashCode()
-        {
-            return this.Literal.GetHashCode();
         }
     }
 }
