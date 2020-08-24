@@ -1,7 +1,7 @@
-#pragma warning disable CA1055 // Uri return values should not be strings
+﻿#pragma warning disable CA1055 // Uri return values should not be strings
 #pragma warning disable CA1056 // Uri properties should not be strings
 #pragma warning disable CA1721 // Property names should not match get methods
-namespace AspNetCoreAnalyzers.Test
+namespace AspNetCoreAnalyzers.Tests
 {
     using System;
     using System.Collections.Concurrent;
