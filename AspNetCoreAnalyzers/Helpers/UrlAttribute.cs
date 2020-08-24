@@ -1,4 +1,4 @@
-namespace AspNetCoreAnalyzers
+﻿namespace AspNetCoreAnalyzers
 {
     using System;
     using Gu.Roslyn.AnalyzerExtensions;
@@ -69,8 +69,8 @@ namespace AspNetCoreAnalyzers
             return Equals(this.Attribute, other.Attribute);
         }
 
-        public override bool Equals(object obj) => obj is UrlAttribute other &&
-                                                   this.Equals(other);
+        public override bool Equals(object? obj) => obj is UrlAttribute other &&
+                                                    this.Equals(other);
 
         public override int GetHashCode() => this.Attribute?.GetHashCode() ?? 0;
 

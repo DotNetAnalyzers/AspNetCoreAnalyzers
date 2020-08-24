@@ -1,4 +1,4 @@
-namespace AspNetCoreAnalyzers
+﻿namespace AspNetCoreAnalyzers
 {
     using System;
     using System.Diagnostics;
@@ -103,7 +103,7 @@ namespace AspNetCoreAnalyzers
             return this.LiteralExpression.Equals(other.LiteralExpression);
         }
 
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
             return obj is StringLiteral other &&
                    this.Equals(other);

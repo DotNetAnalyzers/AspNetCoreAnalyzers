@@ -1,4 +1,4 @@
-namespace AspNetCoreAnalyzers
+﻿namespace AspNetCoreAnalyzers
 {
     using System;
     using System.Collections.Immutable;
@@ -88,7 +88,7 @@ namespace AspNetCoreAnalyzers
             return this.Name.Equals(other.Name);
         }
 
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
             return obj is TemplateParameter other && this.Equals(other);
         }

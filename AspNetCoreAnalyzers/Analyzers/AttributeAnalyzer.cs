@@ -5,7 +5,9 @@
     using System.Collections.Immutable;
     using System.Diagnostics.CodeAnalysis;
     using System.Globalization;
+
     using Gu.Roslyn.AnalyzerExtensions;
+
     using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.CSharp;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -218,8 +220,7 @@
 
         private static bool HasWrongType(PathSegment segment, SyntaxNodeAnalysisContext context, out Replacement<TypeSyntax> typeReplacement, out Replacement<Span> constraintReplacement)
         {
-            if (segment.Parameter is TemplateParameter templateParameter &&
-                templateParameter.Constraints is ImmutableArray<RouteConstraint> constraints)
+            if (segment.Parameter is { Constraints: { } constraints } templateParameter)
             {
                 if (context.ContainingSymbol is IMethodSymbol containingMethod &&
                     TryFindParameter(templateParameter, containingMethod, out var parameterSymbol))
@@ -390,7 +391,7 @@
 
         private static bool HasWrongSyntax(PathSegment segment, out Replacement<Span> replacement)
         {
-            if (segment.Parameter is  { } parameter)
+            if (segment.Parameter is { } parameter)
             {
                 if (parameter.Name.EndsWith("}", StringComparison.Ordinal))
                 {
@@ -643,7 +644,7 @@
             return false;
         }
 
-        private static bool ShouldKebabCase(PathSegment segment, out string kebabCase)
+        private static bool ShouldKebabCase(PathSegment segment, [NotNullWhen(true)] out string? kebabCase)
         {
             if (segment.Parameter == null &&
                 IsHumpOrSnakeCased(segment.Span))
@@ -702,7 +703,7 @@
         /// <summary>
         /// https://tools.ietf.org/html/rfc3986#section-2.2.
         /// </summary>
-        private static bool HasSyntaxError(PathSegment segment, out Location location)
+        private static bool HasSyntaxError(PathSegment segment, [NotNullWhen(true)] out Location? location)
         {
             if (segment.Parameter == null)
             {
@@ -727,7 +728,7 @@
             return false;
         }
 
-        private static bool IsMultipleOccurringParameter(PathSegment segment, UrlAttribute urlAttribute, SyntaxNodeAnalysisContext context, out Location location)
+        private static bool IsMultipleOccurringParameter(PathSegment segment, UrlAttribute urlAttribute, SyntaxNodeAnalysisContext context, [NotNullWhen(true)] out Location? location)
         {
             if (segment.Parameter is TemplateParameter parameter &&
                 urlAttribute.UrlTemplate is UrlTemplate template)
@@ -771,7 +772,7 @@
             bool ContainsName(ImmutableArray<PathSegment> candidates)
             {
                 return candidates.TryFirst(
-                       x => x.Parameter is TemplateParameter other &&
+                       x => x.Parameter is { } other &&
                        other != parameter &&
                        parameter.Name.TextEquals(other.Name),
                        out _);
@@ -784,7 +785,7 @@
                     foreach (var attribute in attributeList.Attributes)
                     {
                         if (UrlAttribute.TryCreate(attribute, context, out var candidate) &&
-                            candidate.UrlTemplate is UrlTemplate temp)
+                            candidate.UrlTemplate is { } temp)
                         {
                             result = temp;
                             return true;
@@ -816,7 +817,7 @@
 
         private static bool ShouldRenameController(PathSegment segment, UrlAttribute urlAttribute, SyntaxNodeAnalysisContext context, out Replacement<Location> replacement)
         {
-            if (urlAttribute.UrlTemplate is UrlTemplate template &&
+            if (urlAttribute.UrlTemplate is { } template &&
                 template.Path.TryLast(x => x.Parameter == null, out var last) &&
                 last == segment &&
                 segment.Span.Length > 0 &&
@@ -847,7 +848,7 @@
             StringBuilderPool.PooledStringBuilder ClassName()
             {
                 var builder = StringBuilderPool.Borrow()
-                                               .Append(char.ToUpper(segment.Span[0]));
+                                               .Append(char.ToUpper(segment.Span[0], CultureInfo.InvariantCulture));
                 for (var i = 1; i < segment.Span.Length; i++)
                 {
                     var c = segment.Span[i];
@@ -861,7 +862,7 @@
                         }
 
                         i++;
-                        _ = builder.Append(char.ToUpper(segment.Span[i]));
+                        _ = builder.Append(char.ToUpper(segment.Span[i], CultureInfo.InvariantCulture));
                     }
                     else
                     {
@@ -924,7 +925,7 @@
 
         private static bool TryFindParameter(TemplateParameter templateParameter, MethodDeclarationSyntax methodDeclaration, [NotNullWhen(true)] out ParameterSyntax? result)
         {
-            if (methodDeclaration.ParameterList is  { } parameterList)
+            if (methodDeclaration.ParameterList is { } parameterList)
             {
                 foreach (var candidate in parameterList.Parameters)
                 {
@@ -985,9 +986,9 @@
         {
             internal readonly T Node;
 
-            internal readonly string NewText;
+            internal readonly string? NewText;
 
-            internal Replacement(T node, string newText)
+            internal Replacement(T node, string? newText)
             {
                 this.Node = node;
                 this.NewText = newText;
@@ -995,7 +996,7 @@
 
             internal ImmutableDictionary<string, string> Property(string key)
             {
-                return this.NewText is string value
+                return this.NewText is { } value
                     ? ImmutableDictionary<string, string>.Empty.Add(key, value)
                     : ImmutableDictionary<string, string>.Empty;
             }

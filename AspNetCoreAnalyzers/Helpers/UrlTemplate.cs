@@ -1,4 +1,4 @@
-namespace AspNetCoreAnalyzers
+﻿namespace AspNetCoreAnalyzers
 {
     using System;
     using System.Collections.Immutable;
@@ -62,7 +62,7 @@ namespace AspNetCoreAnalyzers
             return this.Literal.Equals(other.Literal);
         }
 
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
             return obj is UrlTemplate other &&
                    this.Equals(other);

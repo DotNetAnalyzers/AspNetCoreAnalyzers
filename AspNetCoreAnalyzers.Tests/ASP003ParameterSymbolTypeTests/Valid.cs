@@ -1,4 +1,4 @@
-namespace AspNetCoreAnalyzers.Tests.ASP003ParameterSymbolTypeTests
+﻿namespace AspNetCoreAnalyzers.Tests.ASP003ParameterSymbolTypeTests
 {
     using Gu.Roslyn.Asserts;
     using Microsoft.CodeAnalysis.Diagnostics;
@@ -156,8 +156,7 @@ namespace AspBox
         }
     }
 }".AssertReplace("int", type)
-  .AssertReplace("{value}", constraint)
-                ;
+  .AssertReplace("{value}", constraint);
             RoslynAssert.Valid(Analyzer, code);
         }
 
