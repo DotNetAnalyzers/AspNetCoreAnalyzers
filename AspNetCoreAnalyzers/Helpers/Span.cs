@@ -4,19 +4,19 @@
     using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.Text;
 
-    public struct Span : IEquatable<Span>
+    internal struct Span : IEquatable<Span>
     {
-        public Span(StringLiteral literal, int start, int end)
+        internal Span(StringLiteral literal, int start, int end)
         {
             this.Literal = literal;
             this.TextSpan = new TextSpan(start, end - start);
         }
 
-        public StringLiteral Literal { get; }
+        internal StringLiteral Literal { get; }
 
-        public TextSpan TextSpan { get; }
+        internal TextSpan TextSpan { get; }
 
-        public int Length => this.TextSpan.Length;
+        internal int Length => this.TextSpan.Length;
 
         public char this[int index] => this.Literal.ValueText[this.TextSpan.Start + index];
 
@@ -55,11 +55,11 @@
             ? string.Empty
             : this.Literal.ValueText.Substring(this.TextSpan.Start, this.TextSpan.Length);
 
-        public string ToString(Location location) => this.Literal.ToString(location);
+        internal string ToString(Location location) => this.Literal.ToString(location);
 
-        public Location GetLocation() => this.Literal.GetLocation(this.TextSpan);
+        internal Location GetLocation() => this.Literal.GetLocation(this.TextSpan);
 
-        public Location GetLocation(int start, int length) => this.Literal.GetLocation(new TextSpan(this.TextSpan.Start + start, length));
+        internal Location GetLocation(int start, int length) => this.Literal.GetLocation(new TextSpan(this.TextSpan.Start + start, length));
 
         internal Span Slice(int start, int end)
         {

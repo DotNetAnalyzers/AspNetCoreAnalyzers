@@ -4,14 +4,14 @@
     using System.Diagnostics;
 
     [DebuggerDisplay("{this.Span.ToString()}")]
-    public struct RouteConstraint : IEquatable<RouteConstraint>
+    internal struct RouteConstraint : IEquatable<RouteConstraint>
     {
-        public RouteConstraint(Span span)
+        internal RouteConstraint(Span span)
         {
             this.Span = span;
         }
 
-        public Span Span { get; }
+        internal Span Span { get; }
 
         public static bool operator ==(RouteConstraint left, RouteConstraint right)
         {
@@ -23,7 +23,7 @@
             return !left.Equals(right);
         }
 
-        public static bool TryRead(Span span, int pos, out RouteConstraint constraint)
+        internal static bool TryRead(Span span, int pos, out RouteConstraint constraint)
         {
             if (pos >= span.TextSpan.End ||
                 span[pos] != ':')

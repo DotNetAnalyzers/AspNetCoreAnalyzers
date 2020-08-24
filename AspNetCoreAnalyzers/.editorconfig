@@ -1,0 +1,8 @@
+[*.cs]
+
+# SA0001: XML comment analysis is disabled due to project configuration
+dotnet_diagnostic.SA0001.severity = none
+# SA1401: Field should be private
+dotnet_diagnostic.SA1401.severity = none
+# SA1633: The file header is missing or not located at the top of the file.
+dotnet_diagnostic.SA1633.severity = none

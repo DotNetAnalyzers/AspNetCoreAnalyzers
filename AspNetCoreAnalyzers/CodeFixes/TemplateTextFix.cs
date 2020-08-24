@@ -1,4 +1,4 @@
-namespace AspNetCoreAnalyzers
+﻿namespace AspNetCoreAnalyzers
 {
     using System;
     using System.Collections.Immutable;
@@ -13,7 +13,7 @@ namespace AspNetCoreAnalyzers
 
     [ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(TemplateTextFix))]
     [Shared]
-    public class TemplateTextFix : DocumentEditorCodeFixProvider
+    internal class TemplateTextFix : DocumentEditorCodeFixProvider
     {
         public override ImmutableArray<string> FixableDiagnosticIds { get; } = ImmutableArray.Create(
             Descriptors.ASP002RouteParameterName.Id,

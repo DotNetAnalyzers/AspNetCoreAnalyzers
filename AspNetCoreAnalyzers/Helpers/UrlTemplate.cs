@@ -11,7 +11,7 @@
     /// https://tools.ietf.org/html/rfc1738.
     /// </summary>
     [DebuggerDisplay("{this.Literal.LiteralExpression.ToString()}")]
-    public struct UrlTemplate : IEquatable<UrlTemplate>
+    internal struct UrlTemplate : IEquatable<UrlTemplate>
     {
         private UrlTemplate(StringLiteral literal, ImmutableArray<PathSegment> path)
         {
@@ -19,9 +19,9 @@
             this.Path = path;
         }
 
-        public StringLiteral Literal { get; }
+        internal StringLiteral Literal { get; }
 
-        public ImmutableArray<PathSegment> Path { get; }
+        internal ImmutableArray<PathSegment> Path { get; }
 
         public static bool operator ==(UrlTemplate left, UrlTemplate right)
         {
@@ -33,7 +33,7 @@
             return !left.Equals(right);
         }
 
-        public static bool TryParse(LiteralExpressionSyntax literal, out UrlTemplate template)
+        internal static bool TryParse(LiteralExpressionSyntax literal, out UrlTemplate template)
         {
             if (literal.IsKind(SyntaxKind.StringLiteralExpression))
             {

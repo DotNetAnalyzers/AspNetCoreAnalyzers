@@ -5,7 +5,6 @@
     <LangVersion>latest</LangVersion>
     <Nullable>enable</Nullable>
     <NeutralLanguage>en-US</NeutralLanguage>
-    <CodeAnalysisRuleSet>AspNetCoreAnalyzers.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
 
   <PropertyGroup>
@@ -29,6 +28,14 @@
     <PackageReleaseNotes>ASP012 prefer explicit route.
 ASP013 Name the controller to match the route.</PackageReleaseNotes>
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="stylecop.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <AdditionalFiles Include="stylecop.json" />
+  </ItemGroup>
 
   <ItemGroup>
     <None Update="tools\*" Pack="true" PackagePath="" />

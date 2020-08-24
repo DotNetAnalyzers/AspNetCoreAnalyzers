@@ -7,20 +7,20 @@
     using Microsoft.CodeAnalysis.Text;
 
     [DebuggerDisplay("{this.Text}")]
-    public struct StringLiteral : IEquatable<StringLiteral>
+    internal struct StringLiteral : IEquatable<StringLiteral>
     {
-        public StringLiteral(LiteralExpressionSyntax literalExpression)
+        internal StringLiteral(LiteralExpressionSyntax literalExpression)
         {
             this.LiteralExpression = literalExpression;
         }
 
-        public LiteralExpressionSyntax LiteralExpression { get; }
+        internal LiteralExpressionSyntax LiteralExpression { get; }
 
-        public string Text => this.LiteralExpression.Token.Text;
+        internal string Text => this.LiteralExpression.Token.Text;
 
-        public string ValueText => this.LiteralExpression.Token.ValueText;
+        internal string ValueText => this.LiteralExpression.Token.ValueText;
 
-        public bool IsVerbatim
+        internal bool IsVerbatim
         {
             get
             {
@@ -49,7 +49,23 @@
             return !left.Equals(right);
         }
 
-        public Location GetLocation(TextSpan textSpan)
+        public bool Equals(StringLiteral other)
+        {
+            return this.LiteralExpression.Equals(other.LiteralExpression);
+        }
+
+        public override bool Equals(object? obj)
+        {
+            return obj is StringLiteral other &&
+                   this.Equals(other);
+        }
+
+        public override int GetHashCode()
+        {
+            return this.LiteralExpression.GetHashCode();
+        }
+
+        internal Location GetLocation(TextSpan textSpan)
         {
             var text = this.LiteralExpression.Token.Text;
             var start = 0;
@@ -98,23 +114,7 @@
             }
         }
 
-        public bool Equals(StringLiteral other)
-        {
-            return this.LiteralExpression.Equals(other.LiteralExpression);
-        }
-
-        public override bool Equals(object? obj)
-        {
-            return obj is StringLiteral other &&
-                   this.Equals(other);
-        }
-
-        public override int GetHashCode()
-        {
-            return this.LiteralExpression.GetHashCode();
-        }
-
-        public string ToString(Location location) => location.SourceSpan.Length == 0
+        internal string ToString(Location location) => location.SourceSpan.Length == 0
             ? string.Empty
             : this.Text.Substring(location.SourceSpan.Start - this.LiteralExpression.SpanStart, location.SourceSpan.Length);
     }

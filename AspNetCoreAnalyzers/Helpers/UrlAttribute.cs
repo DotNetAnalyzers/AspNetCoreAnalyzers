@@ -7,20 +7,20 @@
     using Microsoft.CodeAnalysis.CSharp.Syntax;
     using Microsoft.CodeAnalysis.Diagnostics;
 
-    public struct UrlAttribute : IEquatable<UrlAttribute>
+    internal struct UrlAttribute : IEquatable<UrlAttribute>
     {
-        public UrlAttribute(AttributeSyntax attribute, ITypeSymbol type, UrlTemplate? urlTemplate)
+        internal UrlAttribute(AttributeSyntax attribute, ITypeSymbol type, UrlTemplate? urlTemplate)
         {
             this.Attribute = attribute;
             this.Type = type;
             this.UrlTemplate = urlTemplate;
         }
 
-        public AttributeSyntax Attribute { get; }
+        internal AttributeSyntax Attribute { get; }
 
-        public ITypeSymbol Type { get; }
+        internal ITypeSymbol Type { get; }
 
-        public UrlTemplate? UrlTemplate { get; }
+        internal UrlTemplate? UrlTemplate { get; }
 
         public static bool operator ==(UrlAttribute left, UrlAttribute right)
         {
@@ -32,7 +32,7 @@
             return !left.Equals(right);
         }
 
-        public static bool TryCreate(AttributeSyntax attribute, SyntaxNodeAnalysisContext context, out UrlAttribute result)
+        internal static bool TryCreate(AttributeSyntax attribute, SyntaxNodeAnalysisContext context, out UrlAttribute result)
         {
             if (context.SemanticModel.TryGetType(attribute, context.CancellationToken, out var type) &&
                 (type == KnownSymbol.HttpDeleteAttribute ||
@@ -74,7 +74,7 @@
 
         public override int GetHashCode() => this.Attribute?.GetHashCode() ?? 0;
 
-        public bool TryGetParentMember(out MemberDeclarationSyntax memberDeclaration)
+        internal bool TryGetParentMember(out MemberDeclarationSyntax memberDeclaration)
         {
             if (this.Attribute.Parent is AttributeListSyntax attributeList &&
                 attributeList.Parent is MemberDeclarationSyntax temp)

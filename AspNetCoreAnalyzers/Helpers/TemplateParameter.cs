@@ -5,17 +5,17 @@
     using System.Diagnostics;
 
     [DebuggerDisplay("{this.Name.ToString()}")]
-    public struct TemplateParameter : IEquatable<TemplateParameter>
+    internal struct TemplateParameter : IEquatable<TemplateParameter>
     {
-        public TemplateParameter(Span name, ImmutableArray<RouteConstraint> constraints)
+        internal TemplateParameter(Span name, ImmutableArray<RouteConstraint> constraints)
         {
             this.Name = name;
             this.Constraints = constraints;
         }
 
-        public Span Name { get; }
+        internal Span Name { get; }
 
-        public ImmutableArray<RouteConstraint> Constraints { get; }
+        internal ImmutableArray<RouteConstraint> Constraints { get; }
 
         public static bool operator ==(TemplateParameter left, TemplateParameter right)
         {
@@ -27,7 +27,7 @@
             return !left.Equals(right);
         }
 
-        public static bool TryParse(Span span, out TemplateParameter result)
+        internal static bool TryParse(Span span, out TemplateParameter result)
         {
             if (span.TryIndexOf('{', out var start) &&
                 span.TryLastIndexOf('}', out var end) &&

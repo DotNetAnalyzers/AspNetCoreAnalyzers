@@ -13,7 +13,7 @@
 
     [ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(RenameParameterFix))]
     [Shared]
-    public class RenameParameterFix : CodeFixProvider
+    internal class RenameParameterFix : CodeFixProvider
     {
         public override ImmutableArray<string> FixableDiagnosticIds { get; } = ImmutableArray.Create(
             Descriptors.ASP001ParameterSymbolName.Id);

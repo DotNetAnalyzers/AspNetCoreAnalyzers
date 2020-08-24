@@ -11,7 +11,7 @@
 
     [ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(ParameterTypeFix))]
     [Shared]
-    public class ParameterTypeFix : DocumentEditorCodeFixProvider
+    internal class ParameterTypeFix : DocumentEditorCodeFixProvider
     {
         public override ImmutableArray<string> FixableDiagnosticIds { get; } = ImmutableArray.Create(
             Descriptors.ASP003ParameterSymbolType.Id);
