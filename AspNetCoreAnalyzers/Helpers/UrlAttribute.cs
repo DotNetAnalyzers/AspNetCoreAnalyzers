@@ -83,7 +83,7 @@
                 return true;
             }
 
-            memberDeclaration = null;
+            memberDeclaration = null!;
             return false;
         }
     }

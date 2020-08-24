@@ -807,9 +807,11 @@
             {
                 replacement = new Replacement<Span>(
                     segment.Span,
+#pragma warning disable SA1118 // Parameter should not span multiple lines
                     containingType.Name.EndsWith("Controller", StringComparison.Ordinal)
                         ? KebabCase(containingType.Name.Substring(0, containingType.Name.Length - 10))
                         : null);
+#pragma warning restore SA1118 // Parameter should not span multiple lines
                 return true;
             }
 

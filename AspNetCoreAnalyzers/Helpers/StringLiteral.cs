@@ -88,6 +88,7 @@
 
             return Location.Create(
                 this.LiteralExpression.SyntaxTree,
+#pragma warning disable SA1118 // Parameter should not span multiple lines
                 verbatim
                     ? new TextSpan(
                         this.LiteralExpression.SpanStart + start + textSpan.Start,
@@ -95,6 +96,7 @@
                     : TextSpan.FromBounds(
                         this.LiteralExpression.SpanStart + GetIndex(textSpan.Start),
                         this.LiteralExpression.SpanStart + GetIndex(textSpan.End)));
+#pragma warning restore SA1118 // Parameter should not span multiple lines
 
             int GetIndex(int pos)
             {

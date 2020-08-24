@@ -1,4 +1,4 @@
-namespace AspNetCoreAnalyzers
+﻿namespace AspNetCoreAnalyzers
 {
     using Gu.Roslyn.AnalyzerExtensions;
 
@@ -72,7 +72,7 @@ namespace AspNetCoreAnalyzers
         internal static readonly QualifiedType HttpPatchAttribute = Create("Microsoft.AspNetCore.Mvc.HttpPatchAttribute");
         internal static readonly QualifiedType HttpMethodAttribute = Create("Microsoft.AspNetCore.Mvc.Routing.HttpMethodAttribute");
 
-        private static QualifiedType Create(string qualifiedName, string alias = null)
+        private static QualifiedType Create(string qualifiedName, string? alias = null)
         {
             return new QualifiedType(qualifiedName, alias);
         }
