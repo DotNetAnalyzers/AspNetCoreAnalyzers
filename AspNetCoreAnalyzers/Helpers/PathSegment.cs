@@ -49,7 +49,8 @@
             // https://tools.ietf.org/html/rfc3986
             var text = literal.ValueText;
             var pos = start;
-            if (TrySkipStart())
+            if (TrySkipStart() &&
+                pos < text.Length)
             {
                 if (text[pos] == '{')
                 {
