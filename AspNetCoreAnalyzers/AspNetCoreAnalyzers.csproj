@@ -20,13 +20,14 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <Version>0.2.0.0-dev</Version>
+    <Version>0.2.0.1-dev</Version>
     <Description>Analyzers for Microsoft.AspNetCore</Description>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <RepositoryUrl>https://github.com/DotNetAnalyzers/AspNetCoreAnalyzers</RepositoryUrl>
     <PackageTags>ASP Roslyn Diagnostic Analyzer DotnetAnalyzers</PackageTags>
-    <PackageReleaseNotes>ASP012 prefer explicit route.
-ASP013 Name the controller to match the route.</PackageReleaseNotes>
+    <PackageReleaseNotes>
+      BUGFIX: Handle trailing slash in route.
+    </PackageReleaseNotes>
   </PropertyGroup>
 
   <ItemGroup>
