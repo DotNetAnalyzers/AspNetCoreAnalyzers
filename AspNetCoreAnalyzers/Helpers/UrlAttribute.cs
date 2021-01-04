@@ -76,8 +76,7 @@
 
         internal bool TryGetParentMember(out MemberDeclarationSyntax memberDeclaration)
         {
-            if (this.Attribute.Parent is AttributeListSyntax attributeList &&
-                attributeList.Parent is MemberDeclarationSyntax temp)
+            if (this.Attribute.Parent is AttributeListSyntax { Parent: MemberDeclarationSyntax temp })
             {
                 memberDeclaration = temp;
                 return true;

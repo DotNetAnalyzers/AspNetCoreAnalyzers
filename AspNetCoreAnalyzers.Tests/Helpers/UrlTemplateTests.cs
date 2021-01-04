@@ -1,4 +1,4 @@
-namespace AspNetCoreAnalyzers.Tests.Helpers
+﻿namespace AspNetCoreAnalyzers.Tests.Helpers
 {
     using System;
     using System.Linq;
@@ -32,7 +32,7 @@ namespace AspBox
             var literal = syntaxTree.FindLiteralExpression(text);
             Assert.AreEqual(true, UrlTemplate.TryParse(literal, out var template));
             CollectionAssert.AreEqual(expected, template.Path.Select(x => x.Span.ToString()));
-            Assert.IsTrue(template.Path.All(x => x.Parameter == null));
+            Assert.IsTrue(template.Path.All(x => x.Parameter is null));
         }
 
         [TestCase("{id}",                 new[] { "{id}" })]

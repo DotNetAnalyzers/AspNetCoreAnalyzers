@@ -33,11 +33,6 @@
 
         public override void Initialize(AnalysisContext context)
         {
-            if (context == null)
-            {
-                throw new ArgumentNullException(nameof(context));
-            }
-
             context.EnableConcurrentExecution();
             context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.Analyze | GeneratedCodeAnalysisFlags.ReportDiagnostics);
             context.RegisterSyntaxNodeAction(c => Handle(c), SyntaxKind.Attribute);
@@ -494,7 +489,7 @@
             replacement = default;
             return false;
 
-            bool HasWrongIntArgumentSyntax(RouteConstraint constraint, string methodName, out Span result)
+            static bool HasWrongIntArgumentSyntax(RouteConstraint constraint, string methodName, out Span result)
             {
                 var text = constraint.Span;
                 if (text.Length > methodName.Length + 2 &&
@@ -519,7 +514,7 @@
 
         private static bool HasWrongRegexSyntax(PathSegment segment, out Replacement<Span> replacement)
         {
-            if (segment.Parameter is TemplateParameter parameter)
+            if (segment.Parameter is { } parameter)
             {
                 foreach (var constraint in parameter.Constraints)
                 {
@@ -648,7 +643,7 @@
 
         private static bool ShouldKebabCase(PathSegment segment, [NotNullWhen(true)] out string? kebabCase)
         {
-            if (segment.Parameter == null &&
+            if (segment is { Parameter: null } &&
                 IsHumpOrSnakeCased(segment.Span))
             {
                 kebabCase = KebabCase(segment.Span.ToString());
@@ -658,7 +653,7 @@
             kebabCase = null;
             return false;
 
-            bool IsHumpOrSnakeCased(Span span)
+            static bool IsHumpOrSnakeCased(Span span)
             {
                 for (var i = 0; i < span.Length; i++)
                 {
@@ -707,7 +702,7 @@
         /// </summary>
         private static bool HasSyntaxError(PathSegment segment, [NotNullWhen(true)] out Location? location)
         {
-            if (segment.Parameter == null)
+            if (segment.Parameter is null)
             {
                 for (var i = 0; i < segment.Span.Length; i++)
                 {
@@ -732,8 +727,8 @@
 
         private static bool IsMultipleOccurringParameter(PathSegment segment, UrlAttribute urlAttribute, SyntaxNodeAnalysisContext context, [NotNullWhen(true)] out Location? location)
         {
-            if (segment.Parameter is TemplateParameter parameter &&
-                urlAttribute.UrlTemplate is UrlTemplate template)
+            if (segment.Parameter is { } parameter &&
+                urlAttribute.UrlTemplate is { } template)
             {
                 if (ContainsName(template.Path))
                 {
@@ -743,8 +738,7 @@
 
                 if (urlAttribute.TryGetParentMember(out var parentMember))
                 {
-                    if (parentMember is MethodDeclarationSyntax parentMethod &&
-                        parentMethod.Parent is ClassDeclarationSyntax classDeclaration &&
+                    if (parentMember is MethodDeclarationSyntax { Parent: ClassDeclarationSyntax classDeclaration } &&
                         TryGetOtherTemplate(classDeclaration.AttributeLists, out var otherTemplate) &&
                         ContainsName(otherTemplate.Path))
                     {
@@ -822,7 +816,7 @@
         private static bool ShouldRenameController(PathSegment segment, UrlAttribute urlAttribute, SyntaxNodeAnalysisContext context, out Replacement<Location> replacement)
         {
             if (urlAttribute.UrlTemplate is { } template &&
-                template.Path.TryLast(x => x.Parameter == null, out var last) &&
+                template.Path.TryLast(x => x.Parameter is null, out var last) &&
                 last == segment &&
                 segment.Span.Length > 0 &&
                 segment.Span[0] != '[' &&
@@ -945,7 +939,7 @@
             result = null;
             return false;
 
-            bool IsFromRoute(ParameterSyntax p)
+            static bool IsFromRoute(ParameterSyntax p)
             {
                 foreach (var attributeList in p.AttributeLists)
                 {
