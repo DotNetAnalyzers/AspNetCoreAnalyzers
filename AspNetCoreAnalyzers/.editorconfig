@@ -6,3 +6,6 @@ dotnet_diagnostic.SA0001.severity = none
 dotnet_diagnostic.SA1401.severity = none
 # SA1633: The file header is missing or not located at the top of the file.
 dotnet_diagnostic.SA1633.severity = none
+
+# RS2008: Enable analyzer release tracking
+dotnet_diagnostic.RS2008.severity = none

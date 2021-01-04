@@ -23,7 +23,8 @@
 
             foreach (var diagnostic in context.Diagnostics)
             {
-                if (syntaxRoot.TryFindNodeOrAncestor(diagnostic, out TypeSyntax? typeSyntax) &&
+                if (syntaxRoot is { } &&
+                    syntaxRoot.TryFindNodeOrAncestor(diagnostic, out TypeSyntax? typeSyntax) &&
                     diagnostic.Properties.TryGetValue(nameof(TypeSyntax), out var typeName))
                 {
                     context.RegisterCodeFix(

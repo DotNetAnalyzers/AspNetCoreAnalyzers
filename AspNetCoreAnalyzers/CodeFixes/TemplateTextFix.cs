@@ -31,7 +31,8 @@
 
             foreach (var diagnostic in context.Diagnostics)
             {
-                if (syntaxRoot.TryFindNodeOrAncestor<LiteralExpressionSyntax>(diagnostic, out var literal) &&
+                if (syntaxRoot is { } &&
+                    syntaxRoot.TryFindNodeOrAncestor<LiteralExpressionSyntax>(diagnostic, out var literal) &&
                     diagnostic.Properties.TryGetValue(nameof(UrlTemplate), out var text))
                 {
                     context.RegisterCodeFix(

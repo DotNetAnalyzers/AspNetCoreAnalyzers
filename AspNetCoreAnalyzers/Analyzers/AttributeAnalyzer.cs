@@ -337,7 +337,8 @@
                 {
                     // https://docs.microsoft.com/en-us/aspnet/core/fundamentals/routing?view=aspnetcore-2.2#route-constraint-reference
                     if (TryGetType(constraint.Span, out var type) &&
-                        parameterSymbol.TrySingleDeclaration(context.CancellationToken, out var parameter))
+                        parameterSymbol.TrySingleDeclaration(context.CancellationToken, out var parameter) &&
+                        parameter is { Type: { } })
                     {
                         newType = new Replacement<TypeSyntax>(
                             parameter.Type,
@@ -351,7 +352,8 @@
                     if (constraint.Span.Equals("?", StringComparison.Ordinal) &&
                         parameterSymbol.Type.IsValueType &&
                         parameterSymbol.Type.OriginalDefinition.SpecialType != SpecialType.System_Nullable_T &&
-                        parameterSymbol.TrySingleDeclaration(context.CancellationToken, out parameter))
+                        parameterSymbol.TrySingleDeclaration(context.CancellationToken, out parameter) &&
+                        parameter is { Type: { } })
                     {
                         newType = new Replacement<TypeSyntax>(
                             parameter.Type,
@@ -368,7 +370,8 @@
                         parameterSymbol.Type.OriginalDefinition.SpecialType == SpecialType.System_Nullable_T &&
                         parameterSymbol.Type is INamedTypeSymbol namedType &&
                         namedType.TypeArguments.TrySingle(out var typeArg) &&
-                        parameterSymbol.TrySingleDeclaration(context.CancellationToken, out var parameter))
+                        parameterSymbol.TrySingleDeclaration(context.CancellationToken, out var parameter) &&
+                        parameter is { Type: { } })
                     {
                         newType = new Replacement<TypeSyntax>(
                             parameter.Type,

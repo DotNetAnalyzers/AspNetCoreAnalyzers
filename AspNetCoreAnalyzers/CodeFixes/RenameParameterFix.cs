@@ -28,7 +28,9 @@
                                              .ConfigureAwait(false);
             foreach (var diagnostic in context.Diagnostics)
             {
-                if (syntaxRoot.TryFindNodeOrAncestor(diagnostic, out ParameterSyntax? parameterSyntax) &&
+                if (syntaxRoot is { } &&
+                    syntaxRoot.TryFindNodeOrAncestor(diagnostic, out ParameterSyntax? parameterSyntax) &&
+                    semanticModel is { } &&
                     semanticModel.TryGetSymbol(parameterSyntax, context.CancellationToken, out var parameter) &&
                     diagnostic.Properties.TryGetValue(nameof(NameSyntax), out var name))
                 {
