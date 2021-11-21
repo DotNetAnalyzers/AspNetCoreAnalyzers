@@ -26,13 +26,14 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <Version>0.2.0.1-dev</Version>
+    <Version>0.3.0</Version>
     <Description>Analyzers for Microsoft.AspNetCore</Description>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <RepositoryUrl>https://github.com/DotNetAnalyzers/AspNetCoreAnalyzers</RepositoryUrl>
     <PackageTags>ASP Roslyn Diagnostic Analyzer DotnetAnalyzers</PackageTags>
     <PackageReleaseNotes>
       0.3.0
+      For VS2022 now.
       BUGFIX: AD0001 Could not load file or assembly
       0.2.1
       BUGFIX: Handle trailing slash in route.
