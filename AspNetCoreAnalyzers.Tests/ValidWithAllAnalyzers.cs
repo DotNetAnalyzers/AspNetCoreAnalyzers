@@ -1,4 +1,4 @@
-namespace AspNetCoreAnalyzers.Tests
+﻿namespace AspNetCoreAnalyzers.Tests
 {
     using System;
     using System.Collections.Generic;
@@ -10,11 +10,13 @@ namespace AspNetCoreAnalyzers.Tests
 
     public static class ValidWithAllAnalyzers
     {
-        private static readonly IReadOnlyList<DiagnosticAnalyzer> AllAnalyzers = typeof(Descriptors)
-                                                                                 .Assembly.GetTypes()
-                                                                                 .Where(typeof(DiagnosticAnalyzer).IsAssignableFrom)
-                                                                                 .Select(t => (DiagnosticAnalyzer)Activator.CreateInstance(t))
-                                                                                 .ToArray();
+        private static readonly IReadOnlyList<DiagnosticAnalyzer> AllAnalyzers =
+            typeof(Descriptors)
+                .Assembly
+                .GetTypes()
+                .Where(t => typeof(DiagnosticAnalyzer).IsAssignableFrom(t) && !t.IsAbstract)
+                .Select(t => (DiagnosticAnalyzer)Activator.CreateInstance(t))
+                .ToArray();
 
         private static readonly Solution AnalyzersProjectSolution = CodeFactory.CreateSolution(
             ProjectFile.Find("AspNetCoreAnalyzers.csproj"),
