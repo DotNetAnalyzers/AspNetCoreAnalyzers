@@ -92,7 +92,7 @@ namespace AspBox
 
     public class Db : DbContext
     {
-        public DbSet<Order> Orders { get; set; }
+        public DbSet<Order> Orders => this.Set<Order>();
     }
 }";
             var code = @"
@@ -143,7 +143,6 @@ namespace AspBox
 {
     using System.Threading.Tasks;
     using Microsoft.AspNetCore.Mvc;
-    using Microsoft.EntityFrameworkCore;
 
     [ApiController]
     public class OrdersController : Controller
@@ -151,6 +150,7 @@ namespace AspBox
         [HttpGet(""api/{value}"")]
         public async Task<int> GetOrder(int value)
         {
+            await Task.Delay(10).ConfigureAwait(false);
             return value;
         }
     }
@@ -183,7 +183,7 @@ namespace AspBox
 
     public class Db : DbContext
     {
-        public DbSet<Order> Orders { get; set; }
+        public DbSet<Order> Orders => this.Set<Order>();
     }
 }";
             var code = @"
@@ -241,7 +241,7 @@ namespace AspBox
 
     public class Db : DbContext
     {
-        public DbSet<Order> Orders { get; set; }
+        public DbSet<Order> Orders => this.Set<Order>();
     }
 }";
             var code = @"
@@ -291,7 +291,7 @@ namespace AspBox
 {
     public class Order
     {
-        public string Id { get; set; }
+        public string? Id { get; set; }
     }
 }";
 
@@ -302,7 +302,7 @@ namespace AspBox
 
     public class Db : DbContext
     {
-        public DbSet<Order> Orders { get; set; }
+        public DbSet<Order> Orders => this.Set<Order>();
     }
 }";
             var code = @"

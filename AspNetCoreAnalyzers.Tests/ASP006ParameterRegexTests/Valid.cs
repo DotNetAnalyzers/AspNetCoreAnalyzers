@@ -1,4 +1,4 @@
-namespace AspNetCoreAnalyzers.Tests.ASP006ParameterRegexTests
+﻿namespace AspNetCoreAnalyzers.Tests.ASP006ParameterRegexTests
 {
     using Gu.Roslyn.Asserts;
     using Microsoft.CodeAnalysis.Diagnostics;
@@ -41,9 +41,7 @@ namespace AspNetCoreAnalyzers.Tests.ASP006ParameterRegexTests
             var code = @"
 namespace AspBox
 {
-    using System.Threading.Tasks;
     using Microsoft.AspNetCore.Mvc;
-    using Microsoft.EntityFrameworkCore;
 
     [ApiController]
     public class OrdersController : Controller

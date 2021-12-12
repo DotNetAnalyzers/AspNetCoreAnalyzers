@@ -31,7 +31,7 @@
                         $"Change type to match route: {typeName}",
                         (e, _) => e.ReplaceNode(
                             typeSyntax,
-                            x => SyntaxFactory.ParseTypeName(typeName)
+                            x => SyntaxFactory.ParseTypeName(typeName!)
                                               .WithSimplifiedNames()
                                               .WithTriviaFrom(x)),
                         nameof(ParameterTypeFix),

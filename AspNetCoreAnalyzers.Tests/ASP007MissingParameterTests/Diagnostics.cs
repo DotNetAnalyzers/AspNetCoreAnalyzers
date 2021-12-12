@@ -1,4 +1,4 @@
-namespace AspNetCoreAnalyzers.Tests.ASP007MissingParameterTests
+﻿namespace AspNetCoreAnalyzers.Tests.ASP007MissingParameterTests
 {
     using Gu.Roslyn.Asserts;
     using Microsoft.CodeAnalysis.Diagnostics;
@@ -47,7 +47,7 @@ namespace AspBox
 
     public class Db : DbContext
     {
-        public DbSet<Order> Orders { get; set; }
+        public DbSet<Order> Orders => this.Set<Order>();
     }
 }";
             var code = @"
@@ -103,7 +103,7 @@ namespace AspBox
 
     public class Db : DbContext
     {
-        public DbSet<Order> Orders { get; set; }
+        public DbSet<Order> Orders => this.Set<Order>();
     }
 }";
             var code = @"

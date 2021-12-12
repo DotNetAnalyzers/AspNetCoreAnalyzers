@@ -1,4 +1,4 @@
-namespace AspNetCoreAnalyzers.Tests.ASP009KebabCaseUrlTests
+﻿namespace AspNetCoreAnalyzers.Tests.ASP009KebabCaseUrlTests
 {
     using Gu.Roslyn.Asserts;
     using Microsoft.CodeAnalysis.Diagnostics;
@@ -16,9 +16,7 @@ namespace AspNetCoreAnalyzers.Tests.ASP009KebabCaseUrlTests
             var code = @"
 namespace AspBox
 {
-    using System.Threading.Tasks;
     using Microsoft.AspNetCore.Mvc;
-    using Microsoft.EntityFrameworkCore;
 
     [ApiController]
     public class OrdersController : Controller

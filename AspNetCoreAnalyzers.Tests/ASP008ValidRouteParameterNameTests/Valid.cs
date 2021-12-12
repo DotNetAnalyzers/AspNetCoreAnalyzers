@@ -1,4 +1,4 @@
-namespace AspNetCoreAnalyzers.Tests.ASP008ValidRouteParameterNameTests
+﻿namespace AspNetCoreAnalyzers.Tests.ASP008ValidRouteParameterNameTests
 {
     using Gu.Roslyn.Asserts;
     using Microsoft.CodeAnalysis.Diagnostics;
@@ -41,9 +41,7 @@ namespace AspNetCoreAnalyzers.Tests.ASP008ValidRouteParameterNameTests
             var code = @"
 namespace AspBox
 {
-    using System.Threading.Tasks;
     using Microsoft.AspNetCore.Mvc;
-    using Microsoft.EntityFrameworkCore;
 
     [ApiController]
     public class OrdersController : Controller

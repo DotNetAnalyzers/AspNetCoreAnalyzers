@@ -4,6 +4,6 @@
 
     public class Db : DbContext
     {
-        public DbSet<Order> Orders { get; set; }
+        public DbSet<Order> Orders => this.Set<Order>();
     }
 }

@@ -93,7 +93,7 @@ namespace AspBox
 
     public class Db : DbContext
     {
-        public DbSet<Order> Orders { get; set; }
+        public DbSet<Order> Orders => this.Set<Order>();
     }
 }";
             var code = @"
@@ -181,7 +181,7 @@ namespace AspBox
 
     public class Db : DbContext
     {
-        public DbSet<Order> Orders { get; set; }
+        public DbSet<Order> Orders => this.Set<Order>();
     }
 }";
             var code = @"
@@ -239,7 +239,7 @@ namespace AspBox
 
     public class Db : DbContext
     {
-        public DbSet<Order> Orders { get; set; }
+        public DbSet<Order> Orders => this.Set<Order>();
     }
 }";
             var code = @"
@@ -289,7 +289,7 @@ namespace AspBox
 {
     public class Order
     {
-        public string Id { get; set; }
+        public string? Id { get; set; }
     }
 }";
 
@@ -300,7 +300,7 @@ namespace AspBox
 
     public class Db : DbContext
     {
-        public DbSet<Order> Orders { get; set; }
+        public DbSet<Order> Orders => this.Set<Order>();
     }
 }";
             var code = @"

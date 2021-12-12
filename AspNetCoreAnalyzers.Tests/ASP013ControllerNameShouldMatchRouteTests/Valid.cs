@@ -1,4 +1,4 @@
-namespace AspNetCoreAnalyzers.Tests.ASP013ControllerNameShouldMatchRouteTests
+﻿namespace AspNetCoreAnalyzers.Tests.ASP013ControllerNameShouldMatchRouteTests
 {
     using Gu.Roslyn.Asserts;
     using Microsoft.CodeAnalysis;
@@ -17,9 +17,7 @@ namespace AspNetCoreAnalyzers.Tests.ASP013ControllerNameShouldMatchRouteTests
             var code = @"
 namespace AspBox
 {
-    using System.Threading.Tasks;
     using Microsoft.AspNetCore.Mvc;
-    using Microsoft.EntityFrameworkCore;
 
     [Route(""api/orders"")]
     [ApiController]
