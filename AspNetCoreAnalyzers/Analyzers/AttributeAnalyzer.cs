@@ -983,7 +983,7 @@
             return false;
         }
 
-        private struct Replacement<T>
+        private readonly struct Replacement<T>
         {
             internal readonly T Node;
 
@@ -998,8 +998,8 @@
             internal ImmutableDictionary<string, string?> Property(string key)
             {
                 return this.NewText is { } value
-                    ? ImmutableDictionary<string, string>.Empty.Add(key, value)
-                    : ImmutableDictionary<string, string>.Empty;
+                    ? ImmutableDictionary<string, string?>.Empty.Add(key, value)
+                    : ImmutableDictionary<string, string?>.Empty;
             }
         }
     }

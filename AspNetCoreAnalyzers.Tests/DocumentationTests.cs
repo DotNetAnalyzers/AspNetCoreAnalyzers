@@ -1,4 +1,5 @@
 ﻿#pragma warning disable CA1056 // Uri properties should not be strings
+#pragma warning disable CA1305 // Specify IFormatProvider
 namespace AspNetCoreAnalyzers.Tests
 {
     using System;
@@ -309,7 +310,7 @@ Or put this at the top of the file to disable all instances.
 
         public class CodeFile
         {
-            private static readonly ConcurrentDictionary<Type, CodeFile> Cache = new ConcurrentDictionary<Type, CodeFile>();
+            private static readonly ConcurrentDictionary<Type, CodeFile> Cache = new();
 
             public CodeFile(string name)
             {
@@ -318,8 +319,8 @@ Or put this at the top of the file to disable all instances.
 
             public string Name { get; }
 
-            public string Uri => "https://github.com/DotNetAnalyzers/AspNetCoreAnalyzers/blob/master" + this.Name.Substring(SolutionDirectory.FullName.Length)
-                                                                                                             .Replace("\\", "/", StringComparison.Ordinal);
+            public string Uri => "https://github.com/DotNetAnalyzers/AspNetCoreAnalyzers/blob/master" + this.Name[SolutionDirectory.FullName.Length..]
+                                                                                                            .Replace("\\", "/", StringComparison.Ordinal);
 
             public static CodeFile Find(Type type)
             {

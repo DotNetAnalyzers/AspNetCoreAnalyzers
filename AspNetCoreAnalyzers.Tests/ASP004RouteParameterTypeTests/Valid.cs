@@ -1,4 +1,4 @@
-namespace AspNetCoreAnalyzers.Tests.ASP004RouteParameterTypeTests
+﻿namespace AspNetCoreAnalyzers.Tests.ASP004RouteParameterTypeTests
 {
     using Gu.Roslyn.Asserts;
     using Microsoft.CodeAnalysis.Diagnostics;

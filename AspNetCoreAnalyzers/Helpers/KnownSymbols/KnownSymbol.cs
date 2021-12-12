@@ -4,8 +4,8 @@
 
     internal static class KnownSymbol
     {
-        internal static readonly ObjectType Object = new ObjectType();
-        internal static readonly StringType String = new StringType();
+        internal static readonly ObjectType Object = new();
+        internal static readonly StringType String = new();
         internal static readonly QualifiedType Boolean = Create("System.Boolean", "bool");
         internal static readonly QualifiedType DateTime = Create("System.DateTime");
         internal static readonly QualifiedType Decimal = Create("System.Decimal", "decimal");

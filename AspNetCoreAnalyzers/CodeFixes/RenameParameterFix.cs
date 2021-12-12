@@ -40,8 +40,8 @@
                             cancellationToken => Renamer.RenameSymbolAsync(
                                 context.Document.Project.Solution,
                                 parameter,
-                                name,
-                                null,
+                                name!,
+                                context.Document.Project.Solution.Options,
                                 cancellationToken),
                             nameof(RenameParameterFix)),
                         diagnostic);
