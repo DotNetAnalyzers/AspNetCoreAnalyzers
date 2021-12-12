@@ -22,15 +22,12 @@
             .ToArray();
 
         private static readonly Solution Solution = CodeFactory.CreateSolution(
-            new FileInfo("C:\\Git\\Gu.Xml\\Gu.Xml.sln"),
-            AllAnalyzers,
-            MetadataReferences.FromAttributes());
+            new FileInfo("C:\\Git\\Gu.Xml\\Gu.Xml.sln"));
 
         [TestCaseSource(nameof(AllAnalyzers))]
         public static void Run(DiagnosticAnalyzer analyzer)
         {
-            var diagnostics = Analyze.GetDiagnostics(Solution, analyzer);
-            RoslynAssert.NoDiagnostics(diagnostics);
+            RoslynAssert.NoAnalyzerDiagnostics(analyzer, Solution);
         }
     }
 }

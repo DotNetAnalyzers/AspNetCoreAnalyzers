@@ -119,7 +119,7 @@
                             Diagnostic.Create(
                                 Descriptors.ASP009KebabCaseUrl,
                                 segment.Span.GetLocation(),
-                                ImmutableDictionary<string, string>.Empty.Add(nameof(UrlTemplate), kebabCase)));
+                                ImmutableDictionary<string, string?>.Empty.Add(nameof(UrlTemplate), kebabCase)));
                     }
 
                     if (HasSyntaxError(segment, out location))
@@ -995,7 +995,7 @@
                 this.NewText = newText;
             }
 
-            internal ImmutableDictionary<string, string> Property(string key)
+            internal ImmutableDictionary<string, string?> Property(string key)
             {
                 return this.NewText is { } value
                     ? ImmutableDictionary<string, string>.Empty.Add(key, value)
