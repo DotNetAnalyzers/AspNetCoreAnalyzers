@@ -24,7 +24,7 @@ namespace AspBox
         public IActionResult Get() => this.Ok();
     }
 }";
-            var message = "The route template has parameter 'id' that does not have a corresponding method parameter.";
+            var message = "The route template has parameter 'id' that does not have a corresponding method parameter";
             RoslynAssert.Diagnostics(Analyzer, ExpectedDiagnostic.WithMessage(message), code);
         }
 
@@ -80,7 +80,7 @@ namespace AspBox
         }
     }
 }";
-            var message = "The route template has parameter 'itemId' that does not have a corresponding method parameter.";
+            var message = "The route template has parameter 'itemId' that does not have a corresponding method parameter";
             RoslynAssert.Diagnostics(Analyzer, ExpectedDiagnostic.WithMessage(message), order, db, code);
         }
 
@@ -204,7 +204,7 @@ namespace AspBox
         }
     }
 }";
-            var message = "The route template has parameter 'id' that does not have a corresponding method parameter.";
+            var message = "The route template has parameter 'id' that does not have a corresponding method parameter";
             RoslynAssert.Diagnostics(Analyzer, ExpectedDiagnostic.WithMessage(message), code);
         }
 

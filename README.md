@@ -13,19 +13,19 @@ Roslyn analyzers for ASP.NET.Core.
 
 | Id       | Title
 | :--      | :--
-| [ASP001](https://github.com/DotNetAnalyzers/AspNetCoreAnalyzers/tree/master/documentation/ASP001.md)| Parameter name does not match the name specified by the route parameter.
-| [ASP002](https://github.com/DotNetAnalyzers/AspNetCoreAnalyzers/tree/master/documentation/ASP002.md)| Route parameter name does not match the method parameter name.
-| [ASP003](https://github.com/DotNetAnalyzers/AspNetCoreAnalyzers/tree/master/documentation/ASP003.md)| Parameter type does not match the type specified by the name specified by the route parameter.
-| [ASP004](https://github.com/DotNetAnalyzers/AspNetCoreAnalyzers/tree/master/documentation/ASP004.md)| Route parameter type does not match the method parameter type.
-| [ASP005](https://github.com/DotNetAnalyzers/AspNetCoreAnalyzers/tree/master/documentation/ASP005.md)| Syntax error in parameter.
-| [ASP006](https://github.com/DotNetAnalyzers/AspNetCoreAnalyzers/tree/master/documentation/ASP006.md)| Escape constraint regex.
-| [ASP007](https://github.com/DotNetAnalyzers/AspNetCoreAnalyzers/tree/master/documentation/ASP007.md)| The method has no corresponding parameter.
-| [ASP008](https://github.com/DotNetAnalyzers/AspNetCoreAnalyzers/tree/master/documentation/ASP008.md)| Invalid route parameter name.
-| [ASP009](https://github.com/DotNetAnalyzers/AspNetCoreAnalyzers/tree/master/documentation/ASP009.md)| Use kebab-cased urls.
-| [ASP010](https://github.com/DotNetAnalyzers/AspNetCoreAnalyzers/tree/master/documentation/ASP010.md)| Unexpected character in url.
-| [ASP011](https://github.com/DotNetAnalyzers/AspNetCoreAnalyzers/tree/master/documentation/ASP011.md)| Route parameter appears more than once.
-| [ASP012](https://github.com/DotNetAnalyzers/AspNetCoreAnalyzers/tree/master/documentation/ASP012.md)| Don't use [controller].
-| [ASP013](https://github.com/DotNetAnalyzers/AspNetCoreAnalyzers/tree/master/documentation/ASP013.md)| Name the controller to match the route.
+| [ASP001](https://github.com/DotNetAnalyzers/AspNetCoreAnalyzers/tree/master/documentation/ASP001.md)| Parameter name does not match the name specified by the route parameter
+| [ASP002](https://github.com/DotNetAnalyzers/AspNetCoreAnalyzers/tree/master/documentation/ASP002.md)| Route parameter name does not match the method parameter name
+| [ASP003](https://github.com/DotNetAnalyzers/AspNetCoreAnalyzers/tree/master/documentation/ASP003.md)| Parameter type does not match the type specified by the name specified by the route parameter
+| [ASP004](https://github.com/DotNetAnalyzers/AspNetCoreAnalyzers/tree/master/documentation/ASP004.md)| Route parameter type does not match the method parameter type
+| [ASP005](https://github.com/DotNetAnalyzers/AspNetCoreAnalyzers/tree/master/documentation/ASP005.md)| Syntax error in parameter
+| [ASP006](https://github.com/DotNetAnalyzers/AspNetCoreAnalyzers/tree/master/documentation/ASP006.md)| Escape constraint regex
+| [ASP007](https://github.com/DotNetAnalyzers/AspNetCoreAnalyzers/tree/master/documentation/ASP007.md)| The method has no corresponding parameter
+| [ASP008](https://github.com/DotNetAnalyzers/AspNetCoreAnalyzers/tree/master/documentation/ASP008.md)| Invalid route parameter name
+| [ASP009](https://github.com/DotNetAnalyzers/AspNetCoreAnalyzers/tree/master/documentation/ASP009.md)| Use kebab-cased urls
+| [ASP010](https://github.com/DotNetAnalyzers/AspNetCoreAnalyzers/tree/master/documentation/ASP010.md)| Unexpected character in url
+| [ASP011](https://github.com/DotNetAnalyzers/AspNetCoreAnalyzers/tree/master/documentation/ASP011.md)| Route parameter appears more than once
+| [ASP012](https://github.com/DotNetAnalyzers/AspNetCoreAnalyzers/tree/master/documentation/ASP012.md)| Don't use [controller]
+| [ASP013](https://github.com/DotNetAnalyzers/AspNetCoreAnalyzers/tree/master/documentation/ASP013.md)| Name the controller to match the route
 
 
 ## Using AspNetCoreAnalyzers

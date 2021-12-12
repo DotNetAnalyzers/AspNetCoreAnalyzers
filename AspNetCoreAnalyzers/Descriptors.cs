@@ -6,8 +6,8 @@
     {
         internal static readonly DiagnosticDescriptor ASP001ParameterSymbolName = Create(
             id: "ASP001",
-            title: "Parameter name does not match the name specified by the route parameter.",
-            messageFormat: "Parameter name does not match the name specified by the route parameter.",
+            title: "Parameter name does not match the name specified by the route parameter",
+            messageFormat: "Parameter name does not match the name specified by the route parameter",
             category: AnalyzerCategory.Routing,
             defaultSeverity: DiagnosticSeverity.Warning,
             isEnabledByDefault: true,
@@ -15,8 +15,8 @@
 
         internal static readonly DiagnosticDescriptor ASP002RouteParameterName = Descriptors.Create(
             id: "ASP002",
-            title: "Route parameter name does not match the method parameter name.",
-            messageFormat: "Route parameter name does not match the method parameter name.",
+            title: "Route parameter name does not match the method parameter name",
+            messageFormat: "Route parameter name does not match the method parameter name",
             category: AnalyzerCategory.Routing,
             defaultSeverity: DiagnosticSeverity.Warning,
             isEnabledByDefault: true,
@@ -24,8 +24,8 @@
 
         internal static readonly DiagnosticDescriptor ASP003ParameterSymbolType = Descriptors.Create(
             id: "ASP003",
-            title: "Parameter type does not match the type specified by the name specified by the route parameter.",
-            messageFormat: "Parameter type does not match the type specified by the name specified by the route parameter.",
+            title: "Parameter type does not match the type specified by the name specified by the route parameter",
+            messageFormat: "Parameter type does not match the type specified by the name specified by the route parameter",
             category: AnalyzerCategory.Routing,
             defaultSeverity: DiagnosticSeverity.Warning,
             isEnabledByDefault: true,
@@ -33,8 +33,8 @@
 
         internal static readonly DiagnosticDescriptor ASP004RouteParameterType = Descriptors.Create(
             id: "ASP004",
-            title: "Route parameter type does not match the method parameter type.",
-            messageFormat: "Route parameter type does not match the method parameter type.",
+            title: "Route parameter type does not match the method parameter type",
+            messageFormat: "Route parameter type does not match the method parameter type",
             category: AnalyzerCategory.Routing,
             defaultSeverity: DiagnosticSeverity.Warning,
             isEnabledByDefault: true,
@@ -42,8 +42,8 @@
 
         internal static readonly DiagnosticDescriptor ASP005ParameterSyntax = Descriptors.Create(
             id: "ASP005",
-            title: "Syntax error in parameter.",
-            messageFormat: "Syntax error in parameter.",
+            title: "Syntax error in parameter",
+            messageFormat: "Syntax error in parameter",
             category: AnalyzerCategory.Routing,
             defaultSeverity: DiagnosticSeverity.Warning,
             isEnabledByDefault: true,
@@ -54,8 +54,8 @@
         /// </summary>
         internal static readonly DiagnosticDescriptor ASP006ParameterRegex = Descriptors.Create(
             id: "ASP006",
-            title: "Escape constraint regex.",
-            messageFormat: "Escape constraint regex.",
+            title: "Escape constraint regex",
+            messageFormat: "Escape constraint regex",
             category: AnalyzerCategory.Routing,
             defaultSeverity: DiagnosticSeverity.Warning,
             isEnabledByDefault: true,
@@ -63,8 +63,8 @@
 
         internal static readonly DiagnosticDescriptor ASP007MissingParameter = Descriptors.Create(
             id: "ASP007",
-            title: "The method has no corresponding parameter.",
-            messageFormat: "The route template has parameter '{0}' that does not have a corresponding method parameter.",
+            title: "The method has no corresponding parameter",
+            messageFormat: "The route template has parameter '{0}' that does not have a corresponding method parameter",
             category: AnalyzerCategory.Routing,
             defaultSeverity: DiagnosticSeverity.Warning,
             isEnabledByDefault: true,
@@ -72,8 +72,8 @@
 
         internal static readonly DiagnosticDescriptor ASP008ValidRouteParameterName = Descriptors.Create(
             id: "ASP008",
-            title: "Invalid route parameter name.",
-            messageFormat: "Invalid route parameter name.",
+            title: "Invalid route parameter name",
+            messageFormat: "Invalid route parameter name",
             category: AnalyzerCategory.Routing,
             defaultSeverity: DiagnosticSeverity.Warning,
             isEnabledByDefault: true,
@@ -81,8 +81,8 @@
 
         internal static readonly DiagnosticDescriptor ASP009KebabCaseUrl = Descriptors.Create(
             id: "ASP009",
-            title: "Use kebab-cased urls.",
-            messageFormat: "Use kebab-cased urls.",
+            title: "Use kebab-cased urls",
+            messageFormat: "Use kebab-cased urls",
             category: AnalyzerCategory.Routing,
             defaultSeverity: DiagnosticSeverity.Warning,
             isEnabledByDefault: true,
@@ -90,7 +90,7 @@
 
         internal static readonly DiagnosticDescriptor ASP010UrlSyntax = Descriptors.Create(
             id: "ASP010",
-            title: "Unexpected character in url.",
+            title: "Unexpected character in url",
             messageFormat: "Literal sections cannot contain the '{0}' character",
             category: AnalyzerCategory.Routing,
             defaultSeverity: DiagnosticSeverity.Warning,
@@ -99,8 +99,8 @@
 
         internal static readonly DiagnosticDescriptor ASP011RouteParameterNameMustBeUnique = Descriptors.Create(
             id: "ASP011",
-            title: "Route parameter appears more than once.",
-            messageFormat: "Route parameter appears more than once.",
+            title: "Route parameter appears more than once",
+            messageFormat: "Route parameter appears more than once",
             category: AnalyzerCategory.Routing,
             defaultSeverity: DiagnosticSeverity.Warning,
             isEnabledByDefault: true,
@@ -108,8 +108,8 @@
 
         internal static readonly DiagnosticDescriptor ASP012UseExplicitRoute = Descriptors.Create(
             id: "ASP012",
-            title: "Don't use [controller].",
-            messageFormat: "Don't use [controller].",
+            title: "Don't use [controller]",
+            messageFormat: "Don't use [controller]",
             category: AnalyzerCategory.Routing,
             defaultSeverity: DiagnosticSeverity.Warning,
             isEnabledByDefault: true,
@@ -117,7 +117,7 @@
 
         internal static readonly DiagnosticDescriptor ASP013ControllerNameShouldMatchRoute = Descriptors.Create(
             id: "ASP013",
-            title: "Name the controller to match the route.",
+            title: "Name the controller to match the route",
             messageFormat: "Name the controller to match the route. Expected: '{0}'.",
             category: AnalyzerCategory.Routing,
             defaultSeverity: DiagnosticSeverity.Warning,
