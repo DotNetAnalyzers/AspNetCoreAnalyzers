@@ -1,4 +1,4 @@
-namespace ValidCode
+﻿namespace ValidCode
 {
     using System.Collections.Generic;
 
@@ -6,6 +6,6 @@ namespace ValidCode
     {
         public int Id { get; set; }
 
-        public IEnumerable<OrderItem> Items { get; set; }
+        public IEnumerable<OrderItem>? Items { get; set; }
     }
 }

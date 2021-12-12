@@ -12,8 +12,8 @@
                 MetadataReferences.Transitive(
                     typeof(Microsoft.EntityFrameworkCore.DbContext),
                     typeof(Microsoft.Extensions.Hosting.GenericHostBuilderExtensions),
-                    typeof(Microsoft.AspNetCore.Mvc.Controller),
-                    typeof(Microsoft.AspNetCore.Mvc.HttpGetAttribute)));
+                    typeof(Microsoft.Extensions.DependencyInjection.MvcServiceCollectionExtensions),
+                    typeof(Microsoft.AspNetCore.Builder.HttpsPolicyBuilderExtensions)));
         }
     }
 }
