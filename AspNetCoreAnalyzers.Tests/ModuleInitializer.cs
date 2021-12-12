@@ -10,7 +10,10 @@
         {
             Settings.Default = Settings.Default.WithMetadataReferences(
                 MetadataReferences.Transitive(
-                    typeof(ModuleInitializer)));
+                    typeof(Microsoft.EntityFrameworkCore.DbContext),
+                    typeof(Microsoft.Extensions.Hosting.GenericHostBuilderExtensions),
+                    typeof(Microsoft.AspNetCore.Mvc.Controller),
+                    typeof(Microsoft.AspNetCore.Mvc.HttpGetAttribute)));
         }
     }
 }

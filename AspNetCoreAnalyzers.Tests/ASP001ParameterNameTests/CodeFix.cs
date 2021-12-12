@@ -1,4 +1,4 @@
-namespace AspNetCoreAnalyzers.Tests.ASP001ParameterNameTests
+﻿namespace AspNetCoreAnalyzers.Tests.ASP001ParameterNameTests
 {
     using Gu.Roslyn.Asserts;
     using Microsoft.CodeAnalysis.CodeFixes;

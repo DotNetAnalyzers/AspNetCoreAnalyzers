@@ -142,15 +142,13 @@ namespace AspBox
             var code = @"
 namespace AspBox
 {
-    using System.Threading.Tasks;
     using Microsoft.AspNetCore.Mvc;
-    using Microsoft.EntityFrameworkCore;
 
     [ApiController]
     public class OrdersController : Controller
     {
         [HttpGet(""api/{value}"")]
-        public async Task<int> GetOrder(int value)
+        public int GetOrder(int value)
         {
             return value;
         }

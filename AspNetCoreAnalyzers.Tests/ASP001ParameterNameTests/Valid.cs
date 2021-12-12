@@ -1,4 +1,4 @@
-namespace AspNetCoreAnalyzers.Tests.ASP001ParameterNameTests
+﻿namespace AspNetCoreAnalyzers.Tests.ASP001ParameterNameTests
 {
     using Gu.Roslyn.Asserts;
     using Microsoft.CodeAnalysis;
@@ -68,9 +68,7 @@ namespace AspBox
             var code = @"
 namespace AspBox
 {
-    using System.Threading.Tasks;
     using Microsoft.AspNetCore.Mvc;
-    using Microsoft.EntityFrameworkCore;
 
     [ApiController]
     public class OrdersController : Controller
@@ -125,7 +123,7 @@ namespace AspBox
         [HttpGet(""api/orders/{id:int}"")]
         public IActionResult Get(int id)
         {
-            if (id == null)
+            if (id < 0)
             {
                 return this.NotFound();
             }
