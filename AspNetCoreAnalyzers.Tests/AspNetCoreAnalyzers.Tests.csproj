@@ -21,7 +21,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Gu.Roslyn.Asserts" Version="4.0.2" />
+    <PackageReference Include="Gu.Roslyn.Asserts" Version="4.0.3" />
     <PackageReference Include="Gu.Roslyn.Asserts.Analyzers" Version="4.0.0" PrivateAssets="all" />
     <PackageReference Include="IDisposableAnalyzers" Version="4.0.0" PrivateAssets="all" />
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="4.0.1" />
