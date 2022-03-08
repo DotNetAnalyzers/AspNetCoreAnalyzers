@@ -3,7 +3,7 @@
   <Import Sdk="Microsoft.NET.Sdk" Project="Sdk.props" />
 
   <PropertyGroup>
-    <TargetFramework>net461</TargetFramework>
+    <TargetFramework>net48</TargetFramework>
     <RootNamespace>AspNetCoreAnalyzers</RootNamespace>
     <TargetName>AspNetCoreAnalyzers</TargetName>
     <NoWarn>NU1605</NoWarn>
