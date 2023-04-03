@@ -1,24 +1,24 @@
-namespace AspNetCoreAnalyzers.Tests.ASP012UseExplicitRouteTests
+namespace AspNetCoreAnalyzers.Tests.ASP012UseExplicitRouteTests;
+
+using Gu.Roslyn.Asserts;
+using Microsoft.CodeAnalysis.CodeFixes;
+using Microsoft.CodeAnalysis.Diagnostics;
+using NUnit.Framework;
+
+public static class CodeFix
 {
-    using Gu.Roslyn.Asserts;
-    using Microsoft.CodeAnalysis.CodeFixes;
-    using Microsoft.CodeAnalysis.Diagnostics;
-    using NUnit.Framework;
+    private static readonly DiagnosticAnalyzer Analyzer = new AttributeAnalyzer();
+    private static readonly ExpectedDiagnostic ExpectedDiagnostic = ExpectedDiagnostic.Create(Descriptors.ASP012UseExplicitRoute);
+    private static readonly CodeFixProvider Fix = new TemplateTextFix();
 
-    public static class CodeFix
+    [TestCase("OrdersController",      "[controller]",          "orders")]
+    [TestCase("OrdersController",      "api/[controller]",      "api/orders")]
+    [TestCase("OrdersController",      "api/[controller]/{id}", "api/orders/{id}")]
+    [TestCase("SampleDataController ", "api/[controller]",      "api/sample-data")]
+    [TestCase("SampleDataController ", "api/[controller]/{id}", "api/sample-data/{id}")]
+    public static void WhenRouteAttribute(string className, string before, string after)
     {
-        private static readonly DiagnosticAnalyzer Analyzer = new AttributeAnalyzer();
-        private static readonly ExpectedDiagnostic ExpectedDiagnostic = ExpectedDiagnostic.Create(Descriptors.ASP012UseExplicitRoute);
-        private static readonly CodeFixProvider Fix = new TemplateTextFix();
-
-        [TestCase("OrdersController",      "[controller]",          "orders")]
-        [TestCase("OrdersController",      "api/[controller]",      "api/orders")]
-        [TestCase("OrdersController",      "api/[controller]/{id}", "api/orders/{id}")]
-        [TestCase("SampleDataController ", "api/[controller]",      "api/sample-data")]
-        [TestCase("SampleDataController ", "api/[controller]/{id}", "api/sample-data/{id}")]
-        public static void WhenRouteAttribute(string className, string before, string after)
-        {
-            var code = @"
+        var code = @"
 namespace AspBox
 {
     using Microsoft.AspNetCore.Mvc;
@@ -29,9 +29,9 @@ namespace AspBox
     {
     }
 }".AssertReplace("OrdersController", className)
-  .AssertReplace("api/[controller]", before);
+.AssertReplace("api/[controller]", before);
 
-            var fixedCode = @"
+        var fixedCode = @"
 namespace AspBox
 {
     using Microsoft.AspNetCore.Mvc;
@@ -42,8 +42,7 @@ namespace AspBox
     {
     }
 }".AssertReplace("OrdersController", className)
-  .AssertReplace("api/orders", after);
-            RoslynAssert.CodeFix(Analyzer, Fix, ExpectedDiagnostic, code, fixedCode);
-        }
+.AssertReplace("api/orders", after);
+        RoslynAssert.CodeFix(Analyzer, Fix, ExpectedDiagnostic, code, fixedCode);
     }
 }

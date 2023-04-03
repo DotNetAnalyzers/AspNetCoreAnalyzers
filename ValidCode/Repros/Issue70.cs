@@ -1,10 +1,9 @@
-﻿namespace ValidCode.Repros
-{
-    using Microsoft.AspNetCore.Mvc;
+﻿namespace ValidCode.Repros;
 
-    [ApiController]
-    [Route("api/")]
-    public class GrantStubController : ControllerBase
-    {
-    }
+using Microsoft.AspNetCore.Mvc;
+
+[ApiController]
+[Route("api/")]
+public class GrantStubController : ControllerBase
+{
 }

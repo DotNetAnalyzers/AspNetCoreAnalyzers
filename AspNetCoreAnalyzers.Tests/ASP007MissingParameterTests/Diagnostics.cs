@@ -1,18 +1,18 @@
-﻿namespace AspNetCoreAnalyzers.Tests.ASP007MissingParameterTests
+﻿namespace AspNetCoreAnalyzers.Tests.ASP007MissingParameterTests;
+
+using Gu.Roslyn.Asserts;
+using Microsoft.CodeAnalysis.Diagnostics;
+using NUnit.Framework;
+
+public static class Diagnostics
 {
-    using Gu.Roslyn.Asserts;
-    using Microsoft.CodeAnalysis.Diagnostics;
-    using NUnit.Framework;
+    private static readonly DiagnosticAnalyzer Analyzer = new AttributeAnalyzer();
+    private static readonly ExpectedDiagnostic ExpectedDiagnostic = ExpectedDiagnostic.Create(Descriptors.ASP007MissingParameter);
 
-    public static class Diagnostics
+    [Test]
+    public static void WhenNoParameter()
     {
-        private static readonly DiagnosticAnalyzer Analyzer = new AttributeAnalyzer();
-        private static readonly ExpectedDiagnostic ExpectedDiagnostic = ExpectedDiagnostic.Create(Descriptors.ASP007MissingParameter);
-
-        [Test]
-        public static void WhenNoParameter()
-        {
-            var code = @"
+        var code = @"
 namespace AspBox
 {
     using Microsoft.AspNetCore.Mvc;
@@ -24,14 +24,14 @@ namespace AspBox
         public IActionResult Get() => this.Ok();
     }
 }";
-            var message = "The route template has parameter 'id' that does not have a corresponding method parameter";
-            RoslynAssert.Diagnostics(Analyzer, ExpectedDiagnostic.WithMessage(message), code);
-        }
+        var message = "The route template has parameter 'id' that does not have a corresponding method parameter";
+        RoslynAssert.Diagnostics(Analyzer, ExpectedDiagnostic.WithMessage(message), code);
+    }
 
-        [Test]
-        public static void WhenLastIsMissing()
-        {
-            var order = @"
+    [Test]
+    public static void WhenLastIsMissing()
+    {
+        var order = @"
 namespace AspBox
 {
     public class Order
@@ -40,7 +40,7 @@ namespace AspBox
     }
 }";
 
-            var db = @"
+        var db = @"
 namespace AspBox
 {
     using Microsoft.EntityFrameworkCore;
@@ -50,7 +50,7 @@ namespace AspBox
         public DbSet<Order> Orders => this.Set<Order>();
     }
 }";
-            var code = @"
+        var code = @"
 namespace AspBox
 {
     using System.Threading.Tasks;
@@ -80,14 +80,14 @@ namespace AspBox
         }
     }
 }";
-            var message = "The route template has parameter 'itemId' that does not have a corresponding method parameter";
-            RoslynAssert.Diagnostics(Analyzer, ExpectedDiagnostic.WithMessage(message), order, db, code);
-        }
+        var message = "The route template has parameter 'itemId' that does not have a corresponding method parameter";
+        RoslynAssert.Diagnostics(Analyzer, ExpectedDiagnostic.WithMessage(message), order, db, code);
+    }
 
-        [Test]
-        public static void WhenFirstIsMissing()
-        {
-            var order = @"
+    [Test]
+    public static void WhenFirstIsMissing()
+    {
+        var order = @"
 namespace AspBox
 {
     public class Order
@@ -96,7 +96,7 @@ namespace AspBox
     }
 }";
 
-            var db = @"
+        var db = @"
 namespace AspBox
 {
     using Microsoft.EntityFrameworkCore;
@@ -106,7 +106,7 @@ namespace AspBox
         public DbSet<Order> Orders => this.Set<Order>();
     }
 }";
-            var code = @"
+        var code = @"
 namespace AspBox
 {
     using System.Threading.Tasks;
@@ -136,14 +136,14 @@ namespace AspBox
         }
     }
 }";
-            RoslynAssert.Diagnostics(Analyzer, ExpectedDiagnostic, order, db, code);
-        }
+        RoslynAssert.Diagnostics(Analyzer, ExpectedDiagnostic, order, db, code);
+    }
 
-        [TestCase("[FromHeader]")]
-        [TestCase("[FromBody]")]
-        public static void WhenWrongAttribute(string attribute)
-        {
-            var code = @"
+    [TestCase("[FromHeader]")]
+    [TestCase("[FromBody]")]
+    public static void WhenWrongAttribute(string attribute)
+    {
+        var code = @"
 namespace AspBox
 {
     using Microsoft.AspNetCore.Mvc;
@@ -158,13 +158,13 @@ namespace AspBox
         }
     }
 }".AssertReplace("[FromHeader]", attribute);
-            RoslynAssert.Diagnostics(Analyzer, ExpectedDiagnostic, code);
-        }
+        RoslynAssert.Diagnostics(Analyzer, ExpectedDiagnostic, code);
+    }
 
-        [Test]
-        public static void WhenRouteOnClass()
-        {
-            var code = @"
+    [Test]
+    public static void WhenRouteOnClass()
+    {
+        var code = @"
 namespace AspBox
 {
     using Microsoft.AspNetCore.Mvc;
@@ -181,13 +181,13 @@ namespace AspBox
     }
 }";
 
-            RoslynAssert.Diagnostics(Analyzer, ExpectedDiagnostic, code);
-        }
+        RoslynAssert.Diagnostics(Analyzer, ExpectedDiagnostic, code);
+    }
 
-        [Test]
-        public static void WhenRoutesOnClass()
-        {
-            var code = @"
+    [Test]
+    public static void WhenRoutesOnClass()
+    {
+        var code = @"
 namespace AspBox
 {
     using Microsoft.AspNetCore.Mvc;
@@ -204,14 +204,14 @@ namespace AspBox
         }
     }
 }";
-            var message = "The route template has parameter 'id' that does not have a corresponding method parameter";
-            RoslynAssert.Diagnostics(Analyzer, ExpectedDiagnostic.WithMessage(message), code);
-        }
+        var message = "The route template has parameter 'id' that does not have a corresponding method parameter";
+        RoslynAssert.Diagnostics(Analyzer, ExpectedDiagnostic.WithMessage(message), code);
+    }
 
-        [Test]
-        public static void WhenMultipleRouteAttributesMissingActionWithParameter()
-        {
-            var code = @"
+    [Test]
+    public static void WhenMultipleRouteAttributesMissingActionWithParameter()
+    {
+        var code = @"
 namespace AspBox
 {
     using Microsoft.AspNetCore.Mvc;
@@ -229,7 +229,6 @@ namespace AspBox
     }
 }";
 
-            RoslynAssert.Diagnostics(Analyzer, ExpectedDiagnostic, code);
-        }
+        RoslynAssert.Diagnostics(Analyzer, ExpectedDiagnostic, code);
     }
 }

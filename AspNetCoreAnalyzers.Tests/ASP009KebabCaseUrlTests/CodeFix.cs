@@ -1,23 +1,23 @@
-namespace AspNetCoreAnalyzers.Tests.ASP009KebabCaseUrlTests
+namespace AspNetCoreAnalyzers.Tests.ASP009KebabCaseUrlTests;
+
+using Gu.Roslyn.Asserts;
+using Microsoft.CodeAnalysis.CodeFixes;
+using Microsoft.CodeAnalysis.Diagnostics;
+using NUnit.Framework;
+
+public static class CodeFix
 {
-    using Gu.Roslyn.Asserts;
-    using Microsoft.CodeAnalysis.CodeFixes;
-    using Microsoft.CodeAnalysis.Diagnostics;
-    using NUnit.Framework;
+    private static readonly DiagnosticAnalyzer Analyzer = new AttributeAnalyzer();
+    private static readonly ExpectedDiagnostic ExpectedDiagnostic = ExpectedDiagnostic.Create(Descriptors.ASP009KebabCaseUrl);
+    private static readonly CodeFixProvider Fix = new TemplateTextFix();
 
-    public static class CodeFix
+    [TestCase("\"api/↓Orders/{id}\"",    "\"api/orders/{id}\"")]
+    [TestCase("\"api/↓TwoWords/{id}\"",  "\"api/two-words/{id}\"")]
+    [TestCase("\"api/↓twoWords/{id}\"",  "\"api/two-words/{id}\"")]
+    [TestCase("\"api/↓two_words/{id}\"", "\"api/two-words/{id}\"")]
+    public static void WhenMethodAttribute(string before, string after)
     {
-        private static readonly DiagnosticAnalyzer Analyzer = new AttributeAnalyzer();
-        private static readonly ExpectedDiagnostic ExpectedDiagnostic = ExpectedDiagnostic.Create(Descriptors.ASP009KebabCaseUrl);
-        private static readonly CodeFixProvider Fix = new TemplateTextFix();
-
-        [TestCase("\"api/↓Orders/{id}\"",    "\"api/orders/{id}\"")]
-        [TestCase("\"api/↓TwoWords/{id}\"",  "\"api/two-words/{id}\"")]
-        [TestCase("\"api/↓twoWords/{id}\"",  "\"api/two-words/{id}\"")]
-        [TestCase("\"api/↓two_words/{id}\"", "\"api/two-words/{id}\"")]
-        public static void WhenMethodAttribute(string before, string after)
-        {
-            var code = @"
+        var code = @"
 namespace AspBox
 {
     using Microsoft.AspNetCore.Mvc;
@@ -33,7 +33,7 @@ namespace AspBox
     }
 }".AssertReplace("\"api/Orders/{id}\"", before);
 
-            var fixedCode = @"
+        var fixedCode = @"
 namespace AspBox
 {
     using Microsoft.AspNetCore.Mvc;
@@ -48,16 +48,16 @@ namespace AspBox
         }
     }
 }".AssertReplace("\"api/orders/{id}\"", after);
-            RoslynAssert.CodeFix(Analyzer, Fix, ExpectedDiagnostic, code, fixedCode);
-        }
+        RoslynAssert.CodeFix(Analyzer, Fix, ExpectedDiagnostic, code, fixedCode);
+    }
 
-        [TestCase("\"api/↓Orders\"",    "\"api/orders\"")]
-        [TestCase("\"api/↓TwoWords\"",  "\"api/two-words\"")]
-        [TestCase("\"api/↓twoWords\"",  "\"api/two-words\"")]
-        [TestCase("\"api/↓two_words\"", "\"api/two-words\"")]
-        public static void WhenRouteAttribute(string before, string after)
-        {
-            var code = @"
+    [TestCase("\"api/↓Orders\"",    "\"api/orders\"")]
+    [TestCase("\"api/↓TwoWords\"",  "\"api/two-words\"")]
+    [TestCase("\"api/↓twoWords\"",  "\"api/two-words\"")]
+    [TestCase("\"api/↓two_words\"", "\"api/two-words\"")]
+    public static void WhenRouteAttribute(string before, string after)
+    {
+        var code = @"
 namespace AspBox
 {
     using Microsoft.AspNetCore.Mvc;
@@ -74,7 +74,7 @@ namespace AspBox
     }
 }".AssertReplace("\"api/↓TwoWords\"", before);
 
-            var fixedCode = @"
+        var fixedCode = @"
 namespace AspBox
 {
     using Microsoft.AspNetCore.Mvc;
@@ -90,7 +90,6 @@ namespace AspBox
         }
     }
 }".AssertReplace("\"api/orders\"", after);
-            RoslynAssert.CodeFix(Analyzer, Fix, ExpectedDiagnostic, code, fixedCode);
-        }
+        RoslynAssert.CodeFix(Analyzer, Fix, ExpectedDiagnostic, code, fixedCode);
     }
 }

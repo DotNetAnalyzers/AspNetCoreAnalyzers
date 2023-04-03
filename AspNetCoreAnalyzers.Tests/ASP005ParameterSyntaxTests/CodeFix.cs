@@ -1,32 +1,32 @@
-namespace AspNetCoreAnalyzers.Tests.ASP005ParameterSyntaxTests
+namespace AspNetCoreAnalyzers.Tests.ASP005ParameterSyntaxTests;
+
+using Gu.Roslyn.Asserts;
+using Microsoft.CodeAnalysis.CodeFixes;
+using Microsoft.CodeAnalysis.Diagnostics;
+using NUnit.Framework;
+
+public static class CodeFix
 {
-    using Gu.Roslyn.Asserts;
-    using Microsoft.CodeAnalysis.CodeFixes;
-    using Microsoft.CodeAnalysis.Diagnostics;
-    using NUnit.Framework;
+    private static readonly DiagnosticAnalyzer Analyzer = new AttributeAnalyzer();
+    private static readonly ExpectedDiagnostic ExpectedDiagnostic = ExpectedDiagnostic.Create(Descriptors.ASP005ParameterSyntax);
+    private static readonly CodeFixProvider Fix = new TemplateTextFix();
 
-    public static class CodeFix
+    [TestCase("\"↓id}\"",                       "\"{id}\"")]
+    [TestCase("\"↓{id\"",                       "\"{id}\"")]
+    [TestCase("\"{↓id}}\"",                     "\"{id}\"")]
+    [TestCase("\"{↓{id}\"",                     "\"{id}\"")]
+    [TestCase("\"api/orders/↓id}\"",            "\"api/orders/{id}\"")]
+    [TestCase("\"api/orders/↓{id\"",            "\"api/orders/{id}\"")]
+    [TestCase("\"api/orders/{↓id}}\"",          "\"api/orders/{id}\"")]
+    [TestCase("\"api/orders/{↓{id}\"",          "\"api/orders/{id}\"")]
+    [TestCase("\"api/orders/↓id:long}\"",       "\"api/orders/{id:long}\"")]
+    [TestCase("\"api/orders/↓{id:long\"",       "\"api/orders/{id:long}\"")]
+    [TestCase("\"api/orders/{id:min(1}\"",      "\"api/orders/{id:min(1)}\"")]
+    [TestCase("\"api/orders/{id:max(1}\"",      "\"api/orders/{id:max(1)}\"")]
+    [TestCase("\"api/orders/{id:range(1,2}\"",  "\"api/orders/{id:range(1,2)}\"")]
+    public static void WhenLong(string before, string after)
     {
-        private static readonly DiagnosticAnalyzer Analyzer = new AttributeAnalyzer();
-        private static readonly ExpectedDiagnostic ExpectedDiagnostic = ExpectedDiagnostic.Create(Descriptors.ASP005ParameterSyntax);
-        private static readonly CodeFixProvider Fix = new TemplateTextFix();
-
-        [TestCase("\"↓id}\"",                       "\"{id}\"")]
-        [TestCase("\"↓{id\"",                       "\"{id}\"")]
-        [TestCase("\"{↓id}}\"",                     "\"{id}\"")]
-        [TestCase("\"{↓{id}\"",                     "\"{id}\"")]
-        [TestCase("\"api/orders/↓id}\"",            "\"api/orders/{id}\"")]
-        [TestCase("\"api/orders/↓{id\"",            "\"api/orders/{id}\"")]
-        [TestCase("\"api/orders/{↓id}}\"",          "\"api/orders/{id}\"")]
-        [TestCase("\"api/orders/{↓{id}\"",          "\"api/orders/{id}\"")]
-        [TestCase("\"api/orders/↓id:long}\"",       "\"api/orders/{id:long}\"")]
-        [TestCase("\"api/orders/↓{id:long\"",       "\"api/orders/{id:long}\"")]
-        [TestCase("\"api/orders/{id:min(1}\"",      "\"api/orders/{id:min(1)}\"")]
-        [TestCase("\"api/orders/{id:max(1}\"",      "\"api/orders/{id:max(1)}\"")]
-        [TestCase("\"api/orders/{id:range(1,2}\"",  "\"api/orders/{id:range(1,2)}\"")]
-        public static void WhenLong(string before, string after)
-        {
-            var code = @"
+        var code = @"
 namespace AspBox
 {
     using Microsoft.AspNetCore.Mvc;
@@ -42,7 +42,7 @@ namespace AspBox
     }
 }".AssertReplace("\"api/orders/{id:long}\"", before);
 
-            var fixedCode = @"
+        var fixedCode = @"
 namespace AspBox
 {
     using Microsoft.AspNetCore.Mvc;
@@ -57,18 +57,18 @@ namespace AspBox
         }
     }
 }".AssertReplace("\"api/orders/{id:long}\"", after);
-            RoslynAssert.CodeFix(Analyzer, Fix, ExpectedDiagnostic, code, fixedCode);
-        }
+        RoslynAssert.CodeFix(Analyzer, Fix, ExpectedDiagnostic, code, fixedCode);
+    }
 
-        [TestCase("\"api/orders/{id:↓minlength(1}\"",            "\"api/orders/{id:minlength(1)}\"")]
-        [TestCase("\"api/orders/{id:↓maxlength(1}\"",            "\"api/orders/{id:maxlength(1)}\"")]
-        [TestCase("\"api/orders/{id:↓length(1}\"",               "\"api/orders/{id:length(1)}\"")]
-        [TestCase("\"api/orders/{id:↓length(1,2}\"",             "\"api/orders/{id:length(1,2)}\"")]
-        [TestCase("\"api/orders/{id:↓regex((a|b)-c}\"",          "\"api/orders/{id:regex((a|b)-c)}\"")]
-        [TestCase("\"api/orders/{id:regex(\\\\d+):↓length(1}\"", "\"api/orders/{id:regex(\\\\d+):length(1)}\"")]
-        public static void WhenString(string before, string after)
-        {
-            var code = @"
+    [TestCase("\"api/orders/{id:↓minlength(1}\"",            "\"api/orders/{id:minlength(1)}\"")]
+    [TestCase("\"api/orders/{id:↓maxlength(1}\"",            "\"api/orders/{id:maxlength(1)}\"")]
+    [TestCase("\"api/orders/{id:↓length(1}\"",               "\"api/orders/{id:length(1)}\"")]
+    [TestCase("\"api/orders/{id:↓length(1,2}\"",             "\"api/orders/{id:length(1,2)}\"")]
+    [TestCase("\"api/orders/{id:↓regex((a|b)-c}\"",          "\"api/orders/{id:regex((a|b)-c)}\"")]
+    [TestCase("\"api/orders/{id:regex(\\\\d+):↓length(1}\"", "\"api/orders/{id:regex(\\\\d+):length(1)}\"")]
+    public static void WhenString(string before, string after)
+    {
+        var code = @"
 namespace AspBox
 {
     using Microsoft.AspNetCore.Mvc;
@@ -84,7 +84,7 @@ namespace AspBox
     }
 }".AssertReplace("\"api/orders/{id}\"", before);
 
-            var fixedCode = @"
+        var fixedCode = @"
 namespace AspBox
 {
     using Microsoft.AspNetCore.Mvc;
@@ -100,7 +100,6 @@ namespace AspBox
     }
 }".AssertReplace("\"api/orders/{id}\"", after);
 
-            RoslynAssert.CodeFix(Analyzer, Fix, ExpectedDiagnostic, code, fixedCode);
-        }
+        RoslynAssert.CodeFix(Analyzer, Fix, ExpectedDiagnostic, code, fixedCode);
     }
 }

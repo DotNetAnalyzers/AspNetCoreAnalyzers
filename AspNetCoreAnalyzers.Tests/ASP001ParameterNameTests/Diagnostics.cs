@@ -1,18 +1,18 @@
-﻿namespace AspNetCoreAnalyzers.Tests.ASP001ParameterNameTests
+﻿namespace AspNetCoreAnalyzers.Tests.ASP001ParameterNameTests;
+
+using Gu.Roslyn.Asserts;
+using Microsoft.CodeAnalysis.Diagnostics;
+using NUnit.Framework;
+
+public static class Diagnostics
 {
-    using Gu.Roslyn.Asserts;
-    using Microsoft.CodeAnalysis.Diagnostics;
-    using NUnit.Framework;
+    private static readonly DiagnosticAnalyzer Analyzer = new AttributeAnalyzer();
+    private static readonly ExpectedDiagnostic ExpectedDiagnostic = ExpectedDiagnostic.Create(Descriptors.ASP001ParameterSymbolName);
 
-    public static class Diagnostics
+    [Test]
+    public static void BothParameters()
     {
-        private static readonly DiagnosticAnalyzer Analyzer = new AttributeAnalyzer();
-        private static readonly ExpectedDiagnostic ExpectedDiagnostic = ExpectedDiagnostic.Create(Descriptors.ASP001ParameterSymbolName);
-
-        [Test]
-        public static void BothParameters()
-        {
-            var code = @"
+        var code = @"
 namespace AspBox
 {
     using Microsoft.AspNetCore.Mvc;
@@ -28,7 +28,6 @@ namespace AspBox
     }
 }";
 
-            RoslynAssert.Diagnostics(Analyzer, ExpectedDiagnostic, code);
-        }
+        RoslynAssert.Diagnostics(Analyzer, ExpectedDiagnostic, code);
     }
 }

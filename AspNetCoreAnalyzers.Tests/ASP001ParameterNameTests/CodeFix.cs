@@ -1,31 +1,31 @@
-﻿namespace AspNetCoreAnalyzers.Tests.ASP001ParameterNameTests
+﻿namespace AspNetCoreAnalyzers.Tests.ASP001ParameterNameTests;
+
+using Gu.Roslyn.Asserts;
+using Microsoft.CodeAnalysis.CodeFixes;
+using Microsoft.CodeAnalysis.Diagnostics;
+using NUnit.Framework;
+
+public static class CodeFix
 {
-    using Gu.Roslyn.Asserts;
-    using Microsoft.CodeAnalysis.CodeFixes;
-    using Microsoft.CodeAnalysis.Diagnostics;
-    using NUnit.Framework;
+    private static readonly DiagnosticAnalyzer Analyzer = new AttributeAnalyzer();
+    private static readonly ExpectedDiagnostic ExpectedDiagnostic = ExpectedDiagnostic.Create(Descriptors.ASP001ParameterSymbolName);
+    private static readonly CodeFixProvider Fix = new RenameParameterFix();
 
-    public static class CodeFix
+    [TestCase("\"{value}\"")]
+    [TestCase("@\"{value}\"")]
+    [TestCase("\"{value?}\"")]
+    [TestCase("\"{*value}\"")]
+    [TestCase("\"{**value}\"")]
+    [TestCase("\"{value=abc}\"")]
+    [TestCase("@\"{value?}\"")]
+    [TestCase("\"api/orders/{value}\"")]
+    [TestCase("\"api/orders/{value?}\"")]
+    [TestCase("\"api/orders/{value:alpha}\"")]
+    [TestCase("\"api/orders/{value:regex(a-(0|1))}\"")]
+    [TestCase("\"api/orders/{value:regex(^\\\\d{{3}}-\\\\d{{2}}-\\\\d{4}$)}\"")]
+    public static void WhenHttpGet(string template)
     {
-        private static readonly DiagnosticAnalyzer Analyzer = new AttributeAnalyzer();
-        private static readonly ExpectedDiagnostic ExpectedDiagnostic = ExpectedDiagnostic.Create(Descriptors.ASP001ParameterSymbolName);
-        private static readonly CodeFixProvider Fix = new RenameParameterFix();
-
-        [TestCase("\"{value}\"")]
-        [TestCase("@\"{value}\"")]
-        [TestCase("\"{value?}\"")]
-        [TestCase("\"{*value}\"")]
-        [TestCase("\"{**value}\"")]
-        [TestCase("\"{value=abc}\"")]
-        [TestCase("@\"{value?}\"")]
-        [TestCase("\"api/orders/{value}\"")]
-        [TestCase("\"api/orders/{value?}\"")]
-        [TestCase("\"api/orders/{value:alpha}\"")]
-        [TestCase("\"api/orders/{value:regex(a-(0|1))}\"")]
-        [TestCase("\"api/orders/{value:regex(^\\\\d{{3}}-\\\\d{{2}}-\\\\d{4}$)}\"")]
-        public static void WhenHttpGet(string template)
-        {
-            var before = @"
+        var before = @"
 namespace AspBox
 {
     using Microsoft.AspNetCore.Mvc;
@@ -41,7 +41,7 @@ namespace AspBox
     }
 }".AssertReplace("\"api/orders/{value}\"", template);
 
-            var after = @"
+        var after = @"
 namespace AspBox
 {
     using Microsoft.AspNetCore.Mvc;
@@ -56,13 +56,13 @@ namespace AspBox
         }
     }
 }".AssertReplace("\"api/orders/{value}\"", template);
-            RoslynAssert.CodeFix(Analyzer, Fix, ExpectedDiagnostic, before, after);
-        }
+        RoslynAssert.CodeFix(Analyzer, Fix, ExpectedDiagnostic, before, after);
+    }
 
-        [Test]
-        public static void WhenRouteAndHttpGetOnMethod()
-        {
-            var before = @"
+    [Test]
+    public static void WhenRouteAndHttpGetOnMethod()
+    {
+        var before = @"
 namespace AspBox
 {
     using Microsoft.AspNetCore.Mvc;
@@ -79,7 +79,7 @@ namespace AspBox
     }
 }";
 
-            var after = @"
+        var after = @"
 namespace AspBox
 {
     using Microsoft.AspNetCore.Mvc;
@@ -95,13 +95,13 @@ namespace AspBox
         }
     }
 }";
-            RoslynAssert.CodeFix(Analyzer, Fix, ExpectedDiagnostic, before, after);
-        }
+        RoslynAssert.CodeFix(Analyzer, Fix, ExpectedDiagnostic, before, after);
+    }
 
-        [Test]
-        public static void ImplicitSingleParameter()
-        {
-            var order = @"
+    [Test]
+    public static void ImplicitSingleParameter()
+    {
+        var order = @"
 namespace AspBox
 {
     public class Order
@@ -110,7 +110,7 @@ namespace AspBox
     }
 }";
 
-            var db = @"
+        var db = @"
 namespace AspBox
 {
     using Microsoft.EntityFrameworkCore;
@@ -120,7 +120,7 @@ namespace AspBox
         public DbSet<Order> Orders => this.Set<Order>();
     }
 }";
-            var before = @"
+        var before = @"
 namespace AspBox
 {
     using System.Threading.Tasks;
@@ -151,7 +151,7 @@ namespace AspBox
     }
 }";
 
-            var after = @"
+        var after = @"
 namespace AspBox
 {
     using System.Threading.Tasks;
@@ -181,13 +181,13 @@ namespace AspBox
         }
     }
 }";
-            RoslynAssert.CodeFix(Analyzer, Fix, ExpectedDiagnostic, new[] { order, db, before }, after);
-        }
+        RoslynAssert.CodeFix(Analyzer, Fix, ExpectedDiagnostic, new[] { order, db, before }, after);
+    }
 
-        [Test]
-        public static void FirstParameter()
-        {
-            var before = @"
+    [Test]
+    public static void FirstParameter()
+    {
+        var before = @"
 namespace AspBox
 {
     using Microsoft.AspNetCore.Mvc;
@@ -203,7 +203,7 @@ namespace AspBox
     }
 }";
 
-            var after = @"
+        var after = @"
 namespace AspBox
 {
     using Microsoft.AspNetCore.Mvc;
@@ -218,13 +218,13 @@ namespace AspBox
         }
     }
 }";
-            RoslynAssert.CodeFix(Analyzer, Fix, ExpectedDiagnostic, before, after);
-        }
+        RoslynAssert.CodeFix(Analyzer, Fix, ExpectedDiagnostic, before, after);
+    }
 
-        [Test]
-        public static void LastParameter()
-        {
-            var before = @"
+    [Test]
+    public static void LastParameter()
+    {
+        var before = @"
 namespace AspBox
 {
     using Microsoft.AspNetCore.Mvc;
@@ -240,7 +240,7 @@ namespace AspBox
     }
 }";
 
-            var after = @"
+        var after = @"
 namespace AspBox
 {
     using Microsoft.AspNetCore.Mvc;
@@ -255,13 +255,13 @@ namespace AspBox
         }
     }
 }";
-            RoslynAssert.CodeFix(Analyzer, Fix, ExpectedDiagnostic, before, after);
-        }
+        RoslynAssert.CodeFix(Analyzer, Fix, ExpectedDiagnostic, before, after);
+    }
 
-        [Test]
-        public static void ExplicitFromRouteAttributeSingleParameter()
-        {
-            var before = @"
+    [Test]
+    public static void ExplicitFromRouteAttributeSingleParameter()
+    {
+        var before = @"
 namespace AspBox
 {
     using Microsoft.AspNetCore.Mvc;
@@ -277,7 +277,7 @@ namespace AspBox
     }
 }";
 
-            var after = @"
+        var after = @"
 namespace AspBox
 {
     using Microsoft.AspNetCore.Mvc;
@@ -292,7 +292,6 @@ namespace AspBox
         }
     }
 }";
-            RoslynAssert.CodeFix(Analyzer, Fix, ExpectedDiagnostic, before, after);
-        }
+        RoslynAssert.CodeFix(Analyzer, Fix, ExpectedDiagnostic, before, after);
     }
 }

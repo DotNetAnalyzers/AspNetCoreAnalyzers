@@ -1,7 +1,6 @@
-﻿namespace ValidCode
+﻿namespace ValidCode;
+
+public class OrderItem
 {
-    public class OrderItem
-    {
-        public int Id { get; set; }
-    }
+    public int Id { get; set; }
 }

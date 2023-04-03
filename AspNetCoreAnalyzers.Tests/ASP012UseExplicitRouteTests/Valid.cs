@@ -1,17 +1,17 @@
-﻿namespace AspNetCoreAnalyzers.Tests.ASP012UseExplicitRouteTests
+﻿namespace AspNetCoreAnalyzers.Tests.ASP012UseExplicitRouteTests;
+
+using Gu.Roslyn.Asserts;
+using Microsoft.CodeAnalysis.Diagnostics;
+using NUnit.Framework;
+
+public static class Valid
 {
-    using Gu.Roslyn.Asserts;
-    using Microsoft.CodeAnalysis.Diagnostics;
-    using NUnit.Framework;
+    private static readonly DiagnosticAnalyzer Analyzer = new AttributeAnalyzer();
 
-    public static class Valid
+    [Test]
+    public static void Simple()
     {
-        private static readonly DiagnosticAnalyzer Analyzer = new AttributeAnalyzer();
-
-        [Test]
-        public static void Simple()
-        {
-            var code = @"
+        var code = @"
 namespace AspBox
 {
     using Microsoft.AspNetCore.Mvc;
@@ -27,7 +27,6 @@ namespace AspBox
         }
     }
 }";
-            RoslynAssert.Valid(Analyzer, code);
-        }
+        RoslynAssert.Valid(Analyzer, code);
     }
 }

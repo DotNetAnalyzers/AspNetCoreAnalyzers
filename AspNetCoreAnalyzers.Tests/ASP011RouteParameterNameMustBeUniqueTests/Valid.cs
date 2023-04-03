@@ -1,19 +1,19 @@
-﻿namespace AspNetCoreAnalyzers.Tests.ASP011RouteParameterNameMustBeUniqueTests
+﻿namespace AspNetCoreAnalyzers.Tests.ASP011RouteParameterNameMustBeUniqueTests;
+
+using Gu.Roslyn.Asserts;
+using Microsoft.CodeAnalysis.Diagnostics;
+using NUnit.Framework;
+
+public static class Valid
 {
-    using Gu.Roslyn.Asserts;
-    using Microsoft.CodeAnalysis.Diagnostics;
-    using NUnit.Framework;
+    private static readonly DiagnosticAnalyzer Analyzer = new AttributeAnalyzer();
 
-    public static class Valid
+    [TestCase("\"{value}\"")]
+    [TestCase("\"api/orders/{value}\"")]
+    [TestCase("\"api/two-words/{value}\"")]
+    public static void WithParameter(string parameter)
     {
-        private static readonly DiagnosticAnalyzer Analyzer = new AttributeAnalyzer();
-
-        [TestCase("\"{value}\"")]
-        [TestCase("\"api/orders/{value}\"")]
-        [TestCase("\"api/two-words/{value}\"")]
-        public static void WithParameter(string parameter)
-        {
-            var code = @"
+        var code = @"
 namespace AspBox
 {
     using Microsoft.AspNetCore.Mvc;
@@ -28,13 +28,13 @@ namespace AspBox
         }
     }
 }".AssertReplace("\"api/{value}\"", parameter);
-            RoslynAssert.Valid(Analyzer, code);
-        }
+        RoslynAssert.Valid(Analyzer, code);
+    }
 
-        [Test]
-        public static void TwoActions()
-        {
-            var code = @"
+    [Test]
+    public static void TwoActions()
+    {
+        var code = @"
 namespace AspBox
 {
     using Microsoft.AspNetCore.Mvc;
@@ -67,7 +67,6 @@ namespace AspBox
         }
     }
 }";
-            RoslynAssert.Valid(Analyzer, code);
-        }
+        RoslynAssert.Valid(Analyzer, code);
     }
 }

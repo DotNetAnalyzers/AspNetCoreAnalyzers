@@ -1,40 +1,40 @@
-﻿namespace AspNetCoreAnalyzers.Tests.ASP003ParameterSymbolTypeTests
+﻿namespace AspNetCoreAnalyzers.Tests.ASP003ParameterSymbolTypeTests;
+
+using Gu.Roslyn.Asserts;
+using Microsoft.CodeAnalysis.Diagnostics;
+using NUnit.Framework;
+
+public static class Valid
 {
-    using Gu.Roslyn.Asserts;
-    using Microsoft.CodeAnalysis.Diagnostics;
-    using NUnit.Framework;
+    private static readonly DiagnosticAnalyzer Analyzer = new AttributeAnalyzer();
 
-    public static class Valid
+    [TestCase("\"{id}\"",                           "int id")]
+    [TestCase("\"{id=1}\"",                         "int id")]
+    [TestCase("\"{id}\"",                           "string id")]
+    [TestCase("\"{id?}\"",                          "string id")]
+    [TestCase("@\"{id}\"",                          "int id")]
+    [TestCase("\"{id:int}\"",                       "int id")]
+    [TestCase("\"api/orders/{id:int}\"",            "int id")]
+    [TestCase("\"api/orders/{id:int:min(1)}\"",     "int id")]
+    [TestCase("\"api/orders/{id:bool}\"",           "bool id")]
+    [TestCase("\"api/orders/{id:datetime}\"",       "System.DateTime id")]
+    [TestCase("\"api/orders/{id:decimal}\"",        "decimal id")]
+    [TestCase("\"api/orders/{id:double}\"",         "double id")]
+    [TestCase("\"api/orders/{id:float}\"",          "float id")]
+    [TestCase("\"api/orders/{id:guid}\"",           "System.Guid id")]
+    [TestCase("\"api/orders/{id:long}\"",           "long id")]
+    [TestCase("\"api/orders/{id:minlength(1)}\"",   "string id")]
+    [TestCase("\"api/orders/{id:maxlength(1)}\"",   "string id")]
+    [TestCase("\"api/orders/{id:length(1)}\"",      "string id")]
+    [TestCase("\"api/orders/{id:length(1,3)}\"",    "string id")]
+    [TestCase("\"api/orders/{id:min(1)}\"",         "long id")]
+    [TestCase("\"api/orders/{id:max(10)}\"",        "long id")]
+    [TestCase("\"api/orders/{id:range(0,10)}\"",    "long id")]
+    [TestCase("\"api/orders/{id:alpha}\"",          "string id")]
+    [TestCase("\"api/orders/{id:regex(a-(0|1))}\"", "string id")]
+    public static void When(string template, string parameter)
     {
-        private static readonly DiagnosticAnalyzer Analyzer = new AttributeAnalyzer();
-
-        [TestCase("\"{id}\"",                           "int id")]
-        [TestCase("\"{id=1}\"",                         "int id")]
-        [TestCase("\"{id}\"",                           "string id")]
-        [TestCase("\"{id?}\"",                          "string id")]
-        [TestCase("@\"{id}\"",                          "int id")]
-        [TestCase("\"{id:int}\"",                       "int id")]
-        [TestCase("\"api/orders/{id:int}\"",            "int id")]
-        [TestCase("\"api/orders/{id:int:min(1)}\"",     "int id")]
-        [TestCase("\"api/orders/{id:bool}\"",           "bool id")]
-        [TestCase("\"api/orders/{id:datetime}\"",       "System.DateTime id")]
-        [TestCase("\"api/orders/{id:decimal}\"",        "decimal id")]
-        [TestCase("\"api/orders/{id:double}\"",         "double id")]
-        [TestCase("\"api/orders/{id:float}\"",          "float id")]
-        [TestCase("\"api/orders/{id:guid}\"",           "System.Guid id")]
-        [TestCase("\"api/orders/{id:long}\"",           "long id")]
-        [TestCase("\"api/orders/{id:minlength(1)}\"",   "string id")]
-        [TestCase("\"api/orders/{id:maxlength(1)}\"",   "string id")]
-        [TestCase("\"api/orders/{id:length(1)}\"",      "string id")]
-        [TestCase("\"api/orders/{id:length(1,3)}\"",    "string id")]
-        [TestCase("\"api/orders/{id:min(1)}\"",         "long id")]
-        [TestCase("\"api/orders/{id:max(10)}\"",        "long id")]
-        [TestCase("\"api/orders/{id:range(0,10)}\"",    "long id")]
-        [TestCase("\"api/orders/{id:alpha}\"",          "string id")]
-        [TestCase("\"api/orders/{id:regex(a-(0|1))}\"", "string id")]
-        public static void When(string template, string parameter)
-        {
-            var code = @"
+        var code = @"
 namespace AspBox
 {
     using Microsoft.AspNetCore.Mvc;
@@ -49,14 +49,14 @@ namespace AspBox
         }
     }
 }".AssertReplace("\"api/orders/{id:int}\"", template)
-  .AssertReplace("byte id", parameter);
-            RoslynAssert.Valid(Analyzer, code);
-        }
+.AssertReplace("byte id", parameter);
+        RoslynAssert.Valid(Analyzer, code);
+    }
 
-        [TestCase("\"api/orders/\" + \"{value:int}\"")]
-        public static void IgnoreWhen(string template)
-        {
-            var code = @"
+    [TestCase("\"api/orders/\" + \"{value:int}\"")]
+    public static void IgnoreWhen(string template)
+    {
+        var code = @"
 namespace AspBox
 {
     using Microsoft.AspNetCore.Mvc;
@@ -71,13 +71,13 @@ namespace AspBox
         }
     }
 }".AssertReplace("\"api/orders/{value}\"", template);
-            RoslynAssert.Valid(Analyzer, code);
-        }
+        RoslynAssert.Valid(Analyzer, code);
+    }
 
-        [Test]
-        public static void ImplicitType()
-        {
-            var order = @"
+    [Test]
+    public static void ImplicitType()
+    {
+        var order = @"
 namespace AspBox
 {
     public class Order
@@ -86,7 +86,7 @@ namespace AspBox
     }
 }";
 
-            var db = @"
+        var db = @"
 namespace AspBox
 {
     using Microsoft.EntityFrameworkCore;
@@ -96,7 +96,7 @@ namespace AspBox
         public DbSet<Order> Orders => this.Set<Order>();
     }
 }";
-            var code = @"
+        var code = @"
 namespace AspBox
 {
     using System.Threading.Tasks;
@@ -126,20 +126,20 @@ namespace AspBox
         }
     }
 }";
-            RoslynAssert.Valid(Analyzer, order, db, code);
-        }
+        RoslynAssert.Valid(Analyzer, order, db, code);
+    }
 
-        [TestCase("{value:bool}",     "bool")]
-        [TestCase("{value:datetime}", "System.DateTime")]
-        [TestCase("{value:decimal}",  "decimal")]
-        [TestCase("{value:double}",   "double")]
-        [TestCase("{value:float}",    "float")]
-        [TestCase("{value:int}",      "int")]
-        [TestCase("{value:long}",     "long")]
-        [TestCase("{value:guid}",     "System.Guid")]
-        public static void ExplicitType(string constraint, string type)
-        {
-            var code = @"
+    [TestCase("{value:bool}",     "bool")]
+    [TestCase("{value:datetime}", "System.DateTime")]
+    [TestCase("{value:decimal}",  "decimal")]
+    [TestCase("{value:double}",   "double")]
+    [TestCase("{value:float}",    "float")]
+    [TestCase("{value:int}",      "int")]
+    [TestCase("{value:long}",     "long")]
+    [TestCase("{value:guid}",     "System.Guid")]
+    public static void ExplicitType(string constraint, string type)
+    {
+        var code = @"
 namespace AspBox
 {
     using Microsoft.AspNetCore.Mvc;
@@ -154,18 +154,18 @@ namespace AspBox
         }
     }
 }".AssertReplace("int", type)
-  .AssertReplace("{value}", constraint);
-            RoslynAssert.Valid(Analyzer, code);
-        }
+.AssertReplace("{value}", constraint);
+        RoslynAssert.Valid(Analyzer, code);
+    }
 
-        [TestCase("api/orders/{id:int}")]
-        [TestCase("api/orders/{id:int:min(1)}")]
-        [TestCase("api/orders/{id:int:max(1)}")]
-        [TestCase("api/orders/{id:int:range(1,10)}")]
-        [TestCase("api/orders/{id:int:required}")]
-        public static void ExplicitInt(string template)
-        {
-            var order = @"
+    [TestCase("api/orders/{id:int}")]
+    [TestCase("api/orders/{id:int:min(1)}")]
+    [TestCase("api/orders/{id:int:max(1)}")]
+    [TestCase("api/orders/{id:int:range(1,10)}")]
+    [TestCase("api/orders/{id:int:required}")]
+    public static void ExplicitInt(string template)
+    {
+        var order = @"
 namespace AspBox
 {
     public class Order
@@ -174,7 +174,7 @@ namespace AspBox
     }
 }";
 
-            var db = @"
+        var db = @"
 namespace AspBox
 {
     using Microsoft.EntityFrameworkCore;
@@ -184,7 +184,7 @@ namespace AspBox
         public DbSet<Order> Orders => this.Set<Order>();
     }
 }";
-            var code = @"
+        var code = @"
 namespace AspBox
 {
     using System.Threading.Tasks;
@@ -214,16 +214,16 @@ namespace AspBox
         }
     }
 }".AssertReplace("api/orders/{id:int}", template);
-            RoslynAssert.Valid(Analyzer, order, db, code);
-        }
+        RoslynAssert.Valid(Analyzer, order, db, code);
+    }
 
-        [TestCase("api/orders/{id:min(1)}")]
-        [TestCase("api/orders/{id:max(1)}")]
-        [TestCase("api/orders/{id:range(1,10)}")]
-        [TestCase("api/orders/{id:required}")]
-        public static void ImplicitLong(string template)
-        {
-            var order = @"
+    [TestCase("api/orders/{id:min(1)}")]
+    [TestCase("api/orders/{id:max(1)}")]
+    [TestCase("api/orders/{id:range(1,10)}")]
+    [TestCase("api/orders/{id:required}")]
+    public static void ImplicitLong(string template)
+    {
+        var order = @"
 namespace AspBox
 {
     public class Order
@@ -232,7 +232,7 @@ namespace AspBox
     }
 }";
 
-            var db = @"
+        var db = @"
 namespace AspBox
 {
     using Microsoft.EntityFrameworkCore;
@@ -242,7 +242,7 @@ namespace AspBox
         public DbSet<Order> Orders => this.Set<Order>();
     }
 }";
-            var code = @"
+        var code = @"
 namespace AspBox
 {
     using System.Threading.Tasks;
@@ -272,19 +272,19 @@ namespace AspBox
         }
     }
 }".AssertReplace("api/orders/{id:int}", template);
-            RoslynAssert.Valid(Analyzer, order, db, code);
-        }
+        RoslynAssert.Valid(Analyzer, order, db, code);
+    }
 
-        [TestCase("api/orders/{id:minlength(1)}")]
-        [TestCase("api/orders/{id:maxlength(1)}")]
-        [TestCase("api/orders/{id:length(1)}")]
-        [TestCase("api/orders/{id:length(1,3)}")]
-        [TestCase("api/orders/{id:alpha}")]
-        [TestCase("api/orders/{id:regex(a-(0|1))}")]
-        [TestCase("api/orders/{id:required}")]
-        public static void ImplicitString(string template)
-        {
-            var order = @"
+    [TestCase("api/orders/{id:minlength(1)}")]
+    [TestCase("api/orders/{id:maxlength(1)}")]
+    [TestCase("api/orders/{id:length(1)}")]
+    [TestCase("api/orders/{id:length(1,3)}")]
+    [TestCase("api/orders/{id:alpha}")]
+    [TestCase("api/orders/{id:regex(a-(0|1))}")]
+    [TestCase("api/orders/{id:required}")]
+    public static void ImplicitString(string template)
+    {
+        var order = @"
 namespace AspBox
 {
     public class Order
@@ -293,7 +293,7 @@ namespace AspBox
     }
 }";
 
-            var db = @"
+        var db = @"
 namespace AspBox
 {
     using Microsoft.EntityFrameworkCore;
@@ -303,7 +303,7 @@ namespace AspBox
         public DbSet<Order> Orders => this.Set<Order>();
     }
 }";
-            var code = @"
+        var code = @"
 namespace AspBox
 {
     using System.Threading.Tasks;
@@ -333,7 +333,6 @@ namespace AspBox
         }
     }
 }".AssertReplace("api/orders/{id}", template);
-            RoslynAssert.Valid(Analyzer, order, db, code);
-        }
+        RoslynAssert.Valid(Analyzer, order, db, code);
     }
 }

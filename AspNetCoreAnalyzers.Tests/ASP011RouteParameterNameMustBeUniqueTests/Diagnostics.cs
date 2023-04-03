@@ -1,18 +1,18 @@
-namespace AspNetCoreAnalyzers.Tests.ASP011RouteParameterNameMustBeUniqueTests
+namespace AspNetCoreAnalyzers.Tests.ASP011RouteParameterNameMustBeUniqueTests;
+
+using Gu.Roslyn.Asserts;
+using Microsoft.CodeAnalysis.Diagnostics;
+using NUnit.Framework;
+
+public static class Diagnostics
 {
-    using Gu.Roslyn.Asserts;
-    using Microsoft.CodeAnalysis.Diagnostics;
-    using NUnit.Framework;
+    private static readonly DiagnosticAnalyzer Analyzer = new AttributeAnalyzer();
+    private static readonly ExpectedDiagnostic ExpectedDiagnostic = ExpectedDiagnostic.Create(Descriptors.ASP011RouteParameterNameMustBeUnique);
 
-    public static class Diagnostics
+    [TestCase("\"api/{↓id}/{↓id}\"")]
+    public static void WhenMethodAttribute(string template)
     {
-        private static readonly DiagnosticAnalyzer Analyzer = new AttributeAnalyzer();
-        private static readonly ExpectedDiagnostic ExpectedDiagnostic = ExpectedDiagnostic.Create(Descriptors.ASP011RouteParameterNameMustBeUnique);
-
-        [TestCase("\"api/{↓id}/{↓id}\"")]
-        public static void WhenMethodAttribute(string template)
-        {
-            var code = @"
+        var code = @"
 namespace AspBox
 {
     using Microsoft.AspNetCore.Mvc;
@@ -28,13 +28,13 @@ namespace AspBox
     }
 }".AssertReplace("\"api/{↓id}/{↓id}\"", template);
 
-            RoslynAssert.Diagnostics(Analyzer, ExpectedDiagnostic, code);
-        }
+        RoslynAssert.Diagnostics(Analyzer, ExpectedDiagnostic, code);
+    }
 
-        [Test]
-        public static void WhenRouteOnClassAndHttpGetOnMethod()
-        {
-            var code = @"
+    [Test]
+    public static void WhenRouteOnClassAndHttpGetOnMethod()
+    {
+        var code = @"
 namespace AspBox
 {
     using Microsoft.AspNetCore.Mvc;
@@ -51,13 +51,13 @@ namespace AspBox
     }
 }";
 
-            RoslynAssert.Diagnostics(Analyzer, ExpectedDiagnostic, code);
-        }
+        RoslynAssert.Diagnostics(Analyzer, ExpectedDiagnostic, code);
+    }
 
-        [Test]
-        public static void Issue39()
-        {
-            var code = @"
+    [Test]
+    public static void Issue39()
+    {
+        var code = @"
 namespace AspBox
 {
     using Microsoft.AspNetCore.Mvc;
@@ -74,13 +74,13 @@ namespace AspBox
     }
 }";
 
-            RoslynAssert.Diagnostics(Analyzer, ExpectedDiagnostic, code);
-        }
+        RoslynAssert.Diagnostics(Analyzer, ExpectedDiagnostic, code);
+    }
 
-        [Test]
-        public static void WhenMultipleRoutesOnClassAndHttpGetOnMethod()
-        {
-            var code = @"
+    [Test]
+    public static void WhenMultipleRoutesOnClassAndHttpGetOnMethod()
+    {
+        var code = @"
 namespace AspBox
 {
     using Microsoft.AspNetCore.Mvc;
@@ -98,7 +98,6 @@ namespace AspBox
     }
 }";
 
-            RoslynAssert.Diagnostics(Analyzer, ExpectedDiagnostic, code);
-        }
+        RoslynAssert.Diagnostics(Analyzer, ExpectedDiagnostic, code);
     }
 }

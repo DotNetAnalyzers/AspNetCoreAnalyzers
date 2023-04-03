@@ -1,20 +1,20 @@
-﻿namespace AspNetCoreAnalyzers.Tests.ASP013ControllerNameShouldMatchRouteTests
+﻿namespace AspNetCoreAnalyzers.Tests.ASP013ControllerNameShouldMatchRouteTests;
+
+using Gu.Roslyn.Asserts;
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.Diagnostics;
+using NUnit.Framework;
+
+public static class Valid
 {
-    using Gu.Roslyn.Asserts;
-    using Microsoft.CodeAnalysis;
-    using Microsoft.CodeAnalysis.Diagnostics;
-    using NUnit.Framework;
+    private static readonly DiagnosticAnalyzer Analyzer = new AttributeAnalyzer();
+    private static readonly DiagnosticDescriptor Descriptor = Descriptors.ASP013ControllerNameShouldMatchRoute;
 
-    public static class Valid
+    [TestCase("api/orders")]
+    [TestCase("api/[controller]")]
+    public static void Simple(string template)
     {
-        private static readonly DiagnosticAnalyzer Analyzer = new AttributeAnalyzer();
-        private static readonly DiagnosticDescriptor Descriptor = Descriptors.ASP013ControllerNameShouldMatchRoute;
-
-        [TestCase("api/orders")]
-        [TestCase("api/[controller]")]
-        public static void Simple(string template)
-        {
-            var code = @"
+        var code = @"
 namespace AspBox
 {
     using Microsoft.AspNetCore.Mvc;
@@ -30,7 +30,6 @@ namespace AspBox
         }
     }
 }".AssertReplace("api/orders", template);
-            RoslynAssert.Valid(Analyzer, Descriptor, code);
-        }
+        RoslynAssert.Valid(Analyzer, Descriptor, code);
     }
 }

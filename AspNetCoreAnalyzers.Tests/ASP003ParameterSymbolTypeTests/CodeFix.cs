@@ -1,41 +1,41 @@
-namespace AspNetCoreAnalyzers.Tests.ASP003ParameterSymbolTypeTests
+namespace AspNetCoreAnalyzers.Tests.ASP003ParameterSymbolTypeTests;
+
+using Gu.Roslyn.Asserts;
+using Microsoft.CodeAnalysis.CodeFixes;
+using Microsoft.CodeAnalysis.Diagnostics;
+using NUnit.Framework;
+
+public static class CodeFix
 {
-    using Gu.Roslyn.Asserts;
-    using Microsoft.CodeAnalysis.CodeFixes;
-    using Microsoft.CodeAnalysis.Diagnostics;
-    using NUnit.Framework;
+    private static readonly DiagnosticAnalyzer Analyzer = new AttributeAnalyzer();
+    private static readonly ExpectedDiagnostic ExpectedDiagnostic = ExpectedDiagnostic.Create(Descriptors.ASP003ParameterSymbolType);
+    private static readonly CodeFixProvider Fix = new ParameterTypeFix();
 
-    public static class CodeFix
+    [TestCase("\"{id:int}\"",                                                 "int id")]
+    [TestCase("\"api/orders/{id:int}\"",                                      "int id")]
+    [TestCase("\"api/orders/{id:int:min(1)}\"",                               "int id")]
+    [TestCase("\"api/orders/{id:bool}\"",                                     "bool id")]
+    [TestCase("\"api/orders/{id:datetime}\"",                                 "System.DateTime id")]
+    [TestCase("\"api/orders/{id:decimal}\"",                                  "decimal id")]
+    [TestCase("\"api/orders/{id:double}\"",                                   "double id")]
+    [TestCase("\"api/orders/{id:float}\"",                                    "float id")]
+    [TestCase("\"api/orders/{id:guid}\"",                                     "System.Guid id")]
+    [TestCase("\"api/orders/{id:long}\"",                                     "long id")]
+    [TestCase("\"api/orders/{id:minlength(1)}\"",                             "string id")]
+    [TestCase("\"api/orders/{id:maxlength(1)}\"",                             "string id")]
+    [TestCase("\"api/orders/{id:length(1)}\"",                                "string id")]
+    [TestCase("\"api/orders/{id:length(1,3)}\"",                              "string id")]
+    [TestCase("\"api/orders/{id:min(1)}\"",                                   "long id")]
+    [TestCase("\"api/orders/{id:max(10)}\"",                                  "long id")]
+    [TestCase("\"api/orders/{id:range(0,10)}\"",                              "long id")]
+    [TestCase("\"api/orders/{id:alpha}\"",                                    "string id")]
+    [TestCase("\"api/orders/{id:regex(a-(0|1))}\"",                           "string id")]
+    [TestCase("\"api/orders/{id:regex(^\\\\d{{3}}-\\\\d{{2}}-\\\\d{4}$)}\"",  "string id")]
+    [TestCase("@\"api/orders/{id:regex(^\\d{{3}}-\\d{{2}}-\\d{4}$)}\"",       "string id")]
+    [TestCase("@\"api/orders/{id:regex(^\\\\d{{3}}-\\\\d{{2}}-\\\\d{4}$)}\"", "string id")]
+    public static void WhenHttpGet(string template, string parameter)
     {
-        private static readonly DiagnosticAnalyzer Analyzer = new AttributeAnalyzer();
-        private static readonly ExpectedDiagnostic ExpectedDiagnostic = ExpectedDiagnostic.Create(Descriptors.ASP003ParameterSymbolType);
-        private static readonly CodeFixProvider Fix = new ParameterTypeFix();
-
-        [TestCase("\"{id:int}\"",                                                 "int id")]
-        [TestCase("\"api/orders/{id:int}\"",                                      "int id")]
-        [TestCase("\"api/orders/{id:int:min(1)}\"",                               "int id")]
-        [TestCase("\"api/orders/{id:bool}\"",                                     "bool id")]
-        [TestCase("\"api/orders/{id:datetime}\"",                                 "System.DateTime id")]
-        [TestCase("\"api/orders/{id:decimal}\"",                                  "decimal id")]
-        [TestCase("\"api/orders/{id:double}\"",                                   "double id")]
-        [TestCase("\"api/orders/{id:float}\"",                                    "float id")]
-        [TestCase("\"api/orders/{id:guid}\"",                                     "System.Guid id")]
-        [TestCase("\"api/orders/{id:long}\"",                                     "long id")]
-        [TestCase("\"api/orders/{id:minlength(1)}\"",                             "string id")]
-        [TestCase("\"api/orders/{id:maxlength(1)}\"",                             "string id")]
-        [TestCase("\"api/orders/{id:length(1)}\"",                                "string id")]
-        [TestCase("\"api/orders/{id:length(1,3)}\"",                              "string id")]
-        [TestCase("\"api/orders/{id:min(1)}\"",                                   "long id")]
-        [TestCase("\"api/orders/{id:max(10)}\"",                                  "long id")]
-        [TestCase("\"api/orders/{id:range(0,10)}\"",                              "long id")]
-        [TestCase("\"api/orders/{id:alpha}\"",                                    "string id")]
-        [TestCase("\"api/orders/{id:regex(a-(0|1))}\"",                           "string id")]
-        [TestCase("\"api/orders/{id:regex(^\\\\d{{3}}-\\\\d{{2}}-\\\\d{4}$)}\"",  "string id")]
-        [TestCase("@\"api/orders/{id:regex(^\\d{{3}}-\\d{{2}}-\\d{4}$)}\"",       "string id")]
-        [TestCase("@\"api/orders/{id:regex(^\\\\d{{3}}-\\\\d{{2}}-\\\\d{4}$)}\"", "string id")]
-        public static void WhenHttpGet(string template, string parameter)
-        {
-            var before = @"
+        var before = @"
 namespace AspBox
 {
     using Microsoft.AspNetCore.Mvc;
@@ -51,7 +51,7 @@ namespace AspBox
     }
 }".AssertReplace("\"api/orders/{id}\"", template);
 
-            var after = @"
+        var after = @"
 namespace AspBox
 {
     using Microsoft.AspNetCore.Mvc;
@@ -66,14 +66,14 @@ namespace AspBox
         }
     }
 }".AssertReplace("\"api/orders/{id}\"", template)
-  .AssertReplace("byte id", parameter);
-            RoslynAssert.CodeFix(Analyzer, Fix, ExpectedDiagnostic, before, after);
-        }
+.AssertReplace("byte id", parameter);
+        RoslynAssert.CodeFix(Analyzer, Fix, ExpectedDiagnostic, before, after);
+    }
 
-        [Test]
-        public static void WhenHttpGetAndRouteOnClass()
-        {
-            var before = @"
+    [Test]
+    public static void WhenHttpGetAndRouteOnClass()
+    {
+        var before = @"
 namespace AspBox
 {
     using Microsoft.AspNetCore.Mvc;
@@ -96,7 +96,7 @@ namespace AspBox
     }
 }";
 
-            var after = @"
+        var after = @"
 namespace AspBox
 {
     using Microsoft.AspNetCore.Mvc;
@@ -118,14 +118,14 @@ namespace AspBox
         }
     }
 }";
-            RoslynAssert.CodeFix(Analyzer, Fix, ExpectedDiagnostic, before, after);
-        }
+        RoslynAssert.CodeFix(Analyzer, Fix, ExpectedDiagnostic, before, after);
+    }
 
-        [TestCase("int?")]
-        [TestCase("Nullable<int>")]
-        public static void RemoveNullableWhenNotOptional(string parameter)
-        {
-            var before = @"
+    [TestCase("int?")]
+    [TestCase("Nullable<int>")]
+    public static void RemoveNullableWhenNotOptional(string parameter)
+    {
+        var before = @"
 namespace AspBox
 {
     using System;
@@ -142,7 +142,7 @@ namespace AspBox
     }
 }".AssertReplace("int?", parameter);
 
-            var after = @"
+        var after = @"
 namespace AspBox
 {
     using System;
@@ -158,13 +158,13 @@ namespace AspBox
         }
     }
 }";
-            RoslynAssert.CodeFix(Analyzer, Fix, ExpectedDiagnostic, before, after);
-        }
+        RoslynAssert.CodeFix(Analyzer, Fix, ExpectedDiagnostic, before, after);
+    }
 
-        [Test]
-        public static void MakeNullableToMatchOptional()
-        {
-            var before = @"
+    [Test]
+    public static void MakeNullableToMatchOptional()
+    {
+        var before = @"
 namespace AspBox
 {
     using System;
@@ -181,7 +181,7 @@ namespace AspBox
     }
 }";
 
-            var after = @"
+        var after = @"
 namespace AspBox
 {
     using System;
@@ -197,7 +197,6 @@ namespace AspBox
         }
     }
 }";
-            RoslynAssert.CodeFix(Analyzer, Fix, ExpectedDiagnostic, before, after);
-        }
+        RoslynAssert.CodeFix(Analyzer, Fix, ExpectedDiagnostic, before, after);
     }
 }

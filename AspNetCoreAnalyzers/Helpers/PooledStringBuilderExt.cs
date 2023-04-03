@@ -1,17 +1,16 @@
-namespace AspNetCoreAnalyzers
+namespace AspNetCoreAnalyzers;
+
+using Gu.Roslyn.AnalyzerExtensions;
+
+internal static class PooledStringBuilderExt
 {
-    using Gu.Roslyn.AnalyzerExtensions;
-
-    internal static class PooledStringBuilderExt
+    internal static StringBuilderPool.PooledStringBuilder Append(this StringBuilderPool.PooledStringBuilder builder, string text, int startIndex)
     {
-        internal static StringBuilderPool.PooledStringBuilder Append(this StringBuilderPool.PooledStringBuilder builder, string text, int startIndex)
+        for (var i = startIndex; i < text.Length; i++)
         {
-            for (var i = startIndex; i < text.Length; i++)
-            {
-                _ = builder.Append(text[i]);
-            }
-
-            return builder;
+            _ = builder.Append(text[i]);
         }
+
+        return builder;
     }
 }

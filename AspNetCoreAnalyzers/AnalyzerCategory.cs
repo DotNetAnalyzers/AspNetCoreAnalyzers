@@ -1,7 +1,6 @@
-namespace AspNetCoreAnalyzers
+﻿namespace AspNetCoreAnalyzers;
+
+internal static class AnalyzerCategory
 {
-    internal static class AnalyzerCategory
-    {
-        internal const string Routing = "AspNetCoreAnalyzers.Routing";
-    }
+    internal const string Routing = "AspNetCoreAnalyzers.Routing";
 }

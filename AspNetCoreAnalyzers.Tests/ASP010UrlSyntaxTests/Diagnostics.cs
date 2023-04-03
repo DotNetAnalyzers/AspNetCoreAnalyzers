@@ -1,19 +1,19 @@
-namespace AspNetCoreAnalyzers.Tests.ASP010UrlSyntaxTests
+namespace AspNetCoreAnalyzers.Tests.ASP010UrlSyntaxTests;
+
+using Gu.Roslyn.Asserts;
+using Microsoft.CodeAnalysis.Diagnostics;
+using NUnit.Framework;
+
+public static class Diagnostics
 {
-    using Gu.Roslyn.Asserts;
-    using Microsoft.CodeAnalysis.Diagnostics;
-    using NUnit.Framework;
+    private static readonly DiagnosticAnalyzer Analyzer = new AttributeAnalyzer();
+    private static readonly ExpectedDiagnostic ExpectedDiagnostic = ExpectedDiagnostic.Create(Descriptors.ASP010UrlSyntax);
 
-    public static class Diagnostics
+    [TestCase("\"api/a↓?b/{id}\"")]
+    [TestCase("\"api/↓/b/{id}\"")]
+    public static void WhenMethodAttribute(string before)
     {
-        private static readonly DiagnosticAnalyzer Analyzer = new AttributeAnalyzer();
-        private static readonly ExpectedDiagnostic ExpectedDiagnostic = ExpectedDiagnostic.Create(Descriptors.ASP010UrlSyntax);
-
-        [TestCase("\"api/a↓?b/{id}\"")]
-        [TestCase("\"api/↓/b/{id}\"")]
-        public static void WhenMethodAttribute(string before)
-        {
-            var code = @"
+        var code = @"
 namespace AspBox
 {
     using Microsoft.AspNetCore.Mvc;
@@ -29,14 +29,14 @@ namespace AspBox
     }
 }".AssertReplace("\"api/a↓?b/{id}\"", before);
 
-            RoslynAssert.Diagnostics(Analyzer, ExpectedDiagnostic, code);
-        }
+        RoslynAssert.Diagnostics(Analyzer, ExpectedDiagnostic, code);
+    }
 
-        [TestCase("\"api/a↓?b\"")]
-        [TestCase("\"api/↓/b\"")]
-        public static void WhenRouteAttribute(string before)
-        {
-            var code = @"
+    [TestCase("\"api/a↓?b\"")]
+    [TestCase("\"api/↓/b\"")]
+    public static void WhenRouteAttribute(string before)
+    {
+        var code = @"
 namespace AspBox
 {
     using Microsoft.AspNetCore.Mvc;
@@ -53,7 +53,6 @@ namespace AspBox
     }
 }".AssertReplace("\"api/a↓?b\"", before);
 
-            RoslynAssert.Diagnostics(Analyzer, ExpectedDiagnostic, code);
-        }
+        RoslynAssert.Diagnostics(Analyzer, ExpectedDiagnostic, code);
     }
 }

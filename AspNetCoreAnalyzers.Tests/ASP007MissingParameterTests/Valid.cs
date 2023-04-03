@@ -1,21 +1,21 @@
-﻿namespace AspNetCoreAnalyzers.Tests.ASP007MissingParameterTests
+﻿namespace AspNetCoreAnalyzers.Tests.ASP007MissingParameterTests;
+
+using Gu.Roslyn.Asserts;
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.Diagnostics;
+using NUnit.Framework;
+
+public static class Valid
 {
-    using Gu.Roslyn.Asserts;
-    using Microsoft.CodeAnalysis;
-    using Microsoft.CodeAnalysis.Diagnostics;
-    using NUnit.Framework;
+    private static readonly DiagnosticAnalyzer Analyzer = new AttributeAnalyzer();
+    private static readonly DiagnosticDescriptor Descriptor = Descriptors.ASP007MissingParameter;
 
-    public static class Valid
+    [TestCase("\"api/{text}\"")]
+    [TestCase("@\"api/{text}\"")]
+    [TestCase("\"api/{text:alpha}\"")]
+    public static void WhenHttpGet(string after)
     {
-        private static readonly DiagnosticAnalyzer Analyzer = new AttributeAnalyzer();
-        private static readonly DiagnosticDescriptor Descriptor = Descriptors.ASP007MissingParameter;
-
-        [TestCase("\"api/{text}\"")]
-        [TestCase("@\"api/{text}\"")]
-        [TestCase("\"api/{text:alpha}\"")]
-        public static void WhenHttpGet(string after)
-        {
-            var code = @"
+        var code = @"
 namespace AspBox
 {
     using Microsoft.AspNetCore.Mvc;
@@ -31,13 +31,13 @@ namespace AspBox
     }
 }".AssertReplace("\"api/{text}\"", after);
 
-            RoslynAssert.Valid(Analyzer, code);
-        }
+        RoslynAssert.Valid(Analyzer, code);
+    }
 
-        [Test]
-        public static void WhenHttpGetAndTwoRoutesOnClass()
-        {
-            var code = @"
+    [Test]
+    public static void WhenHttpGetAndTwoRoutesOnClass()
+    {
+        var code = @"
 namespace AspBox
 {
     using Microsoft.AspNetCore.Mvc;
@@ -61,13 +61,13 @@ namespace AspBox
     }
 }";
 
-            RoslynAssert.Valid(Analyzer, Descriptor, code);
-        }
+        RoslynAssert.Valid(Analyzer, Descriptor, code);
+    }
 
-        [TestCase("\"api/orders/\" + \"{wrong}\"")]
-        public static void IgnoreWhen(string template)
-        {
-            var code = @"
+    [TestCase("\"api/orders/\" + \"{wrong}\"")]
+    public static void IgnoreWhen(string template)
+    {
+        var code = @"
 namespace AspBox
 {
     using Microsoft.AspNetCore.Mvc;
@@ -82,13 +82,13 @@ namespace AspBox
         }
     }
 }".AssertReplace("\"api/orders/{value}\"", template);
-            RoslynAssert.Valid(Analyzer, code);
-        }
+        RoslynAssert.Valid(Analyzer, code);
+    }
 
-        [Test]
-        public static void ImplicitFromRoute()
-        {
-            var order = @"
+    [Test]
+    public static void ImplicitFromRoute()
+    {
+        var order = @"
 namespace AspBox
 {
     public class Order
@@ -97,7 +97,7 @@ namespace AspBox
     }
 }";
 
-            var db = @"
+        var db = @"
 namespace AspBox
 {
     using Microsoft.EntityFrameworkCore;
@@ -107,7 +107,7 @@ namespace AspBox
         public DbSet<Order> Orders => this.Set<Order>();
     }
 }";
-            var code = @"
+        var code = @"
 namespace AspBox
 {
     using System.Threading.Tasks;
@@ -137,13 +137,13 @@ namespace AspBox
         }
     }
 }";
-            RoslynAssert.Valid(Analyzer, order, db, code);
-        }
+        RoslynAssert.Valid(Analyzer, order, db, code);
+    }
 
-        [Test]
-        public static void ExplicitFromRoute()
-        {
-            var order = @"
+    [Test]
+    public static void ExplicitFromRoute()
+    {
+        var order = @"
 namespace AspBox
 {
     public class Order
@@ -152,7 +152,7 @@ namespace AspBox
     }
 }";
 
-            var db = @"
+        var db = @"
 namespace AspBox
 {
     using Microsoft.EntityFrameworkCore;
@@ -162,7 +162,7 @@ namespace AspBox
         public DbSet<Order> Orders => this.Set<Order>();
     }
 }";
-            var code = @"
+        var code = @"
 namespace AspBox
 {
     using System.Threading.Tasks;
@@ -192,13 +192,13 @@ namespace AspBox
         }
     }
 }";
-            RoslynAssert.Valid(Analyzer, order, db, code);
-        }
+        RoslynAssert.Valid(Analyzer, order, db, code);
+    }
 
-        [Test]
-        public static void WhenFromHeaderAndNoRouteParameter()
-        {
-            var order = @"
+    [Test]
+    public static void WhenFromHeaderAndNoRouteParameter()
+    {
+        var order = @"
 namespace AspBox
 {
     public class Order
@@ -207,7 +207,7 @@ namespace AspBox
     }
 }";
 
-            var db = @"
+        var db = @"
 namespace AspBox
 {
     using Microsoft.EntityFrameworkCore;
@@ -217,7 +217,7 @@ namespace AspBox
         public DbSet<Order> Orders => this.Set<Order>();
     }
 }";
-            var code = @"
+        var code = @"
 namespace AspBox
 {
     using System.Threading.Tasks;
@@ -247,7 +247,6 @@ namespace AspBox
         }
     }
 }";
-            RoslynAssert.Valid(Analyzer, order, db, code);
-        }
+        RoslynAssert.Valid(Analyzer, order, db, code);
     }
 }

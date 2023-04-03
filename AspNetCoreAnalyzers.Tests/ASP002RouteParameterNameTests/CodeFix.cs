@@ -1,23 +1,23 @@
-namespace AspNetCoreAnalyzers.Tests.ASP002RouteParameterNameTests
+namespace AspNetCoreAnalyzers.Tests.ASP002RouteParameterNameTests;
+
+using Gu.Roslyn.Asserts;
+using Microsoft.CodeAnalysis.CodeFixes;
+using Microsoft.CodeAnalysis.Diagnostics;
+using NUnit.Framework;
+
+public static class CodeFix
 {
-    using Gu.Roslyn.Asserts;
-    using Microsoft.CodeAnalysis.CodeFixes;
-    using Microsoft.CodeAnalysis.Diagnostics;
-    using NUnit.Framework;
+    private static readonly DiagnosticAnalyzer Analyzer = new AttributeAnalyzer();
+    private static readonly ExpectedDiagnostic ExpectedDiagnostic = ExpectedDiagnostic.Create(Descriptors.ASP002RouteParameterName);
+    private static readonly CodeFixProvider Fix = new TemplateTextFix();
 
-    public static class CodeFix
+    [TestCase("\"api/{↓value}\"",       "\"api/{text}\"")]
+    [TestCase("\"api/{↓text*}\"",       "\"api/{text}\"")]
+    [TestCase("@\"api/{↓value}\"",      "@\"api/{text}\"")]
+    [TestCase("\"api/{↓value:alpha}\"", "\"api/{text:alpha}\"")]
+    public static void WhenHttpGet(string before, string after)
     {
-        private static readonly DiagnosticAnalyzer Analyzer = new AttributeAnalyzer();
-        private static readonly ExpectedDiagnostic ExpectedDiagnostic = ExpectedDiagnostic.Create(Descriptors.ASP002RouteParameterName);
-        private static readonly CodeFixProvider Fix = new TemplateTextFix();
-
-        [TestCase("\"api/{↓value}\"",       "\"api/{text}\"")]
-        [TestCase("\"api/{↓text*}\"",       "\"api/{text}\"")]
-        [TestCase("@\"api/{↓value}\"",      "@\"api/{text}\"")]
-        [TestCase("\"api/{↓value:alpha}\"", "\"api/{text:alpha}\"")]
-        public static void WhenHttpGet(string before, string after)
-        {
-            var code = @"
+        var code = @"
 namespace AspBox
 {
     using Microsoft.AspNetCore.Mvc;
@@ -33,7 +33,7 @@ namespace AspBox
     }
 }".AssertReplace("\"api/{↓value}\"", before);
 
-            var fixedCode = @"
+        var fixedCode = @"
 namespace AspBox
 {
     using Microsoft.AspNetCore.Mvc;
@@ -49,13 +49,13 @@ namespace AspBox
     }
 }".AssertReplace("\"api/{text}\"", after);
 
-            RoslynAssert.CodeFix(Analyzer, Fix, ExpectedDiagnostic, code, fixedCode);
-        }
+        RoslynAssert.CodeFix(Analyzer, Fix, ExpectedDiagnostic, code, fixedCode);
+    }
 
-        [Test]
-        public static void WhenRouteAndHttpGetOnMethod()
-        {
-            var before = @"
+    [Test]
+    public static void WhenRouteAndHttpGetOnMethod()
+    {
+        var before = @"
 namespace AspBox
 {
     using Microsoft.AspNetCore.Mvc;
@@ -72,7 +72,7 @@ namespace AspBox
     }
 }";
 
-            var after = @"
+        var after = @"
 namespace AspBox
 {
     using Microsoft.AspNetCore.Mvc;
@@ -88,18 +88,18 @@ namespace AspBox
         }
     }
 }";
-            RoslynAssert.CodeFix(Analyzer, Fix, ExpectedDiagnostic, before, after);
-        }
+        RoslynAssert.CodeFix(Analyzer, Fix, ExpectedDiagnostic, before, after);
+    }
 
-        [TestCase("\"api/{text1}/{↓value}\"",                                                        "\"api/{text1}/{text2}\"")]
-        [TestCase("\"api/{↓value}/{text2}\"",                                                        "\"api/{text1}/{text2}\"")]
-        [TestCase("\"api/{text1:regex(\\\\d+)}/{↓value}\"",                                          "\"api/{text1:regex(\\\\d+)}/{text2}\"")]
-        [TestCase("\"api/{text1:regex(\\\\\\\\d+)}/{↓value}\"",                                      "\"api/{text1:regex(\\\\\\\\d+)}/{text2}\"")]
-        [TestCase("@\"api/{text1:regex(\\d+)}/{↓value}\"",                                           "@\"api/{text1:regex(\\d+)}/{text2}\"")]
-        [TestCase("\"api/{text1::regex(^\\\\\\\\d{{3}}-\\\\\\\\d{{2}}-\\\\\\\\d{{4}}$)}/{↓value}\"", "\"api/{text1::regex(^\\\\\\\\d{{3}}-\\\\\\\\d{{2}}-\\\\\\\\d{{4}}$)}/{text2}\"")]
-        public static void WhenWrongNameSecondParameter(string before, string after)
-        {
-            var code = @"
+    [TestCase("\"api/{text1}/{↓value}\"",                                                        "\"api/{text1}/{text2}\"")]
+    [TestCase("\"api/{↓value}/{text2}\"",                                                        "\"api/{text1}/{text2}\"")]
+    [TestCase("\"api/{text1:regex(\\\\d+)}/{↓value}\"",                                          "\"api/{text1:regex(\\\\d+)}/{text2}\"")]
+    [TestCase("\"api/{text1:regex(\\\\\\\\d+)}/{↓value}\"",                                      "\"api/{text1:regex(\\\\\\\\d+)}/{text2}\"")]
+    [TestCase("@\"api/{text1:regex(\\d+)}/{↓value}\"",                                           "@\"api/{text1:regex(\\d+)}/{text2}\"")]
+    [TestCase("\"api/{text1::regex(^\\\\\\\\d{{3}}-\\\\\\\\d{{2}}-\\\\\\\\d{{4}}$)}/{↓value}\"", "\"api/{text1::regex(^\\\\\\\\d{{3}}-\\\\\\\\d{{2}}-\\\\\\\\d{{4}}$)}/{text2}\"")]
+    public static void WhenWrongNameSecondParameter(string before, string after)
+    {
+        var code = @"
 namespace AspBox
 {
     using Microsoft.AspNetCore.Mvc;
@@ -115,7 +115,7 @@ namespace AspBox
     }
 }".AssertReplace("\"api/{text1}/{↓value}\"", before);
 
-            var fixedCode = @"
+        var fixedCode = @"
 namespace AspBox
 {
     using Microsoft.AspNetCore.Mvc;
@@ -131,7 +131,6 @@ namespace AspBox
     }
 }".AssertReplace("\"api/{text1}/{text2}\"", after);
 
-            RoslynAssert.CodeFix(Analyzer, Fix, ExpectedDiagnostic, code, fixedCode);
-        }
+        RoslynAssert.CodeFix(Analyzer, Fix, ExpectedDiagnostic, code, fixedCode);
     }
 }

@@ -1,25 +1,25 @@
-namespace AspNetCoreAnalyzers.Tests.ASP013ControllerNameShouldMatchRouteTests
+namespace AspNetCoreAnalyzers.Tests.ASP013ControllerNameShouldMatchRouteTests;
+
+using Gu.Roslyn.Asserts;
+using Microsoft.CodeAnalysis.CodeFixes;
+using Microsoft.CodeAnalysis.Diagnostics;
+using NUnit.Framework;
+
+public static class CodeFix
 {
-    using Gu.Roslyn.Asserts;
-    using Microsoft.CodeAnalysis.CodeFixes;
-    using Microsoft.CodeAnalysis.Diagnostics;
-    using NUnit.Framework;
+    private static readonly DiagnosticAnalyzer Analyzer = new AttributeAnalyzer();
+    private static readonly ExpectedDiagnostic ExpectedDiagnostic = ExpectedDiagnostic.Create(Descriptors.ASP013ControllerNameShouldMatchRoute);
+    private static readonly CodeFixProvider Fix = new RenameTypeFix();
 
-    public static class CodeFix
+    [TestCase("orders",               "OrdersController")]
+    [TestCase("sample-data",          "SampleDataController")]
+    [TestCase("api/orders",           "OrdersController")]
+    [TestCase("api/sample-data",      "SampleDataController")]
+    [TestCase("api/orders/{id}",      "OrdersController")]
+    [TestCase("api/sample-data/{id}", "SampleDataController")]
+    public static void WhenMethodAttribute(string template, string className)
     {
-        private static readonly DiagnosticAnalyzer Analyzer = new AttributeAnalyzer();
-        private static readonly ExpectedDiagnostic ExpectedDiagnostic = ExpectedDiagnostic.Create(Descriptors.ASP013ControllerNameShouldMatchRoute);
-        private static readonly CodeFixProvider Fix = new RenameTypeFix();
-
-        [TestCase("orders",               "OrdersController")]
-        [TestCase("sample-data",          "SampleDataController")]
-        [TestCase("api/orders",           "OrdersController")]
-        [TestCase("api/sample-data",      "SampleDataController")]
-        [TestCase("api/orders/{id}",      "OrdersController")]
-        [TestCase("api/sample-data/{id}", "SampleDataController")]
-        public static void WhenMethodAttribute(string template, string className)
-        {
-            var before = @"
+        var before = @"
 namespace AspBox
 {
     using Microsoft.AspNetCore.Mvc;
@@ -31,7 +31,7 @@ namespace AspBox
     }
 }".AssertReplace("api/orders", template);
 
-            var after = @"
+        var after = @"
 namespace AspBox
 {
     using Microsoft.AspNetCore.Mvc;
@@ -42,10 +42,9 @@ namespace AspBox
     {
     }
 }".AssertReplace("OrdersController", className)
-  .AssertReplace("api/orders", template);
+.AssertReplace("api/orders", template);
 
-            var message = $"Name the controller to match the route. Expected: '{className}'.";
-            RoslynAssert.CodeFix(Analyzer, Fix, ExpectedDiagnostic.WithMessage(message), before, after);
-        }
+        var message = $"Name the controller to match the route. Expected: '{className}'.";
+        RoslynAssert.CodeFix(Analyzer, Fix, ExpectedDiagnostic.WithMessage(message), before, after);
     }
 }
