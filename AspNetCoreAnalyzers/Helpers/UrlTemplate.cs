@@ -1,6 +1,5 @@
 ﻿namespace AspNetCoreAnalyzers;
 
-using System;
 using System.Collections.Immutable;
 using System.Diagnostics;
 using Microsoft.CodeAnalysis;
@@ -11,7 +10,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 /// https://tools.ietf.org/html/rfc1738.
 /// </summary>
 [DebuggerDisplay("{this.Literal.LiteralExpression.ToString()}")]
-internal struct UrlTemplate : IEquatable<UrlTemplate>
+internal readonly record struct UrlTemplate
 {
     private UrlTemplate(StringLiteral literal, ImmutableArray<PathSegment> path)
     {
@@ -23,31 +22,9 @@ internal struct UrlTemplate : IEquatable<UrlTemplate>
 
     internal ImmutableArray<PathSegment> Path { get; }
 
-    public static bool operator ==(UrlTemplate left, UrlTemplate right)
-    {
-        return left.Equals(right);
-    }
+    public bool Equals(UrlTemplate other) => this.Literal.Equals(other.Literal);
 
-    public static bool operator !=(UrlTemplate left, UrlTemplate right)
-    {
-        return !left.Equals(right);
-    }
-
-    public bool Equals(UrlTemplate other)
-    {
-        return this.Literal.Equals(other.Literal);
-    }
-
-    public override bool Equals(object? obj)
-    {
-        return obj is UrlTemplate other &&
-               this.Equals(other);
-    }
-
-    public override int GetHashCode()
-    {
-        return this.Literal.GetHashCode();
-    }
+    public override int GetHashCode() => this.Literal.GetHashCode();
 
     internal static bool TryParse(LiteralExpressionSyntax literal, out UrlTemplate template)
     {

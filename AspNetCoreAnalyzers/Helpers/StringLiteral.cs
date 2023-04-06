@@ -1,13 +1,12 @@
 ﻿namespace AspNetCoreAnalyzers;
 
-using System;
 using System.Diagnostics;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Text;
 
 [DebuggerDisplay("{this.Text}")]
-internal struct StringLiteral : IEquatable<StringLiteral>
+internal readonly record struct StringLiteral
 {
     internal StringLiteral(LiteralExpressionSyntax literalExpression)
     {
@@ -39,31 +38,9 @@ internal struct StringLiteral : IEquatable<StringLiteral>
         }
     }
 
-    public static bool operator ==(StringLiteral left, StringLiteral right)
-    {
-        return left.Equals(right);
-    }
+    public bool Equals(StringLiteral other) => this.LiteralExpression.Equals(other.LiteralExpression);
 
-    public static bool operator !=(StringLiteral left, StringLiteral right)
-    {
-        return !left.Equals(right);
-    }
-
-    public bool Equals(StringLiteral other)
-    {
-        return this.LiteralExpression.Equals(other.LiteralExpression);
-    }
-
-    public override bool Equals(object? obj)
-    {
-        return obj is StringLiteral other &&
-               this.Equals(other);
-    }
-
-    public override int GetHashCode()
-    {
-        return this.LiteralExpression.GetHashCode();
-    }
+    public override int GetHashCode() => this.LiteralExpression.GetHashCode();
 
     internal Location GetLocation(TextSpan textSpan)
     {

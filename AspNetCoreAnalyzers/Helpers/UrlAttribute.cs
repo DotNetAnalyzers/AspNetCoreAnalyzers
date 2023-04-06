@@ -1,13 +1,12 @@
 ﻿namespace AspNetCoreAnalyzers;
 
-using System;
 using Gu.Roslyn.AnalyzerExtensions;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
 
-internal struct UrlAttribute : IEquatable<UrlAttribute>
+internal readonly record struct UrlAttribute
 {
     internal UrlAttribute(AttributeSyntax attribute, ITypeSymbol type, UrlTemplate? urlTemplate)
     {
@@ -22,23 +21,7 @@ internal struct UrlAttribute : IEquatable<UrlAttribute>
 
     internal UrlTemplate? UrlTemplate { get; }
 
-    public static bool operator ==(UrlAttribute left, UrlAttribute right)
-    {
-        return left.Equals(right);
-    }
-
-    public static bool operator !=(UrlAttribute left, UrlAttribute right)
-    {
-        return !left.Equals(right);
-    }
-
-    public bool Equals(UrlAttribute other)
-    {
-        return Equals(this.Attribute, other.Attribute);
-    }
-
-    public override bool Equals(object? obj) => obj is UrlAttribute other &&
-                                                this.Equals(other);
+    public bool Equals(UrlAttribute other) => Equals(this.Attribute, other.Attribute);
 
     public override int GetHashCode() => this.Attribute?.GetHashCode() ?? 0;
 

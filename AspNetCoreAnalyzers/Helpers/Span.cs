@@ -4,7 +4,7 @@ using System;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Text;
 
-internal struct Span : IEquatable<Span>
+internal readonly record struct Span
 {
     internal Span(StringLiteral literal, int start, int end)
     {
@@ -20,26 +20,7 @@ internal struct Span : IEquatable<Span>
 
     public char this[int index] => this.Literal.ValueText[this.TextSpan.Start + index];
 
-    public static bool operator ==(Span left, Span right)
-    {
-        return left.Equals(right);
-    }
-
-    public static bool operator !=(Span left, Span right)
-    {
-        return !left.Equals(right);
-    }
-
-    public bool Equals(Span other)
-    {
-        return this.Literal.Equals(other.Literal) && this.TextSpan == other.TextSpan;
-    }
-
-    public override bool Equals(object? obj)
-    {
-        return obj is Span other &&
-               this.Equals(other);
-    }
+    public bool Equals(Span other) => this.Literal.Equals(other.Literal) && this.TextSpan == other.TextSpan;
 
     public override int GetHashCode()
     {

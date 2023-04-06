@@ -4,7 +4,7 @@ using System;
 using System.Diagnostics;
 
 [DebuggerDisplay("{this.Span.ToString()}")]
-internal struct PathSegment : IEquatable<PathSegment>
+internal readonly record struct PathSegment
 {
     internal PathSegment(StringLiteral literal, int start, int end)
     {
@@ -18,31 +18,9 @@ internal struct PathSegment : IEquatable<PathSegment>
 
     internal TemplateParameter? Parameter { get; }
 
-    public static bool operator ==(PathSegment left, PathSegment right)
-    {
-        return left.Equals(right);
-    }
+    public bool Equals(PathSegment other) => this.Span.Equals(other.Span);
 
-    public static bool operator !=(PathSegment left, PathSegment right)
-    {
-        return !left.Equals(right);
-    }
-
-    public bool Equals(PathSegment other)
-    {
-        return this.Span.Equals(other.Span);
-    }
-
-    public override bool Equals(object? obj)
-    {
-        return obj is PathSegment other &&
-               this.Equals(other);
-    }
-
-    public override int GetHashCode()
-    {
-        return this.Span.GetHashCode();
-    }
+    public override int GetHashCode() => this.Span.GetHashCode();
 
     internal static bool TryRead(StringLiteral literal, int start, out PathSegment segment)
     {

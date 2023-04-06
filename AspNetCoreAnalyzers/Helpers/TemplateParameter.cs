@@ -1,11 +1,10 @@
 ﻿namespace AspNetCoreAnalyzers;
 
-using System;
 using System.Collections.Immutable;
 using System.Diagnostics;
 
 [DebuggerDisplay("{this.Name.ToString()}")]
-internal struct TemplateParameter : IEquatable<TemplateParameter>
+internal readonly record struct TemplateParameter
 {
     internal TemplateParameter(Span name, ImmutableArray<RouteConstraint> constraints)
     {
@@ -17,30 +16,9 @@ internal struct TemplateParameter : IEquatable<TemplateParameter>
 
     internal ImmutableArray<RouteConstraint> Constraints { get; }
 
-    public static bool operator ==(TemplateParameter left, TemplateParameter right)
-    {
-        return left.Equals(right);
-    }
+    public bool Equals(TemplateParameter other) => this.Name.Equals(other.Name);
 
-    public static bool operator !=(TemplateParameter left, TemplateParameter right)
-    {
-        return !left.Equals(right);
-    }
-
-    public bool Equals(TemplateParameter other)
-    {
-        return this.Name.Equals(other.Name);
-    }
-
-    public override bool Equals(object? obj)
-    {
-        return obj is TemplateParameter other && this.Equals(other);
-    }
-
-    public override int GetHashCode()
-    {
-        return this.Name.GetHashCode();
-    }
+    public override int GetHashCode() => this.Name.GetHashCode();
 
     internal static bool TryParse(Span span, out TemplateParameter result)
     {

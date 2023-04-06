@@ -1,10 +1,9 @@
 ﻿namespace AspNetCoreAnalyzers;
 
-using System;
 using System.Diagnostics;
 
 [DebuggerDisplay("{this.Span.ToString()}")]
-internal struct RouteConstraint : IEquatable<RouteConstraint>
+internal readonly record struct RouteConstraint
 {
     internal RouteConstraint(Span span)
     {
@@ -13,31 +12,9 @@ internal struct RouteConstraint : IEquatable<RouteConstraint>
 
     internal Span Span { get; }
 
-    public static bool operator ==(RouteConstraint left, RouteConstraint right)
-    {
-        return left.Equals(right);
-    }
+    public bool Equals(RouteConstraint other) => this.Span.Equals(other.Span);
 
-    public static bool operator !=(RouteConstraint left, RouteConstraint right)
-    {
-        return !left.Equals(right);
-    }
-
-    public bool Equals(RouteConstraint other)
-    {
-        return this.Span.Equals(other.Span);
-    }
-
-    public override bool Equals(object? obj)
-    {
-        return obj is RouteConstraint other &&
-               this.Equals(other);
-    }
-
-    public override int GetHashCode()
-    {
-        return this.Span.GetHashCode();
-    }
+    public override int GetHashCode() => this.Span.GetHashCode();
 
     internal static bool TryRead(Span span, int pos, out RouteConstraint constraint)
     {
