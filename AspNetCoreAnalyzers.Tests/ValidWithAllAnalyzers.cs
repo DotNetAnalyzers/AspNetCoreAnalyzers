@@ -34,6 +34,11 @@ public static class ValidWithAllAnalyzers
     [TestCaseSource(nameof(AllAnalyzers))]
     public static void ValidCodeProject(DiagnosticAnalyzer analyzer)
     {
+        if (analyzer is AttributeAnalyzer)
+        {
+            Assert.Inconclusive("CS1701 Assuming assembly reference 'Microsoft.Extensions.DependencyInjection.Abstractions, Version=6.0.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60' used by 'Microsoft.AspNetCore.Mvc' matches identity 'Microsoft.Extensions.DependencyInjection.Abstractions, Version=7.0.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60' of 'Microsoft.Extensions.DependencyInjection.Abstractions', you may need to supply runtime policy");
+        }
+
         RoslynAssert.Valid(analyzer, ValidCodeProjectSln);
     }
 
