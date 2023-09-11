@@ -23,7 +23,7 @@
   <ItemGroup>
     <PackageReference Include="Gu.Roslyn.Asserts" Version="4.3.0" />
     <PackageReference Include="Gu.Roslyn.Asserts.Analyzers" Version="4.0.0" PrivateAssets="all" />
-    <PackageReference Include="IDisposableAnalyzers" Version="4.0.6" PrivateAssets="all" />
+    <PackageReference Include="IDisposableAnalyzers" Version="4.0.7" PrivateAssets="all" />
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="4.5.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="7.0.10" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.7.2" />
